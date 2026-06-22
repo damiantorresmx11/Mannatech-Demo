@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { CompanyId, Categoria, Producto, Textos, Distribuidor } from "./types";
 
-const sharedDir = path.resolve(process.cwd(), "../shared-content");
+const sharedDir = path.resolve(process.cwd(), "shared-content");
 
 function readCompanyJSON<T>(companyId: CompanyId, filename: string): T {
   const companyPath = path.join(sharedDir, "companies", companyId, filename);

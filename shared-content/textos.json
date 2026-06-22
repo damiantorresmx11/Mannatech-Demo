@@ -1,0 +1,43 @@
+{
+  "marca": {
+    "nombre": "Mannatech",
+    "tagline": "Productos que Transforman",
+    "fundacion": 1994,
+    "patentes": 90,
+    "anosInnovacion": 30
+  },
+  "sobreNosotros": {
+    "titulo": "Sobre Mannatech",
+    "texto": "Fundada en 1994, Mannatech es la empresa pionera en gliconutrición a nivel mundial. Descubrimos el poder transformador de los glicanos — sacáridos naturales de origen botánico que apoyan la comunicación entre las células de tu cuerpo. Desde el lanzamiento de Ambrotose Complex en 1996, el primer suplemento de gliconutrientes del mundo, hemos seguido innovando con más de 90 patentes globales y una ciencia respaldada por estudios clínicos publicados.",
+    "propuestaValor": "Mannatech no es solo una empresa de suplementos. Es la empresa que descubrió cómo los glicanos apoyan la comunicación entre tus células — y lleva más de 30 años transformando vidas con ciencia real, no tendencias. Nuestros productos están respaldados por más de 90 patentes y estudios clínicos publicados. No seguimos la ciencia: la creamos."
+  },
+  "hero": {
+    "titulo": "Productos que Transforman tu Bienestar",
+    "subtitulo": "Descubre la ciencia de la gliconutrición: suplementos respaldados por más de 90 patentes y 30 años de innovación.",
+    "ctaPrimario": "Explorar Productos",
+    "ctaSecundario": "Conoce la Ciencia"
+  },
+  "unete": {
+    "titulo": "Transforma Vidas. Transforma la Tuya.",
+    "subtitulo": "Únete a la red de asociados independientes de Mannatech y construye un negocio basado en ciencia real y productos que realmente funcionan.",
+    "beneficios": [
+      "Productos respaldados por ciencia y más de 90 patentes",
+      "Tu propia tienda en línea personalizada",
+      "Capacitación y soporte continuo",
+      "Comisiones y bonos competitivos",
+      "Comunidad global de asociados"
+    ],
+    "cta": "Quiero Ser Distribuidor"
+  },
+  "checkoutModal": {
+    "titulo": "Redirigiendo a la Tienda Oficial",
+    "texto": "Te llevamos a la tienda oficial de Mannatech para completar tu compra de forma segura. Serás redirigido en unos segundos...",
+    "cta": "Ir a Tienda Oficial",
+    "nota": "Compra 100% segura en mannatech.com"
+  },
+  "footer": {
+    "disclaimer": "Los productos Mannatech no están destinados a diagnosticar, tratar, curar o prevenir ninguna enfermedad. Los resultados individuales pueden variar.",
+    "selloDmlabs": "Demo desarrollado por DMLABS",
+    "links": ["Productos", "Sobre Mannatech", "Ciencia", "Contacto"]
+  }
+}

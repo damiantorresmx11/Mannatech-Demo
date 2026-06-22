@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#69CA98" fill-opacity="0.1"/>
+  <!-- Shield icon for GI Defense -->
+  <g transform="translate(200,185)" fill="none" stroke="#69CA98" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Shield -->
+    <path d="M0,-100 L75,-68 L75,15 Q75,80 0,108 Q-75,80 -75,15 L-75,-68 Z" fill="#69CA98" fill-opacity="0.12" stroke="#69CA98" stroke-width="3"/>
+    <path d="M0,-76 L55,-50 L55,12 Q55,60 0,82 Q-55,60 -55,12 L-55,-50 Z" fill="#69CA98" fill-opacity="0.2" stroke="#69CA98" stroke-width="2"/>
+    <!-- Leaf inside shield (digestive/gut symbol) -->
+    <path d="M0,-50 C30,-50 45,-25 45,0 C45,35 30,60 0,65 C-30,60 -45,35 -45,0 C-45,-25 -30,-50 0,-50 Z" fill="#69CA98" fill-opacity="0.3" stroke="#69CA98" stroke-width="2"/>
+    <!-- Gut/wave line inside -->
+    <path d="M-25,0 Q-12,-18 0,0 Q12,18 25,0" stroke="#69CA98" stroke-width="2.5" fill="none"/>
+  </g>
+  <text x="200" y="342" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">GI Defense</text>
+  <text x="200" y="365" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#69CA98">Salud Digestiva</text>
+</svg>

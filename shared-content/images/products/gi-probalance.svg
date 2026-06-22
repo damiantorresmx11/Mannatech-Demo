@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#69CA98" fill-opacity="0.1"/>
+  <!-- Sachet icon -->
+  <g transform="translate(200,185)" fill="none" stroke="#69CA98" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Sachet body -->
+    <path d="M-65,-85 L65,-85 L80,85 L-80,85 Z" fill="#69CA98" fill-opacity="0.15" stroke="#69CA98" stroke-width="3"/>
+    <!-- Top seal -->
+    <rect x="-65" y="-105" width="130" height="26" rx="6" fill="#69CA98" fill-opacity="0.3" stroke="#69CA98" stroke-width="3"/>
+    <!-- Tear notch -->
+    <path d="M55,-105 L65,-105 L65,-85 L58,-85" stroke="#69CA98" stroke-width="2" fill="none"/>
+    <!-- Bottom seal line -->
+    <line x1="-80" y1="75" x2="80" y2="75" stroke="#69CA98" stroke-width="3"/>
+    <!-- Label lines on sachet -->
+    <line x1="-40" y1="-40" x2="40" y2="-40" stroke="#69CA98" stroke-width="2"/>
+    <line x1="-40" y1="-20" x2="40" y2="-20" stroke="#69CA98" stroke-width="2"/>
+    <line x1="-40" y1="0" x2="30" y2="0" stroke="#69CA98" stroke-width="2"/>
+    <!-- Leaf/probiotic symbol -->
+    <path d="M-15,30 Q0,15 15,30 Q0,50 -15,30 Z" fill="#69CA98" fill-opacity="0.5" stroke="#69CA98" stroke-width="1.5"/>
+  </g>
+  <text x="200" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">GI ProBalance</text>
+  <text x="200" y="353" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#69CA98">Salud Digestiva</text>
+</svg>

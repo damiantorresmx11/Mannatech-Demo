@@ -1,0 +1,43 @@
+{
+  "marca": {
+    "nombre": "Mannatech",
+    "tagline": "Products that Transform",
+    "fundacion": 1994,
+    "patentes": 90,
+    "anosInnovacion": 30
+  },
+  "sobreNosotros": {
+    "titulo": "About Mannatech",
+    "texto": "Founded in 1994, Mannatech is the global pioneer in glyconutrition. We discovered the transformative power of glycans — natural plant-based saccharides that support cell-to-cell communication in your body. Since the launch of Ambrotose Complex in 1996, the world's first glyconutrient supplement, we have continued innovating with over 90 global patents and science backed by published clinical studies.",
+    "propuestaValor": "Mannatech is not just a supplement company. It is the company that discovered how glycans support communication between your cells — and has been transforming lives with real science, not trends, for over 30 years. Our products are backed by more than 90 patents and published clinical studies. We don't follow the science: we create it."
+  },
+  "hero": {
+    "titulo": "Products that Transform Your Wellness",
+    "subtitulo": "Discover the science of glyconutrition: supplements backed by over 90 patents and 30 years of innovation.",
+    "ctaPrimario": "Explore Products",
+    "ctaSecundario": "Learn About the Science"
+  },
+  "unete": {
+    "titulo": "Transform Lives. Transform Yours.",
+    "subtitulo": "Join Mannatech's network of independent associates and build a business based on real science and products that truly work.",
+    "beneficios": [
+      "Products backed by science and over 90 patents",
+      "Your own personalized online store",
+      "Ongoing training and support",
+      "Competitive commissions and bonuses",
+      "Global community of associates"
+    ],
+    "cta": "I Want to Be a Distributor"
+  },
+  "checkoutModal": {
+    "titulo": "Redirecting to the Official Store",
+    "texto": "We are taking you to the official Mannatech store to complete your purchase securely. You will be redirected in a few seconds...",
+    "cta": "Go to Official Store",
+    "nota": "100% secure purchase at mannatech.com"
+  },
+  "footer": {
+    "disclaimer": "Mannatech products are not intended to diagnose, treat, cure, or prevent any disease. Individual results may vary.",
+    "selloDmlabs": "Demo developed by DMLABS",
+    "links": ["Products", "About Mannatech", "Science", "Contact"]
+  }
+}

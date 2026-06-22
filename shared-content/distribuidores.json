@@ -1,0 +1,73 @@
+{
+  "distribuidores": [
+    {
+      "slug": "maria-lopez",
+      "nombre": "María López García",
+      "ubicacion": "Guadalajara, Jalisco",
+      "whatsapp": "5213312345678",
+      "bio": "Asociada independiente de Mannatech desde 2019. Apasionada por la nutrición celular y el bienestar integral. Certificada en gliconutrición.",
+      "productosFavoritos": ["ambrotose-life", "mannabears", "catalyst-multivitamin"],
+      "nivel": "Asociada Senior",
+      "foto": "/images/distributors/maria-lopez.svg",
+      "stats": {
+        "ventasMes": 45800,
+        "clicsEnlace": 234,
+        "clientesActivos": 18,
+        "metaMensual": 50000,
+        "tendencia": 12,
+        "productosCompartidos": [
+          { "slug": "ambrotose-life", "cantidad": 45 },
+          { "slug": "mannabears", "cantidad": 32 },
+          { "slug": "catalyst-multivitamin", "cantidad": 28 }
+        ],
+        "ventasHistorial": [28000, 32000, 35000, 38000, 41000, 45800]
+      }
+    },
+    {
+      "slug": "carlos-ramirez",
+      "nombre": "Carlos Ramírez Torres",
+      "ubicacion": "Ciudad de México, CDMX",
+      "whatsapp": "5215556789012",
+      "bio": "Asociado independiente desde 2017. Especializado en suplementación deportiva y pérdida de peso con productos Mannatech.",
+      "productosFavoritos": ["osolean", "advanced-ambrotose", "bounceback"],
+      "nivel": "Líder de Equipo",
+      "foto": "/images/distributors/carlos-ramirez.svg",
+      "stats": {
+        "ventasMes": 67200,
+        "clicsEnlace": 412,
+        "clientesActivos": 27,
+        "metaMensual": 70000,
+        "tendencia": 8,
+        "productosCompartidos": [
+          { "slug": "osolean", "cantidad": 58 },
+          { "slug": "advanced-ambrotose", "cantidad": 41 },
+          { "slug": "bounceback", "cantidad": 35 }
+        ],
+        "ventasHistorial": [45000, 48000, 52000, 58000, 62000, 67200]
+      }
+    },
+    {
+      "slug": "ana-sofia-mendoza",
+      "nombre": "Ana Sofía Mendoza",
+      "ubicacion": "Monterrey, Nuevo León",
+      "whatsapp": "5218187654321",
+      "bio": "Asociada independiente enfocada en skincare y bienestar femenino. Creadora de contenido sobre salud y belleza con Mannatech.",
+      "productosFavoritos": ["uth-rejuvenation-creme", "luminovation", "emprizone"],
+      "nivel": "Asociada",
+      "foto": "/images/distributors/ana-sofia-mendoza.svg",
+      "stats": {
+        "ventasMes": 32100,
+        "clicsEnlace": 189,
+        "clientesActivos": 14,
+        "metaMensual": 40000,
+        "tendencia": 22,
+        "productosCompartidos": [
+          { "slug": "uth-rejuvenation-creme", "cantidad": 38 },
+          { "slug": "luminovation", "cantidad": 25 },
+          { "slug": "emprizone", "cantidad": 22 }
+        ],
+        "ventasHistorial": [15000, 18000, 22000, 25000, 28000, 32100]
+      }
+    }
+  ]
+}

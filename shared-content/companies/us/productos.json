@@ -1,0 +1,470 @@
+{
+  "categorias": [
+    {
+      "id": "salud-integrativa",
+      "nombre": "Salud Integrativa",
+      "color": "#00A88F",
+      "colorSecundario": "#69CA98",
+      "descripcion": "Suplementos fundamentales basados en nuestra tecnología patentada de gliconutrientes para apoyar la comunicación celular, el sistema inmunológico y la salud integral.",
+      "icono": "heart-pulse"
+    },
+    {
+      "id": "salud-digestiva",
+      "nombre": "Salud Digestiva",
+      "color": "#69CA98",
+      "colorSecundario": "#00A88F",
+      "descripcion": "Productos diseñados para apoyar la salud gastrointestinal, el microbioma y la digestión óptima.",
+      "icono": "leaf"
+    },
+    {
+      "id": "cuidado-piel",
+      "nombre": "Cuidado de la Piel",
+      "color": "#66C7EC",
+      "colorSecundario": "#008FBF",
+      "descripcion": "Líneas de cuidado de la piel que incorporan tecnología de glicanos para una piel visiblemente más joven y saludable.",
+      "icono": "sparkles"
+    },
+    {
+      "id": "peso-fitness",
+      "nombre": "Peso y Fitness",
+      "color": "#E21C1F",
+      "colorSecundario": "#ED6B19",
+      "descripcion": "Suplementos formulados para apoyar el control de peso, la pérdida de grasa y el rendimiento físico.",
+      "icono": "dumbbell"
+    },
+    {
+      "id": "nutricion-esencial",
+      "nombre": "Nutrición Esencial",
+      "color": "#00529D",
+      "colorSecundario": "#00A88F",
+      "descripcion": "Multivitamínicos y minerales esenciales de fuentes naturales para el mantenimiento diario de la salud.",
+      "icono": "pill"
+    }
+  ],
+  "productos": [
+    {
+      "slug": "ambrotose-life",
+      "sku": "51101",
+      "nombre": "Ambrotose LIFE",
+      "categoria": "salud-integrativa",
+      "precio": 199,
+      "presentacion": "Polvo 100g",
+      "descripcionCorta": "El suplemento más avanzado de gliconutrientes de Mannatech. Nuestro producto insignia.",
+      "descripcionLarga": "Ambrotose LIFE es el suplemento nutricional más importante para tu salud. Contiene la mezcla más potente de gliconutrientes jamás desarrollada por Mannatech, diseñada para apoyar la comunicación entre las células de tu cuerpo, respaldar tu sistema inmunológico, apoyar la función cognitiva y promover la salud gastrointestinal.",
+      "beneficios": [
+        "Apoya la comunicación celular con gliconutrientes avanzados",
+        "Respalda un sistema inmunológico saludable",
+        "Puede mejorar la memoria de recuerdo y reconocimiento",
+        "Promueve la salud gastrointestinal",
+        "Puede mejorar el estado de ánimo y disminuir la irritabilidad"
+      ],
+      "ingredientes": "Manapol (polvo premium de aloe vera), mezcla patentada de glicanos de origen botánico",
+      "imagen": "/images/products/ambrotose-life.svg",
+      "destacado": true,
+      "badge": "Producto Insignia"
+    },
+    {
+      "slug": "advanced-ambrotose",
+      "sku": "37001",
+      "nombre": "Advanced Ambrotose",
+      "categoria": "salud-integrativa",
+      "precio": 80,
+      "presentacion": "120 cápsulas",
+      "descripcionCorta": "Potente combinación de gliconutrientes en cápsulas para apoyar la comunicación celular y el sistema inmunológico.",
+      "descripcionLarga": "Advanced Ambrotose contiene una potente combinación de ingredientes especializados que apoyan la comunicación de célula a célula y promueven un sistema inmunológico saludable. Formulado con sacáridos específicos de plantas, incluyendo gliconutrientes, en una presentación práctica de cápsulas.",
+      "beneficios": [
+        "Apoya la comunicación de célula a célula",
+        "Promueve un sistema inmunológico saludable",
+        "Libre de OGM, bajo índice glucémico y libre de gluten",
+        "Formulado con sacáridos de fuentes botánicas"
+      ],
+      "ingredientes": "Polisacáridos de plantas, betacaroteno natural",
+      "imagen": "/images/products/advanced-ambrotose.svg",
+      "destacado": true,
+      "badge": "Más Vendido"
+    },
+    {
+      "slug": "ambrotose-complex",
+      "sku": "37101",
+      "nombre": "Ambrotose Complex",
+      "categoria": "salud-integrativa",
+      "precio": 56,
+      "presentacion": "60 cápsulas",
+      "descripcionCorta": "El suplemento central de gliconutrientes. El producto que inició la revolución de la gliconutrición.",
+      "descripcionLarga": "Ambrotose Complex es el suplemento central de gliconutrientes de Mannatech — el producto que inició todo en 1996. Formulado con una mezcla de sacáridos específicos de plantas que apoyan la comunicación celular, el sistema inmunológico y la salud integral del cuerpo.",
+      "beneficios": [
+        "El primer gliconutriente del mundo",
+        "Apoya la comunicación celular",
+        "Respalda el sistema inmunológico",
+        "Base de toda la línea Ambrotose"
+      ],
+      "ingredientes": "Manapol (aloe vera), arabinogalactano, ghatti, tragacanto",
+      "imagen": "/images/products/ambrotose-complex.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "ambrotose-ao",
+      "sku": "12701",
+      "nombre": "Ambrotose AO",
+      "categoria": "salud-integrativa",
+      "precio": 62,
+      "presentacion": "60 cápsulas",
+      "descripcionCorta": "Poderoso antioxidante con gliconutrientes para combatir el estrés oxidativo.",
+      "descripcionLarga": "Ambrotose AO combina el poder de los gliconutrientes con una mezcla de antioxidantes de alta potencia. Formulado con extractos de frutas y vegetales que proporcionan protección antioxidante mientras apoyan la comunicación celular.",
+      "beneficios": [
+        "Protección antioxidante avanzada",
+        "Combate el estrés oxidativo",
+        "Apoya la comunicación celular",
+        "Mezcla de extractos de frutas y vegetales"
+      ],
+      "ingredientes": "Gliconutrientes, extractos antioxidantes de frutas y vegetales",
+      "imagen": "/images/products/ambrotose-ao.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "manapol",
+      "sku": "52001",
+      "nombre": "Manapol",
+      "categoria": "salud-integrativa",
+      "precio": 300,
+      "presentacion": "Polvo 30g",
+      "descripcionCorta": "Polvo de aloe vera de la más alta pureza. El ingrediente base de toda la tecnología Ambrotose.",
+      "descripcionLarga": "Manapol con Acemannan es el polvo de aloe vera de la más alta pureza y concentración disponible. Es el ingrediente base de toda la tecnología Ambrotose de Mannatech, obtenido de la parte interna de la hoja del aloe mediante un proceso patentado que preserva la longitud de cadena molecular óptima.",
+      "beneficios": [
+        "La forma más pura de acemannan de aloe vera",
+        "Apoya la salud del sistema inmunológico",
+        "Promueve la salud gastrointestinal",
+        "Proceso de extracción patentado"
+      ],
+      "ingredientes": "Acemannan de aloe vera puro",
+      "imagen": "/images/products/manapol.svg",
+      "destacado": true,
+      "badge": "Premium"
+    },
+    {
+      "slug": "mannabears",
+      "sku": "11325",
+      "nombre": "MannaBears",
+      "categoria": "salud-integrativa",
+      "precio": 28,
+      "presentacion": "60 gomitas",
+      "descripcionCorta": "Deliciosas gomitas con gliconutrientes y vitamina C para toda la familia.",
+      "descripcionLarga": "MannaBears son deliciosas gomitas de pectina con forma de oso, diseñadas para respaldar la comunicación celular a través de gliconutrientes y protección antioxidante de vitamina C. Formuladas con ingredientes naturales como amla, frambuesa, brócoli, zanahoria, col rizada, tomate y espinaca. Ideales para niños y adultos.",
+      "beneficios": [
+        "Gliconutrientes en formato delicioso",
+        "Protección antioxidante con vitamina C",
+        "Veganas, sin OGM, sin gluten, sin lactosa, sin soya",
+        "Sin sabores, colores ni edulcorantes artificiales",
+        "Ideales para toda la familia"
+      ],
+      "ingredientes": "Gliconutrientes, vitamina C, amla, frambuesa, superfoods verdes",
+      "imagen": "/images/products/mannabears.svg",
+      "destacado": true,
+      "badge": "Favorito Familiar"
+    },
+    {
+      "slug": "immunostart",
+      "sku": "15601",
+      "nombre": "ImmunoStart",
+      "categoria": "salud-integrativa",
+      "precio": 53,
+      "presentacion": "30 tabletas masticables",
+      "descripcionCorta": "Tabletas masticables diseñadas para fortalecer el sistema inmunológico.",
+      "descripcionLarga": "ImmunoStart es un suplemento masticable que proporciona una combinación de ingredientes naturales diseñados para fortalecer las defensas naturales del cuerpo. Formulado para apoyar el sistema inmunológico con ingredientes respaldados por la ciencia.",
+      "beneficios": [
+        "Apoya el sistema inmunológico",
+        "Formato masticable, fácil de tomar",
+        "Ingredientes naturales"
+      ],
+      "ingredientes": "Beta-glucanos, gliconutrientes",
+      "imagen": "/images/products/immunostart.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "gi-probalance",
+      "sku": "21301",
+      "nombre": "GI-ProBalance",
+      "categoria": "salud-digestiva",
+      "precio": 45,
+      "presentacion": "30 sobres",
+      "descripcionCorta": "Probióticos avanzados para la salud digestiva y el equilibrio del microbioma.",
+      "descripcionLarga": "GI-ProBalance proporciona una combinación de probióticos y prebióticos diseñados para apoyar un microbioma intestinal saludable. Cada sobre contiene cepas bacterianas beneficiosas que promueven la digestión óptima y el bienestar general del sistema gastrointestinal.",
+      "beneficios": [
+        "Apoya el equilibrio del microbioma intestinal",
+        "Probióticos y prebióticos en una fórmula",
+        "Formato en sobres para fácil consumo",
+        "Promueve una digestión saludable"
+      ],
+      "ingredientes": "Cepas probióticas, prebióticos",
+      "imagen": "/images/products/gi-probalance.svg",
+      "destacado": true,
+      "badge": "Digestivo"
+    },
+    {
+      "slug": "gi-defense",
+      "sku": "21401",
+      "nombre": "GI-Defense",
+      "categoria": "salud-digestiva",
+      "precio": 71,
+      "presentacion": "60 cápsulas",
+      "descripcionCorta": "Defensa integral para el sistema gastrointestinal con ingredientes naturales.",
+      "descripcionLarga": "GI-Defense proporciona una barrera de defensa natural para tu sistema gastrointestinal. Formulado con ingredientes que ayudan a proteger y fortalecer la salud intestinal, apoyando las defensas naturales del tracto digestivo.",
+      "beneficios": [
+        "Protege la salud intestinal",
+        "Fortalece las defensas del tracto digestivo",
+        "Ingredientes naturales de alta calidad"
+      ],
+      "ingredientes": "Mezcla propietaria de ingredientes protectores gastrointestinales",
+      "imagen": "/images/products/gi-defense.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "gi-zyme",
+      "sku": "21501",
+      "nombre": "GI-Zyme",
+      "categoria": "salud-digestiva",
+      "precio": 63,
+      "presentacion": "90 cápsulas",
+      "descripcionCorta": "Enzimas digestivas avanzadas para una digestión óptima.",
+      "descripcionLarga": "GI-Zyme contiene una mezcla completa de enzimas digestivas diseñadas para apoyar la descomposición y absorción eficiente de proteínas, grasas y carbohidratos. Ideal para personas que buscan optimizar su digestión y absorción de nutrientes.",
+      "beneficios": [
+        "Enzimas para digestión de proteínas, grasas y carbohidratos",
+        "Apoya la absorción de nutrientes",
+        "Reduce molestias digestivas"
+      ],
+      "ingredientes": "Proteasa, lipasa, amilasa, celulasa",
+      "imagen": "/images/products/gi-zyme.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "uth-rejuvenation-creme",
+      "sku": "27101",
+      "nombre": "Uth Rejuvenation Crème",
+      "categoria": "cuidado-piel",
+      "precio": 106,
+      "presentacion": "30ml",
+      "descripcionCorta": "Crema rejuvenecedora con tecnología de gliconutrientes para una piel visiblemente más joven.",
+      "descripcionLarga": "Uth Rejuvenation Crème es una crema revolucionaria basada en la ciencia de la glicobiología. Utiliza un sistema de microesferas patentado diseñado para penetrar las capas más profundas de la piel, ayudando a estimular la producción de colágeno y reducir la apariencia de líneas finas y arrugas. Libre de gluten y parabenos.",
+      "beneficios": [
+        "Sistema de microesferas para penetración profunda",
+        "Estimula la producción de colágeno",
+        "Reduce la apariencia de líneas finas y arrugas",
+        "Libre de gluten y parabenos",
+        "Basada en ciencia de glicobiología"
+      ],
+      "ingredientes": "Gliconutrientes, sistema de microesferas, péptidos",
+      "imagen": "/images/products/uth-rejuvenation-creme.svg",
+      "destacado": true,
+      "badge": "Anti-Edad"
+    },
+    {
+      "slug": "uth-facial-cleanser",
+      "sku": "27201",
+      "nombre": "Uth Facial Cleanser",
+      "categoria": "cuidado-piel",
+      "precio": 37,
+      "presentacion": "120ml",
+      "descripcionCorta": "Limpiador facial suave que limpia y exfolia rostro y cuello.",
+      "descripcionLarga": "Uth Facial Cleanser limpia suavemente y exfolia la piel del rostro y cuello, preparándola para recibir los beneficios de la crema Uth Rejuvenation Crème. Formulado para ser gentil pero efectivo, removiendo impurezas sin resecar la piel.",
+      "beneficios": [
+        "Limpieza suave y efectiva",
+        "Exfoliación gentil",
+        "Prepara la piel para el tratamiento",
+        "No reseca la piel"
+      ],
+      "ingredientes": "Agentes limpiadores suaves, exfoliantes naturales",
+      "imagen": "/images/products/uth-facial-cleanser.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "luminovation",
+      "sku": "28001",
+      "nombre": "Luminovation K-Beauty Line",
+      "categoria": "cuidado-piel",
+      "precio": 234,
+      "presentacion": "Set completo (4 productos)",
+      "descripcionCorta": "Línea completa K-beauty con tecnología de glicanos y soporte del microbioma de la piel.",
+      "descripcionLarga": "Luminovation es la línea de skincare K-beauty de Mannatech que combina tecnología de glicanos de vanguardia con soporte del microbioma de la piel. Incluye gliconutrientes propietarios de aloe, NMF para hidratación, gemas preciosas (diamante, perla, amatista, rubí, zafiro blanco y topacio) para promover una piel más brillante, y péptidos para combatir líneas finas y arrugas.",
+      "beneficios": [
+        "Tecnología K-beauty con glicanos",
+        "Soporte del microbioma de la piel",
+        "Gemas preciosas para luminosidad",
+        "Péptidos anti-envejecimiento",
+        "Hidratación profunda con NMF"
+      ],
+      "ingredientes": "Gliconutrientes de aloe, diamante, perla, amatista, rubí, zafiro, topacio, péptidos",
+      "imagen": "/images/products/luminovation.svg",
+      "destacado": true,
+      "badge": "K-Beauty"
+    },
+    {
+      "slug": "emprizone",
+      "sku": "18301",
+      "nombre": "Emprizone",
+      "categoria": "cuidado-piel",
+      "precio": 39,
+      "presentacion": "Gel 175ml",
+      "descripcionCorta": "Gel de aloe vera que hidrata, mejora la resiliencia y unifica el tono de la piel.",
+      "descripcionLarga": "Emprizone es un gel hidratante a base de aloe vera que proporciona hidratación profunda, mejora la resiliencia de la piel y ayuda a unificar el tono. Ideal para uso diario y para pieles que necesitan hidratación intensiva y calmante.",
+      "beneficios": [
+        "Hidratación profunda con aloe vera",
+        "Mejora la resiliencia de la piel",
+        "Unifica el tono de la piel",
+        "Efecto calmante"
+      ],
+      "ingredientes": "Aloe vera, ingredientes hidratantes",
+      "imagen": "/images/products/emprizone.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "osolean",
+      "sku": "22101",
+      "nombre": "OsoLean",
+      "categoria": "peso-fitness",
+      "precio": 77,
+      "presentacion": "30 sobres",
+      "descripcionCorta": "Proteína de suero científicamente probada para apoyar la pérdida de grasa y proteger el músculo magro.",
+      "descripcionLarga": "OsoLean es un suplemento de proteína de suero científicamente probado, diseñado para apoyar la pérdida de grasa mientras ayuda a proteger el músculo magro cuando se combina con una dieta reducida en calorías y ejercicio. Proporciona proteína de alta calidad, aminoácidos de cadena ramificada (BCAAs) y ácido siálico.",
+      "beneficios": [
+        "Apoya la pérdida de grasa",
+        "Protege el músculo magro",
+        "Proteína de suero de alta calidad",
+        "Contiene BCAAs naturales",
+        "Ácido siálico para comunicación celular"
+      ],
+      "ingredientes": "Proteína de suero, BCAAs, ácido siálico",
+      "imagen": "/images/products/osolean.svg",
+      "destacado": true,
+      "badge": "Fitness"
+    },
+    {
+      "slug": "empact-plus",
+      "sku": "23001",
+      "nombre": "Empact+",
+      "categoria": "peso-fitness",
+      "precio": 51,
+      "presentacion": "30 sobres",
+      "descripcionCorta": "Bebida de rendimiento deportivo para energía y recuperación.",
+      "descripcionLarga": "Empact+ es una mezcla de rendimiento deportivo diseñada para proporcionar energía sostenida, mejorar la resistencia y apoyar la recuperación después del ejercicio. Formulada con ingredientes naturales que optimizan el rendimiento físico.",
+      "beneficios": [
+        "Energía sostenida para el entrenamiento",
+        "Mejora la resistencia física",
+        "Apoya la recuperación post-ejercicio",
+        "Ingredientes naturales"
+      ],
+      "ingredientes": "Mezcla de rendimiento deportivo, electrolitos",
+      "imagen": "/images/products/empact-plus.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "bounceback",
+      "sku": "24001",
+      "nombre": "BounceBack",
+      "categoria": "peso-fitness",
+      "precio": 65,
+      "presentacion": "90 cápsulas",
+      "descripcionCorta": "Suplemento para recuperación muscular y articular después del ejercicio.",
+      "descripcionLarga": "BounceBack está diseñado para apoyar la recuperación muscular y articular después del ejercicio o la actividad física intensa. Formulado con enzimas proteolíticas y otros ingredientes naturales que apoyan la respuesta natural del cuerpo a la inflamación post-ejercicio.",
+      "beneficios": [
+        "Recuperación muscular acelerada",
+        "Soporte articular",
+        "Enzimas proteolíticas",
+        "Respuesta natural a la inflamación"
+      ],
+      "ingredientes": "Enzimas proteolíticas, ingredientes antiinflamatorios naturales",
+      "imagen": "/images/products/bounceback.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "catalyst-multivitamin",
+      "sku": "56201",
+      "nombre": "Catalyst Multivitamin",
+      "categoria": "nutricion-esencial",
+      "precio": 69,
+      "presentacion": "120 cápsulas",
+      "descripcionCorta": "Multivitamínico completo con ashwagandha para energía, estado de ánimo y salud integral.",
+      "descripcionLarga": "Catalyst Multivitamin combina lo mejor de la nutrición esencial con ingredientes científicamente respaldados. Incluye vitaminas y minerales de fuentes naturales, además de ashwagandha clínicamente estudiada para proporcionar apoyo adicional del estado de ánimo y energía.",
+      "beneficios": [
+        "Multivitamínico completo de fuentes naturales",
+        "Ashwagandha para estado de ánimo y energía",
+        "Apoya la respuesta del cuerpo al estrés",
+        "Apoya niveles saludables de presión arterial",
+        "Función hepática saludable"
+      ],
+      "ingredientes": "Vitaminas y minerales naturales, ashwagandha, fitonutrientes",
+      "imagen": "/images/products/catalyst-multivitamin.svg",
+      "destacado": true,
+      "badge": "Esencial"
+    },
+    {
+      "slug": "nutriverus",
+      "sku": "34301",
+      "nombre": "NutriVerus",
+      "categoria": "nutricion-esencial",
+      "precio": 60,
+      "presentacion": "Polvo 165g",
+      "descripcionCorta": "Polvo de vitaminas, minerales y gliconutrientes de fuentes alimenticias naturales.",
+      "descripcionLarga": "NutriVerus otorga un complejo de fuentes naturales, basado en alimentos, de vitaminas y minerales. Respalda la comunicación entre las células a través de una mezcla de sacáridos específicos provenientes de plantas, que incluyen gliconutrientes.",
+      "beneficios": [
+        "Vitaminas y minerales de fuentes alimenticias",
+        "Gliconutrientes para comunicación celular",
+        "Antioxidantes naturales",
+        "Fitonutrientes en matriz de alimentos integrales",
+        "Apoyo del sistema inmunitario"
+      ],
+      "ingredientes": "Vitaminas, minerales, gliconutrientes, fitonutrientes",
+      "imagen": "/images/products/nutriverus.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "phytomatrix",
+      "sku": "11201",
+      "nombre": "PhytoMatrix",
+      "categoria": "nutricion-esencial",
+      "precio": 45,
+      "presentacion": "60 comprimidos",
+      "descripcionCorta": "Multivitamínico con vitaminas y minerales de fuentes naturales para salud del corazón e inmunológica.",
+      "descripcionLarga": "PhytoMatrix está creado con vitaminas y minerales de fuentes naturales que respaldan la salud del corazón y del sistema inmunitario. Es una multivitamina para el mantenimiento diario de la salud.",
+      "beneficios": [
+        "Vitaminas y minerales de fuentes naturales",
+        "Salud del corazón",
+        "Sistema inmunitario",
+        "Mantenimiento diario"
+      ],
+      "ingredientes": "Vitaminas, minerales, fitonutrientes",
+      "imagen": "/images/products/phytomatrix.svg",
+      "destacado": false,
+      "badge": null
+    },
+    {
+      "slug": "glycocafe",
+      "sku": "32001",
+      "nombre": "GlycoCafe",
+      "categoria": "nutricion-esencial",
+      "precio": 38,
+      "presentacion": "30 sobres",
+      "descripcionCorta": "Café premium con gliconutrientes. El café que nutre mientras disfrutas.",
+      "descripcionLarga": "GlycoCafe combina café premium con la tecnología patentada de gliconutrientes de Mannatech. Disfruta de tu café de cada mañana sabiendo que también estás apoyando la comunicación celular de tu cuerpo.",
+      "beneficios": [
+        "Café premium con gliconutrientes",
+        "Energía natural del café",
+        "Apoyo a la comunicación celular",
+        "Conveniente formato en sobres"
+      ],
+      "ingredientes": "Café premium, gliconutrientes",
+      "imagen": "/images/products/glycocafe.svg",
+      "destacado": false,
+      "badge": null
+    }
+  ]
+}
