@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#66C7EC" fill-opacity="0.1"/>
+  <!-- Set of bottles icon -->
+  <g transform="translate(200,185)" fill="none" stroke="#66C7EC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left bottle (serum dropper) -->
+    <rect x="-95" y="-30" width="50" height="90" rx="8" fill="#66C7EC" fill-opacity="0.15" stroke="#66C7EC" stroke-width="2.5"/>
+    <rect x="-86" y="-55" width="32" height="30" rx="6" fill="#66C7EC" fill-opacity="0.25" stroke="#66C7EC" stroke-width="2.5"/>
+    <line x1="-70" y1="-70" x2="-70" y2="-55" stroke="#66C7EC" stroke-width="3"/>
+    <circle cx="-70" cy="-74" r="5" fill="#66C7EC" fill-opacity="0.5" stroke="#66C7EC" stroke-width="2"/>
+    <!-- Center bottle (tall) -->
+    <rect x="-28" y="-75" width="56" height="130" rx="10" fill="#66C7EC" fill-opacity="0.2" stroke="#66C7EC" stroke-width="2.5"/>
+    <rect x="-20" y="-96" width="40" height="26" rx="8" fill="#66C7EC" fill-opacity="0.35" stroke="#66C7EC" stroke-width="2.5"/>
+    <!-- Label on center bottle -->
+    <line x1="-18" y1="-30" x2="18" y2="-30" stroke="#66C7EC" stroke-width="1.5"/>
+    <line x1="-18" y1="-15" x2="18" y2="-15" stroke="#66C7EC" stroke-width="1.5"/>
+    <!-- Right bottle (short) -->
+    <rect x="45" y="-10" width="50" height="70" rx="8" fill="#66C7EC" fill-opacity="0.15" stroke="#66C7EC" stroke-width="2.5"/>
+    <rect x="50" y="-32" width="40" height="26" rx="8" fill="#66C7EC" fill-opacity="0.28" stroke="#66C7EC" stroke-width="2.5"/>
+    <!-- Sparkle dots -->
+    <circle cx="-95" cy="-85" r="4" fill="#66C7EC" fill-opacity="0.5"/>
+    <circle cx="95" cy="-65" r="3" fill="#66C7EC" fill-opacity="0.4"/>
+    <circle cx="85" cy="-90" r="2.5" fill="#66C7EC" fill-opacity="0.35"/>
+  </g>
+  <text x="200" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">Luminovation</text>
+  <text x="200" y="358" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#66C7EC">Cuidado de la Piel</text>
+</svg>

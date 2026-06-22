@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#00A88F" fill-opacity="0.1"/>
+  <!-- Capsule icon -->
+  <g transform="translate(200,180)" fill="none" stroke="#00A88F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Single large capsule -->
+    <path d="M-20,-70 Q-50,-70 -50,-40 L-50,40 Q-50,70 -20,70 L20,70 Q50,70 50,40 L50,-40 Q50,-70 20,-70 Z" fill="#00A88F" fill-opacity="0.12" stroke="#00A88F" stroke-width="3"/>
+    <!-- Capsule divider line -->
+    <line x1="-50" y1="0" x2="50" y2="0" stroke="#00A88F" stroke-width="2.5"/>
+    <!-- Top half fill -->
+    <path d="M-50,0 L-50,-40 Q-50,-70 -20,-70 L20,-70 Q50,-70 50,-40 L50,0 Z" fill="#00A88F" fill-opacity="0.3"/>
+    <!-- Star/sparkle detail -->
+    <circle cx="0" cy="35" r="12" fill="#00A88F" fill-opacity="0.25" stroke="#00A88F" stroke-width="2"/>
+    <line x1="0" y1="25" x2="0" y2="45" stroke="#00A88F" stroke-width="2"/>
+    <line x1="-10" y1="35" x2="10" y2="35" stroke="#00A88F" stroke-width="2"/>
+  </g>
+  <text x="200" y="318" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">Ambrotose Complex</text>
+  <text x="200" y="341" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#00A88F">Salud Integrativa</text>
+</svg>

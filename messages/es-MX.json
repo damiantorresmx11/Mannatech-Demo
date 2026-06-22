@@ -1,0 +1,272 @@
+{
+  "common": {
+    "nav": {
+      "home": "Inicio",
+      "products": "Productos",
+      "distributors": "Distribuidores",
+      "science": "Ciencia",
+      "cart": "Carrito",
+      "logoAria": "Mannatech - Inicio",
+      "openMenu": "Abrir menu",
+      "closeMenu": "Cerrar menu"
+    },
+    "actions": {
+      "addToCart": "Agregar al carrito",
+      "added": "Agregado",
+      "buyNow": "Comprar ahora",
+      "viewProducts": "Ver Productos",
+      "continueShopping": "Seguir comprando",
+      "checkout": "Ir al Checkout",
+      "shareWhatsApp": "Compartir por WhatsApp",
+      "close": "Cerrar"
+    },
+    "company": {
+      "selectorLabel": "Empresa",
+      "mx": "Mannatech Mexico",
+      "us": "Mannatech USA"
+    },
+    "locale": {
+      "switcherLabel": "Idioma",
+      "es-MX": "Espanol",
+      "en-US": "English"
+    },
+    "footer": {
+      "brandDescription": "Pioneros en gliconutricion desde 1994. Transformando vidas con ciencia real.",
+      "products": "Productos",
+      "categories": "Categorias",
+      "company": "Compania",
+      "contact": "Contacto",
+      "items": {
+        "ambrotose": "Ambrotose",
+        "osolean": "OsoLean",
+        "phytomatrix": "PhytoMatrix",
+        "uth": "Uth",
+        "immuneSystem": "Sistema Inmune",
+        "essentialNutrition": "Nutricion Esencial",
+        "personalCare": "Cuidado Personal",
+        "performance": "Rendimiento",
+        "aboutUs": "Sobre Nosotros",
+        "science": "Ciencia",
+        "opportunity": "Oportunidad",
+        "blog": "Blog"
+      },
+      "newsletter": {
+        "title": "Newsletter",
+        "description": "Recibe novedades y ofertas exclusivas en tu correo.",
+        "emailLabel": "Correo electronico",
+        "placeholder": "tu@correo.com",
+        "successTitle": "Te has suscrito exitosamente",
+        "successDescription": "Pronto recibiras noticias y ofertas exclusivas"
+      },
+      "disclaimer": "Los productos Mannatech no estan destinados a diagnosticar, tratar, curar o prevenir ninguna enfermedad. Los resultados individuales pueden variar. Consulta a tu medico antes de iniciar cualquier suplementacion.",
+      "copyright": "Todos los derechos reservados",
+      "madeBy": "Hecho con cuidado por",
+      "ssl": "SSL Seguro | Envio a todo Mexico"
+    }
+  },
+  "landing": {
+    "hero": {
+      "overline": "Gliconutricion Avanzada",
+      "headline": "La ciencia de vivir mejor",
+      "subtitle": "Mas de 30 anos transformando la salud celular con tecnologia patentada de gliconutrientes.",
+      "stats": {
+        "patents": "Patentes",
+        "years": "Anos",
+        "clients": "Clientes"
+      }
+    },
+    "socialProof": {
+      "label": "Respaldado por",
+      "badges": {
+        "patents": "90+ Patentes",
+        "fda": "FDA Registered",
+        "gmp": "GMP Certified",
+        "nonGmo": "Non-GMO",
+        "glutenFree": "Gluten Free",
+        "vegan": "Vegan Options"
+      },
+      "titles": {
+        "fda": "Food and Drug Administration",
+        "gmp": "Good Manufacturing Practices",
+        "nonGmo": "No Genetically Modified Organisms"
+      }
+    },
+    "science": {
+      "overline": "Formulaciones",
+      "headline": "Ciencia que respalda cada producto",
+      "description": "Cada formula esta desarrollada con ingredientes respaldados por estudios clinicos y mas de 90 patentes globales.",
+      "sectionLabel": "Ciencia",
+      "categories": {
+        "cellCommunication": {
+          "title": "Comunicacion Celular",
+          "label": "Gliconutrientes"
+        },
+        "immuneSystem": {
+          "title": "Sistema Inmunologico",
+          "label": "Defensa Natural"
+        },
+        "digestiveHealth": {
+          "title": "Salud Digestiva",
+          "label": "Bienestar Integral"
+        }
+      }
+    },
+    "howItWorks": {
+      "overline": "Como Funciona",
+      "headline": "La ciencia detras de la gliconutricion",
+      "description": "Un proceso de tres pasos que transforma ingredientes naturales en bienestar celular",
+      "stepLabel": "Paso {number}",
+      "steps": {
+        "0": {
+          "title": "Ingredientes Naturales",
+          "description": "Extraemos glicanos de la parte interna de la hoja del aloe vera mediante un proceso patentado."
+        },
+        "1": {
+          "title": "Tecnologia Patentada",
+          "description": "Nuestra formula Ambrotose preserva la longitud de cadena molecular optima para maxima absorcion."
+        },
+        "2": {
+          "title": "Comunicacion Celular",
+          "description": "Los gliconutrientes apoyan la comunicacion entre tus celulas, fortaleciendo tu sistema inmune y bienestar."
+        }
+      }
+    },
+    "beforeAfter": {
+      "overline": "Transformacion",
+      "headline": "Sin Mannatech vs Con Mannatech",
+      "without": "Sin Mannatech",
+      "with": "Con Mannatech",
+      "painPoints": {
+        "0": "Fatiga constante",
+        "1": "Sistema inmune debil",
+        "2": "Digestion irregular",
+        "3": "Piel sin brillo",
+        "4": "Falta de nutrientes esenciales"
+      },
+      "benefits": {
+        "0": "Energia sostenida todo el dia",
+        "1": "Sistema inmune fortalecido",
+        "2": "Digestion optima y saludable",
+        "3": "Piel radiante y juvenil",
+        "4": "Nutricion celular completa"
+      }
+    },
+    "testimonials": {
+      "overline": "Testimonios",
+      "ratingLabel": "Calificacion: {rating} de 5 estrellas",
+      "dotLabel": "Ver testimonio {current} de {total}: {name}",
+      "items": {
+        "0": {
+          "name": "Laura M.",
+          "role": "Clienta desde 2020",
+          "text": "Ambrotose LIFE transformo mi bienestar. Mi energia, concentracion y calidad de sueno mejoraron desde el primer mes. Es el mejor suplemento que he probado.",
+          "initials": "LM"
+        },
+        "1": {
+          "name": "Roberto G.",
+          "role": "Asociado Independiente",
+          "text": "Como deportista, OsoLean me ayudo a transformar mi composicion corporal. Y como asociado, Mannatech me dio un negocio real basado en ciencia.",
+          "initials": "RG"
+        },
+        "2": {
+          "name": "Patricia S.",
+          "role": "Clienta desde 2019",
+          "text": "La linea Uth rejuvenecio mi piel de una forma que ninguna crema comercial logro. Todas mis amigas ahora son clientas de Mannatech.",
+          "initials": "PS"
+        }
+      }
+    },
+    "faq": {
+      "overline": "FAQ",
+      "headline": "Preguntas Frecuentes",
+      "description": "Resolvemos tus dudas mas comunes sobre Mannatech y la gliconutricion",
+      "items": {
+        "0": {
+          "question": "Que son los gliconutrientes?",
+          "answer": "Los gliconutrientes son sacaridos esenciales de origen natural que apoyan la comunicacion entre las celulas de tu cuerpo. Son fundamentales para que las celulas se reconozcan y funcionen correctamente, lo cual impacta el sistema inmunologico, la digestion y la salud general."
+        },
+        "1": {
+          "question": "Los productos Mannatech son seguros?",
+          "answer": "Si. Todos nuestros productos estan respaldados por estudios clinicos y mas de 90 patentes globales. Son fabricados bajo estrictos estandares de calidad y buenas practicas de manufactura (GMP). Ademas, utilizamos ingredientes de origen natural cuidadosamente seleccionados."
+        },
+        "2": {
+          "question": "Como me convierto en distribuidor?",
+          "answer": "Puedes unirte como asociado independiente de Mannatech contactando a un distribuidor existente o a traves del sitio oficial. Como asociado, obtendras acceso a precios preferenciales, comisiones por ventas y herramientas de negocio para construir tu red."
+        },
+        "3": {
+          "question": "Cuanto tiempo tarda en verse resultados?",
+          "answer": "Los resultados varian, pero muchos clientes reportan mejoras en energia y bienestar general dentro de las primeras 4 a 8 semanas de uso consistente. La clave es mantener una suplementacion diaria constante como parte de un estilo de vida saludable."
+        },
+        "4": {
+          "question": "Hacen envios a todo Mexico?",
+          "answer": "Si, Mannatech tiene operaciones en Mexico y envia a todo el pais. Los envios se procesan en dias habiles y llegan a la mayoria de las ubicaciones en 3 a 7 dias habiles. Tu distribuidor local tambien puede ayudarte con la entrega."
+        }
+      }
+    },
+    "cta": {
+      "headline": "Listo para transformar tu bienestar?",
+      "description": "Unete a mas de 25,000 personas que ya confian en la ciencia de Mannatech.",
+      "exploreProducts": "Explorar Productos",
+      "talkToAdvisor": "Hablar con un Asesor"
+    },
+    "categories": {
+      "overline": "Categorias",
+      "headline": "Explora Nuestras Categorias",
+      "description": "Soluciones nutricionales avanzadas para cada aspecto de tu bienestar"
+    },
+    "about": {
+      "overline": "Sobre Nosotros",
+      "globalPatents": "Patentes Globales",
+      "yearsInnovation": "Anos de Innovacion",
+      "countriesPresence": "Paises con Presencia"
+    },
+    "stats": {
+      "globalPatents": "Patentes Globales",
+      "yearsInnovation": "Anos de Innovacion",
+      "countriesPresence": "Paises con Presencia",
+      "satisfiedClients": "Clientes Satisfechos"
+    },
+    "marquee": {
+      "text": " \u2726 Mas de 90 Patentes Globales \u2726 30 Anos de Innovacion \u2726 Ciencia Real \u2726 Tecnologia Patentada \u2726 Ingredientes Naturales \u2726 Resultados Comprobados \u2726 Mas de 90 Patentes Globales \u2726 30 Anos de Innovacion \u2726 Ciencia Real \u2726 Tecnologia Patentada \u2726 Ingredientes Naturales \u2726 Resultados Comprobados"
+    },
+    "featuredProducts": {
+      "overline": "Productos",
+      "headline": "Nuestros Productos Estrella",
+      "description": "Los favoritos de nuestra comunidad, respaldados por ciencia y resultados",
+      "add": "Agregar",
+      "decreaseQty": "Reducir cantidad",
+      "increaseQty": "Aumentar cantidad",
+      "viewAll": "Ver todos los productos"
+    },
+    "productShowcase": {
+      "overline": "Productos",
+      "headline": "Productos Destacados",
+      "description": "Los favoritos de nuestra comunidad, respaldados por ciencia y resultados",
+      "bestSeller": "Mas vendido",
+      "addedNotification": "{name} agregado al carrito",
+      "selectProduct": "Seleccionar producto destacado",
+      "viewProduct": "Ver producto: {name}",
+      "viewAll": "Ver todos los productos"
+    },
+    "join": {
+      "badge": "Red de Asociados"
+    },
+    "newsletter": {
+      "headline": "Mantente al dia con la ciencia del bienestar",
+      "description": "Recibe novedades, consejos de nutricion y ofertas exclusivas directamente en tu correo.",
+      "placeholder": "tu@correo.com",
+      "subscribe": "Suscribirme",
+      "consent": "Al suscribirte, aceptas recibir comunicaciones de Mannatech. Puedes cancelar en cualquier momento."
+    }
+  },
+  "shop": {
+    "catalog": {},
+    "product": {},
+    "cart": {},
+    "checkout": {}
+  },
+  "distributor": {
+    "profile": {},
+    "panel": {}
+  }
+}

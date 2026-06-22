@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#00A88F" fill-opacity="0.1"/>
+  <!-- Shield/immune icon -->
+  <g transform="translate(200,185)" fill="none" stroke="#00A88F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Outer shield -->
+    <path d="M0,-100 L75,-68 L75,15 Q75,80 0,108 Q-75,80 -75,15 L-75,-68 Z" fill="#00A88F" fill-opacity="0.12" stroke="#00A88F" stroke-width="3"/>
+    <!-- Inner shield -->
+    <path d="M0,-75 L55,-50 L55,12 Q55,62 0,82 Q-55,62 -55,12 L-55,-50 Z" fill="#00A88F" fill-opacity="0.18" stroke="#00A88F" stroke-width="2"/>
+    <!-- Plus/cross symbol inside -->
+    <rect x="-10" y="-42" width="20" height="60" rx="5" fill="#00A88F" fill-opacity="0.6"/>
+    <rect x="-32" y="-22" width="64" height="20" rx="5" fill="#00A88F" fill-opacity="0.6"/>
+    <!-- Stars around shield -->
+    <circle cx="0" cy="-110" r="5" fill="#00A88F" fill-opacity="0.5"/>
+    <circle cx="82" cy="-75" r="4" fill="#00A88F" fill-opacity="0.4"/>
+    <circle cx="-82" cy="-75" r="4" fill="#00A88F" fill-opacity="0.4"/>
+  </g>
+  <text x="200" y="342" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">ImmunoSTART</text>
+  <text x="200" y="365" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#00A88F">Salud Integrativa</text>
+</svg>

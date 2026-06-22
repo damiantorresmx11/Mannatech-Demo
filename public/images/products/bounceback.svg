@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#E21C1F" fill-opacity="0.08"/>
+  <!-- Capsule icon for BounceBack -->
+  <g transform="translate(200,185)" fill="none" stroke="#E21C1F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Bottle -->
+    <rect x="-42" y="-85" width="84" height="145" rx="18" fill="#E21C1F" fill-opacity="0.12" stroke="#E21C1F" stroke-width="3"/>
+    <!-- Cap -->
+    <rect x="-32" y="-108" width="64" height="28" rx="12" fill="#E21C1F" fill-opacity="0.28" stroke="#E21C1F" stroke-width="3"/>
+    <!-- Capsules inside -->
+    <ellipse cx="-14" cy="-28" rx="16" ry="9" fill="#E21C1F" fill-opacity="0.4" transform="rotate(25,-14,-28)"/>
+    <ellipse cx="14" cy="-8" rx="16" ry="9" fill="#E21C1F" fill-opacity="0.4" transform="rotate(-20,14,-8)"/>
+    <ellipse cx="-14" cy="16" rx="16" ry="9" fill="#E21C1F" fill-opacity="0.4" transform="rotate(25,-14,16)"/>
+    <ellipse cx="14" cy="38" rx="16" ry="9" fill="#E21C1F" fill-opacity="0.4" transform="rotate(-20,14,38)"/>
+    <!-- Arrow bounce symbol -->
+    <path d="M-25,15 Q0,-10 25,15 Q0,40 -25,15" stroke="#E21C1F" stroke-width="2" fill="none"/>
+  </g>
+  <text x="200" y="322" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">BounceBack</text>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E21C1F">Peso y Fitness</text>
+</svg>

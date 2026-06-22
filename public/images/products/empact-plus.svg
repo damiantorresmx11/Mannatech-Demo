@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#E21C1F" fill-opacity="0.08"/>
+  <!-- Drink sachet icon -->
+  <g transform="translate(200,185)" fill="none" stroke="#E21C1F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Sachet body (narrower/tall) -->
+    <path d="M-55,-90 L55,-90 L65,90 L-65,90 Z" fill="#E21C1F" fill-opacity="0.12" stroke="#E21C1F" stroke-width="3"/>
+    <!-- Top seal -->
+    <rect x="-55" y="-110" width="110" height="26" rx="6" fill="#E21C1F" fill-opacity="0.25" stroke="#E21C1F" stroke-width="3"/>
+    <!-- Tear notch -->
+    <path d="M42,-110 L55,-110 L55,-90 L47,-90" stroke="#E21C1F" stroke-width="2" fill="none"/>
+    <!-- Bottom seal -->
+    <line x1="-65" y1="80" x2="65" y2="80" stroke="#E21C1F" stroke-width="3"/>
+    <!-- Lightning bolt (energy) inside -->
+    <path d="M12,-50 L-10,-5 L8,-5 L-12,50" stroke="#E21C1F" stroke-width="3.5" fill="none"/>
+    <!-- Label lines -->
+    <line x1="-38" y1="42" x2="38" y2="42" stroke="#E21C1F" stroke-width="1.5"/>
+    <line x1="-38" y1="58" x2="38" y2="58" stroke="#E21C1F" stroke-width="1.5"/>
+  </g>
+  <text x="200" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">EMPACT+</text>
+  <text x="200" y="353" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E21C1F">Peso y Fitness</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#69CA98" fill-opacity="0.1"/>
+  <!-- Capsule icon for GI Zyme -->
+  <g transform="translate(200,185)" fill="none" stroke="#69CA98" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Horizontal capsule -->
+    <path d="M-85,0 Q-85,-38 -50,-38 L0,-38 L0,38 L-50,38 Q-85,38 -85,0 Z" fill="#69CA98" fill-opacity="0.35" stroke="#69CA98" stroke-width="3"/>
+    <path d="M85,0 Q85,-38 50,-38 L0,-38 L0,38 L50,38 Q85,38 85,0 Z" fill="#69CA98" fill-opacity="0.18" stroke="#69CA98" stroke-width="3"/>
+    <!-- Divider line -->
+    <line x1="0" y1="-38" x2="0" y2="38" stroke="#69CA98" stroke-width="2.5"/>
+    <!-- Enzyme symbol - lightning bolt -->
+    <path d="M8,-55 L-8,-5 L8,-5 L-8,55" stroke="#69CA98" stroke-width="3" fill="none" transform="translate(0,-5)"/>
+  </g>
+  <text x="200" y="318" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">GI-Zyme</text>
+  <text x="200" y="341" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#69CA98">Salud Digestiva</text>
+</svg>

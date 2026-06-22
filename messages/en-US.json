@@ -1,0 +1,272 @@
+{
+  "common": {
+    "nav": {
+      "home": "Home",
+      "products": "Products",
+      "distributors": "Distributors",
+      "science": "Science",
+      "cart": "Cart",
+      "logoAria": "Mannatech - Home",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    },
+    "actions": {
+      "addToCart": "Add to cart",
+      "added": "Added",
+      "buyNow": "Buy now",
+      "viewProducts": "View Products",
+      "continueShopping": "Continue shopping",
+      "checkout": "Go to Checkout",
+      "shareWhatsApp": "Share via WhatsApp",
+      "close": "Close"
+    },
+    "company": {
+      "selectorLabel": "Company",
+      "mx": "Mannatech Mexico",
+      "us": "Mannatech USA"
+    },
+    "locale": {
+      "switcherLabel": "Language",
+      "es-MX": "Espanol",
+      "en-US": "English"
+    },
+    "footer": {
+      "brandDescription": "Pioneers in glyconutrition since 1994. Transforming lives with real science.",
+      "products": "Products",
+      "categories": "Categories",
+      "company": "Company",
+      "contact": "Contact",
+      "items": {
+        "ambrotose": "Ambrotose",
+        "osolean": "OsoLean",
+        "phytomatrix": "PhytoMatrix",
+        "uth": "Uth",
+        "immuneSystem": "Immune System",
+        "essentialNutrition": "Essential Nutrition",
+        "personalCare": "Personal Care",
+        "performance": "Performance",
+        "aboutUs": "About Us",
+        "science": "Science",
+        "opportunity": "Opportunity",
+        "blog": "Blog"
+      },
+      "newsletter": {
+        "title": "Newsletter",
+        "description": "Get the latest news and exclusive offers in your inbox.",
+        "emailLabel": "Email address",
+        "placeholder": "you@email.com",
+        "successTitle": "You have subscribed successfully",
+        "successDescription": "You will soon receive news and exclusive offers"
+      },
+      "disclaimer": "Mannatech products are not intended to diagnose, treat, cure, or prevent any disease. Individual results may vary. Consult your physician before starting any supplementation.",
+      "copyright": "All rights reserved",
+      "madeBy": "Made with care by",
+      "ssl": "SSL Secure | Shipping to all of Mexico"
+    }
+  },
+  "landing": {
+    "hero": {
+      "overline": "Advanced Glyconutrition",
+      "headline": "The science of living better",
+      "subtitle": "Over 30 years transforming cellular health with patented glyconutrient technology.",
+      "stats": {
+        "patents": "Patents",
+        "years": "Years",
+        "clients": "Clients"
+      }
+    },
+    "socialProof": {
+      "label": "Backed by",
+      "badges": {
+        "patents": "90+ Patents",
+        "fda": "FDA Registered",
+        "gmp": "GMP Certified",
+        "nonGmo": "Non-GMO",
+        "glutenFree": "Gluten Free",
+        "vegan": "Vegan Options"
+      },
+      "titles": {
+        "fda": "Food and Drug Administration",
+        "gmp": "Good Manufacturing Practices",
+        "nonGmo": "No Genetically Modified Organisms"
+      }
+    },
+    "science": {
+      "overline": "Formulations",
+      "headline": "Science behind every product",
+      "description": "Each formula is developed with ingredients backed by clinical studies and over 90 global patents.",
+      "sectionLabel": "Science",
+      "categories": {
+        "cellCommunication": {
+          "title": "Cellular Communication",
+          "label": "Glyconutrients"
+        },
+        "immuneSystem": {
+          "title": "Immune System",
+          "label": "Natural Defense"
+        },
+        "digestiveHealth": {
+          "title": "Digestive Health",
+          "label": "Integral Wellness"
+        }
+      }
+    },
+    "howItWorks": {
+      "overline": "How It Works",
+      "headline": "The science behind glyconutrition",
+      "description": "A three-step process that transforms natural ingredients into cellular wellness",
+      "stepLabel": "Step {number}",
+      "steps": {
+        "0": {
+          "title": "Natural Ingredients",
+          "description": "We extract glycans from the inner leaf of aloe vera through a patented process."
+        },
+        "1": {
+          "title": "Patented Technology",
+          "description": "Our Ambrotose formula preserves the optimal molecular chain length for maximum absorption."
+        },
+        "2": {
+          "title": "Cellular Communication",
+          "description": "Glyconutrients support communication between your cells, strengthening your immune system and wellness."
+        }
+      }
+    },
+    "beforeAfter": {
+      "overline": "Transformation",
+      "headline": "Without Mannatech vs With Mannatech",
+      "without": "Without Mannatech",
+      "with": "With Mannatech",
+      "painPoints": {
+        "0": "Constant fatigue",
+        "1": "Weak immune system",
+        "2": "Irregular digestion",
+        "3": "Dull skin",
+        "4": "Lack of essential nutrients"
+      },
+      "benefits": {
+        "0": "Sustained energy all day",
+        "1": "Strengthened immune system",
+        "2": "Optimal and healthy digestion",
+        "3": "Radiant and youthful skin",
+        "4": "Complete cellular nutrition"
+      }
+    },
+    "testimonials": {
+      "overline": "Testimonials",
+      "ratingLabel": "Rating: {rating} out of 5 stars",
+      "dotLabel": "View testimonial {current} of {total}: {name}",
+      "items": {
+        "0": {
+          "name": "Laura M.",
+          "role": "Customer since 2020",
+          "text": "Ambrotose LIFE transformed my wellbeing. My energy, focus, and sleep quality improved from the first month. It's the best supplement I've ever tried.",
+          "initials": "LM"
+        },
+        "1": {
+          "name": "Roberto G.",
+          "role": "Independent Associate",
+          "text": "As an athlete, OsoLean helped me transform my body composition. And as an associate, Mannatech gave me a real science-based business.",
+          "initials": "RG"
+        },
+        "2": {
+          "name": "Patricia S.",
+          "role": "Customer since 2019",
+          "text": "The Uth line rejuvenated my skin in a way no commercial cream could. All my friends are now Mannatech customers.",
+          "initials": "PS"
+        }
+      }
+    },
+    "faq": {
+      "overline": "FAQ",
+      "headline": "Frequently Asked Questions",
+      "description": "We answer your most common questions about Mannatech and glyconutrition",
+      "items": {
+        "0": {
+          "question": "What are glyconutrients?",
+          "answer": "Glyconutrients are essential naturally-sourced saccharides that support communication between the cells of your body. They are fundamental for cells to recognize and function correctly, which impacts the immune system, digestion, and overall health."
+        },
+        "1": {
+          "question": "Are Mannatech products safe?",
+          "answer": "Yes. All our products are backed by clinical studies and over 90 global patents. They are manufactured under strict quality standards and Good Manufacturing Practices (GMP). Additionally, we use carefully selected naturally-sourced ingredients."
+        },
+        "2": {
+          "question": "How do I become a distributor?",
+          "answer": "You can join as an independent Mannatech associate by contacting an existing distributor or through the official website. As an associate, you'll get access to preferred pricing, sales commissions, and business tools to build your network."
+        },
+        "3": {
+          "question": "How long does it take to see results?",
+          "answer": "Results vary, but many customers report improvements in energy and overall wellness within the first 4 to 8 weeks of consistent use. The key is maintaining daily supplementation as part of a healthy lifestyle."
+        },
+        "4": {
+          "question": "Do you ship to all of Mexico?",
+          "answer": "Yes, Mannatech has operations in Mexico and ships nationwide. Shipments are processed on business days and arrive at most locations within 3 to 7 business days. Your local distributor can also help with delivery."
+        }
+      }
+    },
+    "cta": {
+      "headline": "Ready to transform your wellness?",
+      "description": "Join over 25,000 people who already trust the science of Mannatech.",
+      "exploreProducts": "Explore Products",
+      "talkToAdvisor": "Talk to an Advisor"
+    },
+    "categories": {
+      "overline": "Categories",
+      "headline": "Explore Our Categories",
+      "description": "Advanced nutritional solutions for every aspect of your wellness"
+    },
+    "about": {
+      "overline": "About Us",
+      "globalPatents": "Global Patents",
+      "yearsInnovation": "Years of Innovation",
+      "countriesPresence": "Countries with Presence"
+    },
+    "stats": {
+      "globalPatents": "Global Patents",
+      "yearsInnovation": "Years of Innovation",
+      "countriesPresence": "Countries with Presence",
+      "satisfiedClients": "Satisfied Clients"
+    },
+    "marquee": {
+      "text": " \u2726 Over 90 Global Patents \u2726 30 Years of Innovation \u2726 Real Science \u2726 Patented Technology \u2726 Natural Ingredients \u2726 Proven Results \u2726 Over 90 Global Patents \u2726 30 Years of Innovation \u2726 Real Science \u2726 Patented Technology \u2726 Natural Ingredients \u2726 Proven Results"
+    },
+    "featuredProducts": {
+      "overline": "Products",
+      "headline": "Our Star Products",
+      "description": "Community favorites, backed by science and results",
+      "add": "Add",
+      "decreaseQty": "Decrease quantity",
+      "increaseQty": "Increase quantity",
+      "viewAll": "View all products"
+    },
+    "productShowcase": {
+      "overline": "Products",
+      "headline": "Featured Products",
+      "description": "Community favorites, backed by science and results",
+      "bestSeller": "Best seller",
+      "addedNotification": "{name} added to cart",
+      "selectProduct": "Select featured product",
+      "viewProduct": "View product: {name}",
+      "viewAll": "View all products"
+    },
+    "join": {
+      "badge": "Associates Network"
+    },
+    "newsletter": {
+      "headline": "Stay up to date with the science of wellness",
+      "description": "Get news, nutrition tips, and exclusive offers delivered to your inbox.",
+      "placeholder": "you@email.com",
+      "subscribe": "Subscribe",
+      "consent": "By subscribing, you agree to receive communications from Mannatech. You can unsubscribe at any time."
+    }
+  },
+  "shop": {
+    "catalog": {},
+    "product": {},
+    "cart": {},
+    "checkout": {}
+  },
+  "distributor": {
+    "profile": {},
+    "panel": {}
+  }
+}

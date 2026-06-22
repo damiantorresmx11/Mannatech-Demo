@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#00529D" fill-opacity="0.08"/>
+  <!-- Tablet icon -->
+  <g transform="translate(200,185)" fill="none" stroke="#00529D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Stack of tablets -->
+    <!-- Bottom tablet shadow -->
+    <ellipse cx="0" cy="58" rx="62" ry="16" fill="#00529D" fill-opacity="0.15" stroke="#00529D" stroke-width="2"/>
+    <!-- Middle tablet -->
+    <ellipse cx="0" cy="30" rx="62" ry="16" fill="#00529D" fill-opacity="0.2" stroke="#00529D" stroke-width="2.5"/>
+    <rect x="-62" y="14" width="124" height="16" fill="#00529D" fill-opacity="0.18"/>
+    <!-- Front tablet (main) -->
+    <ellipse cx="0" cy="-5" rx="65" ry="18" fill="#00529D" fill-opacity="0.25" stroke="#00529D" stroke-width="3"/>
+    <!-- Score line on tablet -->
+    <line x1="-35" y1="-5" x2="35" y2="-5" stroke="#00529D" stroke-width="2"/>
+    <!-- Top tablet -->
+    <ellipse cx="0" cy="-40" rx="62" ry="16" fill="#00529D" fill-opacity="0.2" stroke="#00529D" stroke-width="2.5"/>
+    <rect x="-62" y="-56" width="124" height="16" fill="#00529D" fill-opacity="0.18"/>
+    <ellipse cx="0" cy="-72" rx="62" ry="16" fill="#00529D" fill-opacity="0.3" stroke="#00529D" stroke-width="3"/>
+    <!-- Score line top tablet -->
+    <line x1="-35" y1="-72" x2="35" y2="-72" stroke="#00529D" stroke-width="2"/>
+    <!-- Leaf/plant icon -->
+    <path d="M0,-102 C15,-92 18,-78 0,-72 C-18,-78 -15,-92 0,-102 Z" fill="#00529D" fill-opacity="0.5" stroke="#00529D" stroke-width="1.5"/>
+    <line x1="0" y1="-72" x2="0" y2="-102" stroke="#00529D" stroke-width="1.5"/>
+  </g>
+  <text x="200" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">PhytoMatrix</text>
+  <text x="200" y="358" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#00529D">Nutrición Esencial</text>
+</svg>

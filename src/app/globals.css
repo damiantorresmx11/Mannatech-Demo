@@ -1,26 +1,359 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-heading, var(--font-sans));
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Mannatech brand colors */
+  --color-mannatech: var(--mannatech);
+  --color-mannatech-light: var(--mannatech-light);
+  --color-mannatech-dark: var(--mannatech-dark);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Mannatech brand — teal palette */
+  --mannatech: #00897B;
+  --mannatech-light: #4DB6AC;
+  --mannatech-dark: #00695C;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --primary: #00A88F;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #f1f5f9;
+  --destructive: #ef4444;
+  --border: #334155;
+  --input: #334155;
+  --ring: #00A88F;
+  --chart-1: #00A88F;
+  --chart-2: #69CA98;
+  --chart-3: #66C7EC;
+  --chart-4: #00529D;
+  --chart-5: #E21C1F;
+
+  --mannatech: #00C9A7;
+  --mannatech-light: #5CCFBF;
+  --mannatech-dark: #00A88F;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    transition: background-color 0.5s ease, color 0.4s ease;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    color-scheme: light dark;
   }
 }
 
-body {
-  background: var(--background);
+/* Smooth dark mode transition on surfaces */
+html.dark body,
+html:not(.dark) body {
+  transition: background-color 0.5s ease, color 0.4s ease;
+}
+
+/* Mesh gradient animations for Hero */
+@keyframes mesh1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(80px, -40px) scale(1.1); }
+  66% { transform: translate(-40px, 60px) scale(0.95); }
+}
+@keyframes mesh2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-60px, 50px) scale(1.05); }
+  66% { transform: translate(50px, -30px) scale(1.1); }
+}
+@keyframes mesh3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 40px) scale(1.15); }
+}
+
+.animate-mesh-1 { animation: mesh1 15s ease-in-out infinite; }
+.animate-mesh-2 { animation: mesh2 18s ease-in-out infinite; }
+.animate-mesh-3 { animation: mesh3 12s ease-in-out infinite; }
+
+/* Scroll snap for home page */
+.scroll-snap-container {
+  scroll-snap-type: y proximity;
+}
+.scroll-snap-section {
+  scroll-snap-align: start;
+}
+
+/* Dark mode overrides for hardcoded colors */
+.dark .bg-white { background-color: var(--card); }
+.dark .bg-slate-50,
+.dark .bg-gray-50 { background-color: var(--background); }
+.dark .bg-muted { background-color: var(--muted); }
+.dark .border-border { border-color: var(--border); }
+.dark .text-foreground { color: var(--foreground); }
+.dark .bg-\[\#F0FDF9\],
+.dark .from-\[\#F0FDF9\],
+.dark .from-\[\#E6F7F4\],
+.dark .from-\[\#E8F9F5\] { background-color: var(--background); }
+
+/* Smooth transitions for dark mode */
+* {
+  transition: background-color 0.3s ease, color 0.2s ease, border-color 0.3s ease;
+}
+/* Exclude animations from transition override */
+[class*="animate-"], [class*="motion"], svg, svg * {
+  transition: none;
+}
+
+/* Dark mode specific element overrides */
+.dark .bg-gradient-to-b,
+.dark .bg-gradient-to-br,
+.dark .bg-gradient-to-r {
+  --tw-gradient-from: var(--background);
+  --tw-gradient-to: var(--card);
+}
+
+.dark input,
+.dark textarea {
+  background-color: var(--muted);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  border-color: var(--border);
+}
+
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scroll-snap-container {
+    scroll-snap-type: none !important;
+  }
+}
+
+/* ─── Premium enhancements ─────────────────────────────────────────────────── */
+
+/* 1. Noise / grain texture overlay */
+.premium-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 2. Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3. Premium section divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--mannatech, #00A88F) 50%, transparent);
+  opacity: 0.2;
+}
+
+/* 4. Hero carousel progress bar animation */
+@keyframes progress-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.animate-progress-fill {
+  animation: progress-fill 5s linear forwards;
+  transform-origin: left;
+}
+
+/* 5. Product image glow effect */
+.product-glow {
+  filter: drop-shadow(0 0 40px rgba(0, 168, 143, 0.15));
+}
+
+/* 6. Smooth image zoom container */
+.zoom-container {
+  overflow: hidden;
+}
+.zoom-container img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.zoom-container:hover img {
+  transform: scale(1.05);
+}
+
+/* 7. Category card overlay gradient */
+.category-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 40%, transparent 100%);
+}
+
+/* 8. Floating animation for products */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* 9. Pulse glow for CTAs */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 168, 143, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(0, 168, 143, 0.15); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* 10. Smooth 3D perspective for cards */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+/* 11. Text gradient animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-shift 4s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 12. Stagger grid children reveal on scroll */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 13. Magnetic hover effect for buttons */
+.magnetic-hover {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.magnetic-hover:hover {
+  transform: scale(1.03);
+}
+.magnetic-hover:active {
+  transform: scale(0.97);
+}
+
+/* 14. SVG check draw animations (newsletter popup, order confirmation) */
+@keyframes draw-circle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes draw-mark {
+  to { stroke-dashoffset: 0; }
 }

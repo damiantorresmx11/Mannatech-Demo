@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="24" fill="#00A88F" fill-opacity="0.1"/>
+  <!-- Capsule icon -->
+  <g transform="translate(200,180)" fill="none" stroke="#00A88F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Capsule bottle -->
+    <rect x="-40" y="-90" width="80" height="140" rx="20" fill="#00A88F" fill-opacity="0.15" stroke="#00A88F" stroke-width="3"/>
+    <!-- Bottle cap -->
+    <rect x="-30" y="-110" width="60" height="28" rx="12" fill="#00A88F" fill-opacity="0.35" stroke="#00A88F" stroke-width="3"/>
+    <!-- Capsules inside -->
+    <ellipse cx="-12" cy="-30" rx="14" ry="8" fill="#00A88F" fill-opacity="0.4"/>
+    <ellipse cx="12" cy="-10" rx="14" ry="8" fill="#00A88F" fill-opacity="0.4"/>
+    <ellipse cx="-12" cy="10" rx="14" ry="8" fill="#00A88F" fill-opacity="0.4"/>
+    <ellipse cx="12" cy="30" rx="14" ry="8" fill="#00A88F" fill-opacity="0.4"/>
+  </g>
+  <text x="200" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#262626">Advanced Ambrotose</text>
+  <text x="200" y="343" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#00A88F">Salud Integrativa</text>
+</svg>
