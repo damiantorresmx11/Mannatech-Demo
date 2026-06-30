@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Minus, Flame } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import type { Producto } from "@/lib/types";
 import { formatPrecio } from "@/lib/format";
 import { useCartStore } from "@/lib/cart-store";
@@ -20,12 +19,14 @@ const EASE = "easeOut" as const;
 function badgeColor(badge: string | null): string {
   if (!badge) return "";
   const b = badge.toLowerCase();
-  if (b.includes("vendido") || b.includes("insignia")) return "bg-mannatech";
-  if (b.includes("premium")) return "bg-amber-600";
-  if (b.includes("favorito")) return "bg-pink-500";
-  if (b.includes("fitness")) return "bg-red-500";
-  if (b.includes("k-beauty")) return "bg-purple-500";
-  return "bg-mannatech";
+  if (b.includes("vendido") || b.includes("insignia")) return "bg-mannatech text-white";
+  if (b.includes("nuevo")) return "bg-emerald-600 text-white";
+  if (b.includes("best") || b.includes("popular")) return "bg-blue-600 text-white";
+  if (b.includes("premium")) return "bg-amber-600 text-white";
+  if (b.includes("favorito")) return "bg-pink-500 text-white";
+  if (b.includes("fitness")) return "bg-red-500 text-white";
+  if (b.includes("k-beauty")) return "bg-purple-500 text-white";
+  return "bg-mannatech text-white";
 }
 
 export function ProductCard({ producto, index = 0 }: ProductCardProps) {
@@ -34,8 +35,6 @@ export function ProductCard({ producto, index = 0 }: ProductCardProps) {
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const cartItem = items.find((i) => i.slug === producto.slug);
   const qty = cartItem?.cantidad ?? 0;
-  const vendidos = producto.slug.length * 7;
-
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -56,7 +55,7 @@ export function ProductCard({ producto, index = 0 }: ProductCardProps) {
       className="h-full"
     >
       <Product3DCard intensity={10} className="h-full">
-        <div className="group relative bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden flex flex-col h-full shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.12)] transition-shadow duration-300">
+        <div className="group relative bg-white dark:bg-zinc-900 rounded-xl overflow-hidden flex flex-col h-full shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.12)] transition-shadow duration-300">
           {/* Image area */}
           <Link href={`/productos/${producto.slug}`} className="block relative" style={{ aspectRatio: "3/4" }}>
             <div className="absolute inset-0 bg-[#F2F0ED] dark:bg-zinc-800 overflow-hidden">
@@ -73,7 +72,7 @@ export function ProductCard({ producto, index = 0 }: ProductCardProps) {
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-mannatech/5 via-transparent to-transparent" />
             </div>
             {producto.badge && (
-              <span className={`absolute top-3 left-3 z-10 px-3 py-1.5 rounded-lg text-white text-[11px] font-bold tracking-wide shadow-md ${badgeColor(producto.badge)}`}>
+              <span className={`absolute top-3 left-3 z-10 px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide shadow-md ${badgeColor(producto.badge)}`}>
                 {producto.badge}
               </span>
             )}
@@ -90,12 +89,18 @@ export function ProductCard({ producto, index = 0 }: ProductCardProps) {
                 {producto.nombre}
               </h3>
             </Link>
+            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+              {producto.descripcionCorta}
+            </p>
 
             <div className="flex items-baseline gap-2 mb-3 mt-auto">
               <span className="text-xl font-extrabold text-foreground">
                 {formatPrecio(producto.precio)}
               </span>
               <span className="text-xs text-muted-foreground">{producto.presentacion}</span>
+              <span className="text-xs text-muted-foreground line-through ml-2">
+                {formatPrecio(Math.round(producto.precio * 1.1))}
+              </span>
             </div>
 
             {/* Cart controls */}
@@ -143,11 +148,6 @@ export function ProductCard({ producto, index = 0 }: ProductCardProps) {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <p className="flex items-center gap-1 text-[11px] text-orange-500/70 mt-2.5 font-medium">
-              <Flame size={11} />
-              {vendidos} vendidos
-            </p>
           </div>
         </div>
       </Product3DCard>

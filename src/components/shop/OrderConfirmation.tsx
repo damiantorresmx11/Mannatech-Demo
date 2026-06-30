@@ -41,7 +41,7 @@ export default function OrderConfirmation({
   const total = subtotal + iva + shipping;
 
   return (
-    <div className="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-white/5 bg-slate-800/40 p-7">
+    <div className="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-zinc-200 dark:border-white/5 bg-white dark:bg-slate-800/40 p-7">
       <div className="confetti" aria-hidden="true">
         {[
           { x: "8%", d: "0s", c: "#10b981" },
@@ -93,32 +93,32 @@ export default function OrderConfirmation({
         </svg>
       </div>
 
-      <h3 className="mb-1.5 text-center text-2xl font-medium text-slate-100">
+      <h3 className="mb-1.5 text-center text-2xl font-medium text-zinc-900 dark:text-slate-100">
         ¡Pedido confirmado!
       </h3>
-      <p className="mb-4 text-center text-sm leading-relaxed text-slate-400">
+      <p className="mb-4 text-center text-sm leading-relaxed text-zinc-500 dark:text-slate-400">
         Gracias, {customerName}. Te enviamos el comprobante a {email}.
       </p>
 
       {/* Número de pedido */}
       <div className="mb-6 flex justify-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3.5 py-1.5 text-[13px] text-emerald-400">
+        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3.5 py-1.5 text-[13px] text-emerald-600 dark:text-emerald-400">
           Pedido <span className="font-medium tracking-wide">{orderId}</span>
         </span>
       </div>
 
       {/* Resumen */}
-      <div className="mb-3.5 rounded-xl border border-white/5 bg-slate-900/50 p-4">
+      <div className="mb-3.5 rounded-xl border border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-slate-900/50 p-4">
         {items.map((it, i) => (
           <div
             key={i}
-            className="flex items-center justify-between border-b border-white/5 pb-2.5 text-sm last:border-0"
+            className="flex items-center justify-between border-b border-zinc-200 dark:border-white/5 pb-2.5 text-sm last:border-0"
           >
             <div>
-              <div className="text-slate-200">{it.name}</div>
-              <div className="text-xs text-slate-500">Cantidad: {it.qty}</div>
+              <div className="text-zinc-800 dark:text-slate-200">{it.name}</div>
+              <div className="text-xs text-zinc-500 dark:text-slate-500">Cantidad: {it.qty}</div>
             </div>
-            <div className="text-slate-200">{mxn(it.price)}</div>
+            <div className="text-zinc-800 dark:text-slate-200">{mxn(it.price)}</div>
           </div>
         ))}
 
@@ -128,11 +128,11 @@ export default function OrderConfirmation({
           <Row
             label="Envío"
             value={shipping === 0 ? "Gratis" : mxn(shipping)}
-            valueClass={shipping === 0 ? "text-emerald-400" : "text-slate-300"}
+            valueClass={shipping === 0 ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-700 dark:text-slate-300"}
           />
-          <div className="mt-1 flex justify-between border-t border-white/10 pt-2.5">
-            <span className="font-medium text-slate-100">Total</span>
-            <span className="font-medium text-slate-100">{mxn(total)}</span>
+          <div className="mt-1 flex justify-between border-t border-zinc-300 dark:border-white/10 pt-2.5">
+            <span className="font-medium text-zinc-900 dark:text-slate-100">Total</span>
+            <span className="font-medium text-zinc-900 dark:text-slate-100">{mxn(total)}</span>
           </div>
         </div>
       </div>
@@ -145,13 +145,13 @@ export default function OrderConfirmation({
 
       <button
         onClick={onTrack}
-        className="mb-2.5 w-full rounded-xl bg-emerald-500 py-3 text-[15px] font-medium text-emerald-950 transition hover:bg-emerald-400"
+        className="mb-2.5 w-full rounded-xl bg-mannatech py-3 text-[15px] font-medium text-white transition hover:bg-mannatech-dark"
       >
         Rastrear mi pedido
       </button>
       <button
         onClick={onHome}
-        className="w-full rounded-xl border border-white/10 py-3 text-sm text-slate-300 transition hover:bg-white/5"
+        className="w-full rounded-xl border border-zinc-200 dark:border-white/10 py-3 text-sm text-zinc-600 dark:text-slate-300 transition hover:bg-zinc-50 dark:hover:bg-white/5"
       >
         Volver al inicio
       </button>
@@ -211,7 +211,7 @@ export default function OrderConfirmation({
 function Row({
   label,
   value,
-  valueClass = "text-slate-300",
+  valueClass = "text-zinc-700 dark:text-slate-300",
 }: {
   label: string;
   value: string;
@@ -219,7 +219,7 @@ function Row({
 }) {
   return (
     <div className="mb-1.5 flex justify-between">
-      <span className="text-slate-400">{label}</span>
+      <span className="text-zinc-500 dark:text-slate-400">{label}</span>
       <span className={valueClass}>{value}</span>
     </div>
   );
@@ -227,9 +227,9 @@ function Row({
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 rounded-xl border border-white/5 bg-slate-900/50 px-4 py-3.5">
-      <div className="mb-1.5 text-xs text-slate-500">{label}</div>
-      <div className="text-sm text-slate-200">{value}</div>
+    <div className="flex-1 rounded-xl border border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-slate-900/50 px-4 py-3.5">
+      <div className="mb-1.5 text-xs text-zinc-500 dark:text-slate-500">{label}</div>
+      <div className="text-sm text-zinc-800 dark:text-slate-200">{value}</div>
     </div>
   );
 }

@@ -60,7 +60,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Tu carrito"
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-background shadow-2xl transition-transform duration-300 ease-out ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-white dark:bg-zinc-950 shadow-2xl transition-transform duration-300 ease-out ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -107,7 +107,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         )}
 
         {/* Items — ONLY scrollable zone */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-5 py-4" data-lenis-prevent>
           {items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingBag className="mb-3 h-12 w-12 text-muted-foreground/30" />
@@ -143,7 +143,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
                     <div className="flex items-center justify-between mt-2">
                       {/* Qty controls */}
-                      <div className="flex items-center bg-background rounded-lg border border-border overflow-hidden">
+                      <div className="flex items-center bg-white dark:bg-zinc-900 rounded-lg border border-border overflow-hidden">
                         <button
                           onClick={() => updateQuantity(item.slug, item.cantidad - 1)}
                           className="w-7 h-7 flex items-center justify-center hover:bg-mannatech/10 transition-colors"

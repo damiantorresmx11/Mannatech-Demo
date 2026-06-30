@@ -8,8 +8,8 @@ export default function LandingLayout({
 }) {
   return (
     <>
-      <Header variant="landing" />
-      <main className="flex-1 flex flex-col pt-[72px]">{children}</main>
+      <Header />
+      <main className="flex-1 flex flex-col pt-[calc(72px+var(--announcement-bar-height))]">{children}</main>
       <Footer />
     </>
   );

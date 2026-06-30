@@ -1,73 +1,62 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { ArrowDown } from "lucide-react";
-
-interface HeroProps {
-  titulo: string;
-  subtitulo: string;
-  ctaPrimario: string;
-  ctaSecundario: string;
-}
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   src: string;
-  headline: string;
-  subtitle: string;
-  cta: string;
+  srcMobile?: string;
+  alt: string;
   href: string;
 }
 
 const SLIDES: Slide[] = [
   {
     src: "https://mx.mannatech.com/wp-content/uploads/sites/16/2026/05/OsoLean-Chocolate-Banner-WEB.png",
-    headline: "OsoLean Chocolate",
-    subtitle: "Nuevo sabor, misma ciencia. Proteína para pérdida de grasa.",
-    cta: "Descubrir",
+    srcMobile: "https://mx.mannatech.com/wp-content/uploads/sites/16/2026/05/OsoLean-Chocolate-Banner-WEB.png",
+    alt: "OsoLean Chocolate",
     href: "/productos/osolean",
   },
   {
     src: "https://mx.mannatech.com/wp-content/uploads/sites/16/2026/05/MannaBears-Banner-WEB-2.png",
-    headline: "MannaBears",
-    subtitle: "Gliconutrientes en gomitas para toda la familia.",
-    cta: "Ver Producto",
+    srcMobile: "https://mx.mannatech.com/wp-content/uploads/sites/16/2026/05/MannaBears-Banner-WEB-2.png",
+    alt: "MannaBears",
     href: "/productos/mannabears",
   },
   {
     src: "https://mx.mannatech.com/wp-content/uploads/sites/16/2024/11/MX-Luminovation.jpg",
-    headline: "Luminovation K-Beauty",
-    subtitle: "Tecnología de glicanos para una piel radiante.",
-    cta: "Explorar",
+    srcMobile: "https://mx.mannatech.com/wp-content/uploads/sites/16/2024/11/MX-Luminovation.jpg",
+    alt: "Luminovation K-Beauty",
     href: "/productos/luminovation",
   },
   {
     src: "https://mx.mannatech.com/wp-content/uploads/sites/16/2024/07/MANNA-ZENWEB.jpg",
-    headline: "Manna Zen Prime",
-    subtitle: "Equilibrio y bienestar para cuerpo y mente.",
-    cta: "Conocer",
+    srcMobile: "https://mx.mannatech.com/wp-content/uploads/sites/16/2024/07/MANNA-ZENWEB.jpg",
+    alt: "Manna Zen Prime",
     href: "/productos/ambrotose-life",
   },
   {
     src: "https://mx.mannatech.com/wp-content/uploads/sites/16/2024/05/TRUCONTROL_hero-scaled.jpg",
-    headline: "TruControl",
-    subtitle: "Control de peso con ciencia avanzada.",
-    cta: "Ver Más",
+    srcMobile: "https://mx.mannatech.com/wp-content/uploads/sites/16/2024/05/TRUCONTROL_hero-scaled.jpg",
+    alt: "TruControl",
     href: "/productos/osolean",
   },
 ];
 
 const INTERVAL = 5500;
 
-export function Hero({ ctaPrimario }: HeroProps) {
-  const t = useTranslations("landing.hero");
+export function Hero() {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const goTo = useCallback((i: number) => setCurrent(i), []);
   const goNext = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), []);
+  const goPrev = useCallback(() => setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length), []);
 
   useEffect(() => {
     if (paused) return;
@@ -75,54 +64,88 @@ export function Hero({ ctaPrimario }: HeroProps) {
     return () => clearTimeout(id);
   }, [current, paused, goNext]);
 
-  const slide = SLIDES[current];
+  // GSAP ScrollTrigger parallax on hero images
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const img = sectionRef.current.querySelector("img");
+    if (!img) return;
+
+    gsap.to(img, {
+      yPercent: -8,
+      ease: "none",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
 
   return (
     <section
-      className="relative w-full overflow-hidden -mt-[72px] bg-black"
-      style={{ height: "100vh", minHeight: "600px" }}
+      ref={sectionRef}
+      className="relative w-full overflow-hidden bg-white dark:bg-zinc-950"
+      aria-roledescription="carousel"
+      aria-label="Hero Carousel"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Background images */}
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-          className="absolute inset-0"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={slide.src}
-            alt={slide.headline}
-            className="w-full h-full object-cover"
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 z-[1]" />
-      <div className="absolute inset-0 z-[2] opacity-[0.03]">
-        <div className="absolute left-1/4 top-0 bottom-0 w-px bg-white" />
-        <div className="absolute left-2/4 top-0 bottom-0 w-px bg-white" />
-        <div className="absolute left-3/4 top-0 bottom-0 w-px bg-white" />
+      {/* Slides */}
+      <div className="relative w-full" style={{ aspectRatio: "16/5.5" }}>
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="absolute inset-0"
+          >
+            <Link href={SLIDES[current].href} className="block w-full h-full">
+              <picture>
+                <source
+                  media="(max-width: 768px)"
+                  srcSet={SLIDES[current].srcMobile || SLIDES[current].src}
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={SLIDES[current].src}
+                  alt={SLIDES[current].alt}
+                  className="w-full h-full object-cover"
+                />
+              </picture>
+            </Link>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute top-28 right-8 z-20 hidden lg:flex flex-col items-center gap-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30 [writing-mode:vertical-lr]">
-          Scroll
-        </span>
-        <ArrowDown size={14} className="text-white/30 animate-bounce" />
-      </div>
+      {/* Prev/Next arrows */}
+      <button
+        onClick={goPrev}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-zinc-800/80 text-foreground/70 hover:bg-white dark:hover:bg-zinc-700 shadow-md transition-all hover:scale-110"
+        aria-label="Slide anterior"
+      >
+        <ChevronLeft size={24} />
+      </button>
+      <button
+        onClick={goNext}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-zinc-800/80 text-foreground/70 hover:bg-white dark:hover:bg-zinc-700 shadow-md transition-all hover:scale-110"
+        aria-label="Siguiente slide"
+      >
+        <ChevronRight size={24} />
+      </button>
 
-      {/* Progress line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] z-30 bg-white/10">
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-[3px] z-20 bg-border/30">
         <motion.div
-          key={`p-${current}`}
+          key={`progress-${current}`}
           className="h-full bg-mannatech"
           initial={{ width: "0%" }}
           animate={{ width: paused ? undefined : "100%" }}
@@ -130,79 +153,20 @@ export function Hero({ ctaPrimario }: HeroProps) {
         />
       </div>
 
-      {/* Bottom panel — ALWAYS VISIBLE, no animation dependency */}
-      <div className="absolute inset-x-0 bottom-0 z-20">
-        <div className="bg-black/70 backdrop-blur-xl border-t border-white/[0.06]">
-          <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-8 lg:py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:gap-16 items-end">
-              {/* Slide content */}
-              <div>
-                <p className="text-mannatech text-xs font-semibold uppercase tracking-[0.35em] mb-4">
-                  Ciencia que transforma
-                </p>
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`t-${current}`}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.35 }}
-                  >
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.08] mb-2">
-                      {slide.headline}
-                    </h1>
-                    <p className="text-white/50 text-sm sm:text-base max-w-lg mb-6">
-                      {slide.subtitle}
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link
-                    href={slide.href}
-                    className="inline-flex items-center gap-2 px-7 py-3 bg-mannatech text-white font-semibold rounded-xl hover:bg-mannatech-dark transition-colors text-sm shadow-lg shadow-mannatech/25"
-                  >
-                    {slide.cta} →
-                  </Link>
-                  <Link
-                    href="/productos"
-                    className="inline-flex items-center px-7 py-3 border border-white/20 text-white/70 font-medium rounded-xl hover:border-white/40 hover:text-white transition-colors text-sm"
-                  >
-                    {ctaPrimario}
-                  </Link>
-
-                  {/* Dots */}
-                  <div className="flex items-center gap-2 ml-2">
-                    {SLIDES.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => goTo(i)}
-                        className={`rounded-full transition-all duration-300 ${
-                          i === current ? "w-6 h-2 bg-mannatech" : "w-2 h-2 bg-white/25 hover:bg-white/50"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats — visible immediately */}
-              <div className="hidden lg:flex gap-8">
-                {[
-                  { val: "90+", label: t("stats.patents") },
-                  { val: "30+", label: t("stats.years") },
-                  { val: "25+", label: t("stats.clients") },
-                ].map((s) => (
-                  <div key={s.label} className="text-center">
-                    <p className="text-3xl font-bold text-white">{s.val}</p>
-                    <p className="text-[10px] text-white/30 mt-1 uppercase tracking-wider">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Dots */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            className={`rounded-full transition-all duration-300 ${
+              i === current
+                ? "w-8 h-2.5 bg-mannatech"
+                : "w-2.5 h-2.5 bg-white/60 dark:bg-zinc-400/60 hover:bg-white dark:hover:bg-zinc-300"
+            }`}
+            aria-label={`Ir a slide ${i + 1}`}
+          />
+        ))}
       </div>
     </section>
   );

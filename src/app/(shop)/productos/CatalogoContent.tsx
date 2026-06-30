@@ -2,12 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import type { Categoria, Producto } from "@/lib/types";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 interface CatalogoContentProps {
   productos: Producto[];
@@ -25,12 +22,34 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
+type SortOption = "featured" | "price-asc" | "price-desc" | "name-az";
+
+function SidebarSection({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-border/50 pb-4 mb-4">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between mb-3"
+      >
+        <h3 className="text-sm font-bold text-foreground">{title}</h3>
+        <ChevronDown
+          size={16}
+          className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && children}
+    </div>
+  );
+}
+
 export function CatalogoContent({ productos, categorias, initialCategoria }: CatalogoContentProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategoria, setActiveCategoria] = useState<string>(initialCategoria ?? "all");
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
 
   const filteredProductos = useMemo(() => {
-    return productos.filter((p) => {
+    let result = productos.filter((p) => {
       const matchesCategoria = activeCategoria === "all" || p.categoria === activeCategoria;
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q ||
@@ -38,131 +57,166 @@ export function CatalogoContent({ productos, categorias, initialCategoria }: Cat
         p.descripcionCorta.toLowerCase().includes(q);
       return matchesCategoria && matchesSearch;
     });
-  }, [productos, activeCategoria, searchQuery]);
 
-  const activeCatName = categorias.find((c) => c.id === activeCategoria)?.nombre;
+    // Sort
+    switch (sortBy) {
+      case "price-asc":
+        result = [...result].sort((a, b) => a.precio - b.precio);
+        break;
+      case "price-desc":
+        result = [...result].sort((a, b) => b.precio - a.precio);
+        break;
+      case "name-az":
+        result = [...result].sort((a, b) => a.nombre.localeCompare(b.nombre));
+        break;
+    }
+
+    return result;
+  }, [productos, activeCategoria, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Hero banner */}
-      <div className="relative mb-10 overflow-hidden">
-        <div className="relative h-[240px] sm:h-[280px] bg-gradient-to-br from-[#0A0A0A] via-[#1a2e35] to-[#0A0A0A] overflow-hidden rounded-2xl">
-          <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: "radial-gradient(circle at 30% 50%, rgba(0,168,143,0.4) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(105,202,152,0.3) 0%, transparent 40%)"
-          }} />
-          <div className="relative z-10 h-full flex flex-col justify-center px-8 sm:px-12">
-            <p className="text-mannatech-light text-xs font-semibold uppercase tracking-[0.3em] mb-3">
-              Colección Completa
-            </p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 leading-[1.05]">
-              Catálogo de{" "}
-              <span className="font-heading italic font-normal text-mannatech-light">Productos</span>
-            </h1>
-            <p className="text-white/45 text-sm sm:text-base max-w-lg">
-              {productos.length} productos respaldados por ciencia
-            </p>
+      {/* Page title */}
+      <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Todos los Productos</h1>
+      <p className="text-sm text-muted-foreground mb-6">
+        Inicio / Tienda / Todos los Productos
+      </p>
+
+      {/* Search bar — full width */}
+      <div className="relative mb-8">
+        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Buscar en la tienda"
+          className="w-full pl-11 pr-5 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-mannatech/20 focus:border-mannatech/40 transition-all text-sm"
+        />
+      </div>
+
+      <div className="flex gap-8">
+        {/* Left Sidebar */}
+        <aside className="hidden lg:block w-56 flex-shrink-0">
+          <div className="sticky top-[calc(72px+var(--announcement-bar-height)+2rem)]">
+            {/* Category links */}
+            <SidebarSection title="Categorías">
+              <ul className="space-y-2">
+                <li>
+                  <button
+                    onClick={() => setActiveCategoria("all")}
+                    className={`text-sm w-full text-left transition-colors ${
+                      activeCategoria === "all"
+                        ? "text-mannatech font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Todos los Productos
+                  </button>
+                </li>
+                {categorias.map((cat) => (
+                  <li key={cat.id}>
+                    <button
+                      onClick={() => setActiveCategoria(cat.id)}
+                      className={`text-sm w-full text-left transition-colors ${
+                        activeCategoria === cat.id
+                          ? "text-mannatech font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {cat.nombre}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </SidebarSection>
           </div>
-        </div>
-      </div>
+        </aside>
 
-      {/* Search */}
-      <div className="max-w-lg mb-6">
-        <div className="relative">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar productos..."
-            className="w-full pl-11 pr-5 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-mannatech/20 focus:border-mannatech/40 transition-all text-sm"
-          />
-        </div>
-      </div>
-
-      {/* Category Tabs */}
-      <Tabs value={activeCategoria} onValueChange={setActiveCategoria} className="mb-6">
-        <TabsList className="h-auto flex-wrap gap-1 bg-transparent p-0">
-          <TabsTrigger
-            value="all"
-            className="rounded-xl data-[state=active]:bg-mannatech data-[state=active]:text-white data-[state=active]:shadow-md px-5 py-2.5 text-sm"
-          >
-            Todos
-          </TabsTrigger>
-          {categorias.map((cat) => (
-            <TabsTrigger
-              key={cat.id}
-              value={cat.id}
-              className="rounded-xl data-[state=active]:bg-mannatech data-[state=active]:text-white data-[state=active]:shadow-md px-5 py-2.5 text-sm gap-2"
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+          {/* Sort + count bar */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{filteredProductos.length}</span>{" "}
+              producto{filteredProductos.length !== 1 ? "s" : ""}
+            </p>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="text-sm border border-border rounded-lg px-3 py-2 bg-background text-foreground/70 focus:outline-none focus:ring-1 focus:ring-mannatech/30"
             >
-              <span
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ backgroundColor: activeCategoria === cat.id ? "white" : cat.color }}
-              />
-              {cat.nombre}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+              <option value="featured">Destacados</option>
+              <option value="price-asc">Precio: Menor a Mayor</option>
+              <option value="price-desc">Precio: Mayor a Menor</option>
+              <option value="name-az">A a Z</option>
+            </select>
+          </div>
 
-      <Separator className="mb-6" />
-
-      {/* Results + sort */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">{filteredProductos.length}</span> producto{filteredProductos.length !== 1 ? "s" : ""}
-            {activeCatName && (
-              <> en <Badge variant="secondary" className="ml-1">{activeCatName}</Badge></>
-            )}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal size={14} className="text-muted-foreground" />
-          <select className="text-sm border border-border rounded-xl px-3 py-2 bg-background text-foreground/70 focus:outline-none focus:ring-1 focus:ring-mannatech/30">
-            <option>Destacados</option>
-            <option>Precio: Menor a Mayor</option>
-            <option>Precio: Mayor a Menor</option>
-            <option>Nombre A-Z</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Grid */}
-      <AnimatePresence mode="wait">
-        {filteredProductos.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-20 text-muted-foreground"
-          >
-            <Search size={48} className="mx-auto mb-4 opacity-20" />
-            <p className="font-medium">No se encontraron productos</p>
+          {/* Mobile category filter */}
+          <div className="lg:hidden mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <button
-              onClick={() => { setSearchQuery(""); setActiveCategoria("all"); }}
-              className="mt-4 text-mannatech text-sm hover:underline"
+              onClick={() => setActiveCategoria("all")}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-colors ${
+                activeCategoria === "all"
+                  ? "bg-mannatech text-white"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
             >
-              Limpiar filtros
+              Todos
             </button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key={`grid-${activeCategoria}-${searchQuery}`}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit={{ opacity: 0 }}
-            className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
-          >
-            {filteredProductos.map((producto, idx) => (
-              <motion.div key={producto.slug} variants={itemVariants}>
-                <ProductCard producto={producto} index={idx} />
-              </motion.div>
+            {categorias.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategoria(cat.id)}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-colors ${
+                  activeCategoria === cat.id
+                    ? "bg-mannatech text-white"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {cat.nombre}
+              </button>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+
+          {/* Product Grid */}
+          <AnimatePresence mode="wait">
+            {filteredProductos.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center py-20 text-muted-foreground"
+              >
+                <Search size={48} className="mx-auto mb-4 opacity-20" />
+                <p className="font-medium">No se encontraron productos</p>
+                <button
+                  onClick={() => { setSearchQuery(""); setActiveCategoria("all"); }}
+                  className="mt-4 text-mannatech text-sm hover:underline"
+                >
+                  Limpiar filtros
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`grid-${activeCategoria}-${searchQuery}-${sortBy}`}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+              >
+                {filteredProductos.map((producto, idx) => (
+                  <motion.div key={producto.slug} variants={itemVariants}>
+                    <ProductCard producto={producto} index={idx} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }

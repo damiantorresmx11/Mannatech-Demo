@@ -8,8 +8,8 @@ export default function ShopLayout({
 }) {
   return (
     <>
-      <Header variant="shop" />
-      <main className="flex-1 flex flex-col pt-[72px]">{children}</main>
+      <Header />
+      <main className="flex-1 flex flex-col pt-[calc(72px+var(--announcement-bar-height))]">{children}</main>
       <Footer />
     </>
   );

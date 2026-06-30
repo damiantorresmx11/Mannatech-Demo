@@ -38,7 +38,7 @@ export function CheckoutModal({
         </DialogHeader>
         <div className="flex flex-col gap-3 mt-4">
           <Button
-            className="bg-mannatech hover:bg-mannatech/90 text-white"
+            className="bg-mannatech hover:bg-mannatech-dark text-white"
             onClick={() => onOpenChange(false)}
           >
             <ExternalLink size={16} className="mr-2" />

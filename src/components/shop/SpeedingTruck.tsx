@@ -45,7 +45,7 @@ export default function SpeedingTruck({
       </div>
 
       <div className="truck-run">
-        <Truck size={size} className="text-emerald-500" strokeWidth={2} />
+        <Truck size={size} className="text-mannatech" strokeWidth={2} />
       </div>
 
       <style jsx>{`
@@ -78,8 +78,8 @@ export default function SpeedingTruck({
           margin-left: auto;
           background: linear-gradient(
             90deg,
-            rgba(16, 185, 129, 0) 0%,
-            rgba(16, 185, 129, 0.85) 100%
+            rgba(0, 168, 143, 0) 0%,
+            rgba(0, 168, 143, 0.85) 100%
           );
           animation: zoom var(--zoom) linear infinite;
         }

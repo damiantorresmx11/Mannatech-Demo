@@ -1,37 +1,21 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
-import { FlaskConical, Dna, ShieldCheck } from "lucide-react";
-import { SpotlightCard } from "@/components/ui/spotlight";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Brain, Heart, Smile, Shield, Leaf } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
 
-const categoryDefs = [
-  {
-    key: "cellCommunication" as const,
-    icon: Dna,
-    gradient: "from-mannatech to-mannatech-dark",
-  },
-  {
-    key: "immuneSystem" as const,
-    icon: ShieldCheck,
-    gradient: "from-mannatech-light to-mannatech",
-  },
-  {
-    key: "digestiveHealth" as const,
-    icon: FlaskConical,
-    gradient: "from-mannatech-light/70 to-mannatech-light",
-  },
+const benefits = [
+  { icon: Heart, label: "Comunicación Celular", desc: "Bloques fundamentales para una mejor salud general*" },
+  { icon: Brain, label: "Cognición", desc: "Apoya la función cerebral y la memoria saludable*" },
+  { icon: Smile, label: "Estado de Ánimo", desc: "Reduce la irritabilidad y apoya el bienestar emocional*" },
+  { icon: Shield, label: "Inmunidad", desc: "Apoya las defensas celulares de forma natural*" },
+  { icon: Leaf, label: "Salud Digestiva", desc: "Fomenta un microbioma saludable*" },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
@@ -40,79 +24,114 @@ const cardVariants = {
 };
 
 export function ScienceSection() {
-  const t = useTranslations("landing.science");
   return (
     <section
       id="ciencia"
-      data-label={t("sectionLabel")}
-      className="relative py-32 scroll-snap-section overflow-hidden"
+      className="py-20 sm:py-28 bg-white dark:bg-zinc-950 overflow-hidden"
     >
-      {/* Background image from Mannatech */}
-      <div className="absolute inset-0">
-        <Image
-          src="https://mx.mannatech.com/wp-content/uploads/sites/16/2016/10/bg-opportunity.jpg"
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/70 to-black/80" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] text-mannatech-light mb-4">
-            {t("overline")}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Overline */}
+        <BlurFade delay={0.1}>
+          <p className="text-mannatech text-xs font-semibold uppercase tracking-[0.35em] mb-4">
+            Ambrotose® Complex
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white mb-4 leading-tight">
-            {t("headline")}
-          </h2>
-          <p className="text-lg text-white/60 max-w-2xl mx-auto leading-relaxed">
-            {t("description")}
-          </p>
-        </motion.div>
+        </BlurFade>
 
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-        >
-          {categoryDefs.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <motion.div
-                key={cat.key}
-                variants={cardVariants}
-              >
-              <SpotlightCard
-                spotlightColor="rgba(0,168,143,0.15)"
-                className="rounded-3xl backdrop-blur-xl bg-white/10 border border-white/15 p-8 sm:p-10 hover:bg-white/15 transition-all duration-500 group"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-mannatech/20 flex items-center justify-center mb-6">
-                  <Icon size={26} className="text-mannatech-light" />
-                </div>
-                <span className="inline-flex px-3 py-1.5 bg-white/10 rounded-full text-xs font-medium text-white/70 tracking-wide mb-4">
-                  {t(`categories.${cat.key}.label`)}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-white leading-tight mb-3">
-                  {t(`categories.${cat.key}.title`)}
-                </h3>
-                <div className={`h-0.5 w-12 rounded-full bg-gradient-to-r ${cat.gradient} opacity-60 group-hover:w-20 transition-all duration-500`} />
-                <div className="absolute -bottom-20 -right-20 w-40 h-40 rounded-full bg-mannatech/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </SpotlightCard>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left — text content */}
+          <div>
+            <BlurFade delay={0.2}>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-4">
+                Una{" "}
+                <span className="font-heading italic font-normal text-mannatech">
+                  Revolución
+                </span>{" "}
+                en Bienestar
+              </h2>
+            </BlurFade>
+
+            <BlurFade delay={0.3}>
+              <h3 className="text-lg font-semibold text-foreground/80 mb-4">
+                Sentirse bien debería ser natural
+              </h3>
+              <p className="text-muted-foreground leading-relaxed mb-8">
+                Descubre el secreto del bienestar natural con nuestro producto estrella,
+                <strong> Mannatech Ambrotose Complex</strong>. Elaborado meticulosamente a partir de
+                fuentes vegetales y veganas, representa la cúspide de la suplementación dietética,
+                con respaldo clínico para la memoria, la salud digestiva, el sistema inmunológico
+                y beneficios integrales para todo el cuerpo.*
+              </p>
+            </BlurFade>
+
+            {/* Benefits list */}
+            <div className="space-y-4 mb-8">
+              {benefits.map((b, i) => {
+                const Icon = b.icon;
+                return (
+                  <BlurFade key={b.label} delay={0.35 + i * 0.08}>
+                    <div className="flex items-start gap-3 group">
+                      <div className="w-9 h-9 rounded-lg bg-mannatech/10 dark:bg-mannatech/20 flex items-center justify-center flex-shrink-0 group-hover:bg-mannatech/20 transition-colors">
+                        <Icon size={18} className="text-mannatech" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">{b.label}</p>
+                        <p className="text-xs text-muted-foreground">{b.desc}</p>
+                      </div>
+                    </div>
+                  </BlurFade>
+                );
+              })}
+            </div>
+
+            {/* CTAs */}
+            <BlurFade delay={0.8}>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/productos"
+                  className="btn-magnetic btn-ripple inline-flex items-center px-6 py-3 bg-mannatech text-white font-semibold rounded-xl hover:bg-mannatech-dark transition-colors text-sm shadow-lg shadow-mannatech/20"
+                >
+                  Comprar Ahora
+                </Link>
+                <button className="inline-flex items-center px-6 py-3 border border-border text-foreground/70 font-medium rounded-xl hover:border-mannatech hover:text-mannatech transition-colors text-sm">
+                  Ver Video
+                </button>
+              </div>
+            </BlurFade>
+          </div>
+
+          {/* Right — product image */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-md mx-auto">
+              {/* Glow background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-mannatech/10 via-transparent to-mannatech-light/10 rounded-3xl blur-3xl" />
+
+              {/* Product image */}
+              <div className="relative bg-[#F2F0ED] dark:bg-zinc-800 rounded-3xl p-8 sm:p-12">
+                <Image
+                  src="/images/ambrotose-complex-hero.png"
+                  alt="Ambrotose Complex"
+                  width={500}
+                  height={500}
+                  className="w-full h-auto object-contain product-glow animate-float"
+                />
+              </div>
+
+              {/* Price badge */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-900 shadow-lg rounded-xl px-6 py-3 text-center border border-border">
+                <p className="text-sm font-bold text-foreground">Ambrotose Complex</p>
+                <p className="text-xs text-muted-foreground">
+                  Desde <span className="text-mannatech font-semibold">$1,392</span>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

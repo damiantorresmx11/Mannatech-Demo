@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -15,10 +14,8 @@ const fadeUp = {
 };
 
 export function CTABanner() {
-  const t = useTranslations("landing.cta");
-
   return (
-    <section className="relative py-32 overflow-hidden scroll-snap-section">
+    <section id="unete" className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
@@ -32,15 +29,6 @@ export function CTABanner() {
         <div className="absolute inset-0 bg-gradient-to-br from-mannatech/90 via-mannatech-dark/85 to-black/80" />
       </div>
 
-      {/* Dot pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
-
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           variants={fadeUp}
@@ -48,26 +36,18 @@ export function CTABanner() {
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white mb-6 leading-tight">
-            {t("headline")}
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+            Gana dinero globalmente
           </h2>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            {t("description")}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/productos"
-              className="inline-flex items-center px-10 py-4 bg-white text-mannatech-dark font-semibold rounded-full shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-base"
-            >
-              {t("exploreProducts")}
-            </Link>
-            <Link
-              href="#contacto"
-              className="inline-flex items-center px-10 py-4 border-2 border-white/60 text-white font-semibold rounded-full hover:border-white hover:bg-white/10 transition-all duration-300 text-base"
-            >
-              {t("talkToAdvisor")}
-            </Link>
-          </div>
+          <h3 className="text-xl sm:text-2xl font-light text-white/80 mb-8">
+            La Oportunidad Definitiva
+          </h3>
+          <Link
+            href="/distribuidores/maria-lopez"
+            className="btn-magnetic btn-ripple inline-flex items-center px-8 py-4 bg-white text-mannatech-dark font-bold rounded-xl hover:bg-white/90 transition-colors text-base shadow-xl"
+          >
+            Conoce Más
+          </Link>
         </motion.div>
       </div>
     </section>

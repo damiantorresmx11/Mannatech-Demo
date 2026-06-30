@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 interface Section {
   id: string;
@@ -11,6 +11,7 @@ interface Section {
 
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
   const [sections, setSections] = useState<Section[]>([]);
   const [activeSection, setActiveSection] = useState("");
 
@@ -76,9 +77,9 @@ export function ScrollProgress() {
     <>
       {/* Main progress bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 z-[60] h-[3px] origin-left"
+        className="fixed top-0 left-0 right-0 z-[60] h-[2px] origin-left"
         style={{
-          scaleX: scrollYProgress,
+          scaleX: smoothProgress,
           background: "linear-gradient(90deg, #00897B, #4DB6AC)",
         }}
       />

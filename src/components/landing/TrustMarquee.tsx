@@ -1,50 +1,66 @@
 "use client";
 
-import { Award, ShieldCheck, FlaskConical, Wheat, LeafyGreen, Heart, Microscope, Globe } from "lucide-react";
+import { Heart, Percent, Truck, ShieldCheck } from "lucide-react";
 
-const badges = [
-  { icon: Award, text: "+90 Patentes Globales" },
-  { icon: ShieldCheck, text: "FDA Compliant" },
-  { icon: FlaskConical, text: "GMP Certificado" },
-  { icon: Wheat, text: "Sin OGM" },
-  { icon: LeafyGreen, text: "Sin Gluten" },
-  { icon: Heart, text: "Vegano Disponible" },
-  { icon: Microscope, text: "Respaldado por Ciencia" },
-  { icon: Globe, text: "+25 Países" },
+const benefits = [
+  { icon: Heart, text: "Con tu compra, juntos nutrimos a quienes más lo necesitan" },
+  { icon: Percent, text: "¡Suscríbete y ahorra 10% en tus productos favoritos!" },
+  { icon: Truck, text: "Envío gratis en pedidos mayores a $2,999" },
+  { icon: ShieldCheck, text: "¡Garantía de satisfacción de 180 días!" },
 ];
 
 export function TrustMarquee() {
   return (
-    <section className="py-4 bg-[#0A0A0A] dark:bg-zinc-950 overflow-hidden border-y border-white/[0.06]">
-      <div className="relative flex">
-        {[0, 1].map((copy) => (
-          <div
-            key={copy}
-            className="flex shrink-0 animate-marquee-slow items-center gap-8 px-4"
-            aria-hidden={copy === 1}
-          >
-            {badges.map((badge) => {
-              const Icon = badge.icon;
-              return (
-                <div key={`${badge.text}-${copy}`} className="flex items-center gap-2 text-white/50 whitespace-nowrap">
-                  <Icon size={14} className="text-mannatech" />
-                  <span className="text-xs font-medium tracking-wide">{badge.text}</span>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+    <section className="py-10 sm:py-14 bg-[#FAF9F7] dark:bg-zinc-900 border-y border-border/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Heading */}
+        <div className="text-center mb-6">
+          <p className="text-mannatech text-xs font-semibold uppercase tracking-[0.35em] mb-2">
+            Bienestar
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+            <span className="font-heading italic font-normal">Sin Esfuerzo</span>
+          </h2>
+        </div>
 
-      <style jsx>{`
-        @keyframes marquee-slow {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-100%); }
-        }
-        .animate-marquee-slow {
-          animation: marquee-slow 30s linear infinite;
-        }
-      `}</style>
+        {/* Desktop: all 4 in a row */}
+        <div className="hidden md:grid grid-cols-4 gap-6">
+          {benefits.map((b) => {
+            const Icon = b.icon;
+            return (
+              <div key={b.text} className="flex items-center gap-3 text-center justify-center">
+                <Icon size={18} className="text-mannatech flex-shrink-0" />
+                <span className="text-xs font-medium text-foreground/70 leading-tight">
+                  {b.text}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Mobile: scrolling marquee */}
+        <div className="md:hidden relative flex overflow-hidden">
+          {[0, 1].map((copy) => (
+            <div
+              key={copy}
+              className="flex shrink-0 animate-marquee-scroll items-center gap-10 px-4"
+              aria-hidden={copy === 1}
+            >
+              {benefits.map((b) => {
+                const Icon = b.icon;
+                return (
+                  <div key={`${b.text}-${copy}`} className="flex items-center gap-2 whitespace-nowrap">
+                    <Icon size={14} className="text-mannatech flex-shrink-0" />
+                    <span className="text-xs font-medium text-foreground/70">
+                      {b.text}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
