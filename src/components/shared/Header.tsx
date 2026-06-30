@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl";
 import { MannatechLogo } from "@/components/shared/MannatechLogo";
 import { CartButton } from "@/components/shop/cart/CartButton";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { CompanySelector } from "@/components/shared/CompanySelector";
 import { LocaleSwitcher } from "@/components/shared/LocaleSwitcher";
 import { AnnouncementBar } from "@/components/shared/AnnouncementBar";
 
@@ -105,8 +104,7 @@ export function Header() {
                 <Search size={20} className="text-foreground/70" />
               </button>
 
-              <div className="hidden md:flex items-center gap-2">
-                <CompanySelector />
+              <div className="hidden md:flex">
                 <LocaleSwitcher />
               </div>
 
@@ -252,7 +250,6 @@ export function Header() {
                     }}
                     className="flex items-center gap-4 py-2.5 px-3 border-t border-border mt-2 pt-3"
                   >
-                    <CompanySelector />
                     <LocaleSwitcher />
                   </motion.div>
                 </div>
