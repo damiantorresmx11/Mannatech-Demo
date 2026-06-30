@@ -22,7 +22,7 @@ const navLinkDefs: NavLink[] = [
   { href: "/impacto", labelKey: "impact" },
   { href: "/#ciencia", labelKey: "science" },
   { href: "/#historia", labelKey: "successStories" },
-  { href: "/#quienes-somos", labelKey: "aboutUs" },
+  { href: "/quienes-somos", labelKey: "aboutUs" },
   { href: "/unete", labelKey: "join" },
 ];
 
