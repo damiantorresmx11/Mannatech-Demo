@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, User, UserCircle, Briefcase } from "lucide-react";
+import { Menu, X, Search, User, UserCircle, Briefcase, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { MannatechLogo } from "@/components/shared/MannatechLogo";
@@ -140,7 +140,7 @@ export function Header() {
                       </Link>
                       <Link
                         href="/login/socio"
-                        className="flex items-center gap-4 px-5 py-4 hover:bg-muted/60 transition-colors"
+                        className="flex items-center gap-4 px-5 py-4 hover:bg-muted/60 transition-colors border-b border-border/50"
                         onClick={() => setLoginOpen(false)}
                       >
                         <Briefcase size={28} className="text-mannatech flex-shrink-0" />
@@ -148,6 +148,14 @@ export function Header() {
                           <p className="text-sm font-semibold text-foreground">¿Eres <span className="underline">socio</span> Mannatech?</p>
                           <p className="text-xs text-muted-foreground">Inicia Sesion Aqui</p>
                         </div>
+                      </Link>
+                      <Link
+                        href="/admin/dashboard"
+                        className="flex items-center gap-4 px-5 py-3 hover:bg-muted/60 transition-colors"
+                        onClick={() => setLoginOpen(false)}
+                      >
+                        <Shield size={22} className="text-zinc-500 flex-shrink-0" />
+                        <p className="text-xs text-muted-foreground">Panel de Administracion</p>
                       </Link>
                     </motion.div>
                   )}
@@ -238,6 +246,14 @@ export function Header() {
                     >
                       <Briefcase size={18} />
                       Iniciar sesion — Socio
+                    </Link>
+                    <Link
+                      href="/admin/dashboard"
+                      className="flex items-center gap-3 py-2.5 px-3 text-xs text-muted-foreground hover:text-mannatech hover:bg-muted rounded-lg transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <Shield size={16} />
+                      Panel Admin
                     </Link>
                   </motion.div>
                   <motion.div

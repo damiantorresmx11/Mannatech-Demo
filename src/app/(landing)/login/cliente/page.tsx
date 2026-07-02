@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { MannatechLogo } from "@/components/shared/MannatechLogo";
@@ -9,10 +10,12 @@ export default function LoginClientePage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Demo only — no real auth
+    // Demo only — redirect to client dashboard
+    router.push("/cuenta/mi-cuenta");
   }
 
   return (
