@@ -12,6 +12,8 @@ import {
 import { blockDefMap, type FieldDef } from "@/config/block-definitions"
 import { blockDefinitions } from "@/config/block-definitions"
 import { ICON_LIBRARY, ICON_MAP, ICON_CATEGORIES } from "@/config/icon-library"
+import { ANIMATION_PRESETS, ANIMATION_CATEGORIES, type AnimationPreset } from "@/config/animation-presets"
+import { motion, AnimatePresence } from "framer-motion"
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -974,6 +976,9 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "icon":
       return <IconPickerControl field={field} value={value} onChange={onChange} />
 
+    case "animation":
+      return <AnimationPickerControl field={field} value={value} onChange={onChange} />
+
     case "media":
       return <MediaFieldControl field={field} value={value} onChange={onChange} />
 
@@ -988,6 +993,140 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
 // ═══════════════════════════════════════════════════════════════
 // MEDIA FIELD CONTROL (Upload + Gallery)
 // ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// ANIMATION PICKER — Visual preview of 14 motion presets
+// ═══════════════════════════════════════════════════════════════
+
+function AnimationPickerControl({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
+  const [open, setOpen] = useState(false)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [previewKey, setPreviewKey] = useState(0)
+
+  const current = ANIMATION_PRESETS.find(p => p.id === value)
+  const filtered = activeCategory
+    ? ANIMATION_PRESETS.filter(p => p.category === activeCategory)
+    : ANIMATION_PRESETS
+
+  const replayAll = () => setPreviewKey(k => k + 1)
+
+  return (
+    <div>
+      <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
+
+      {/* Current */}
+      <button
+        onClick={() => { setOpen(!open); replayAll() }}
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-zinc-800/60 border border-zinc-700/40 rounded-lg text-xs text-white hover:border-blue-500/50 transition-all"
+      >
+        {current ? (
+          <>
+            <motion.div
+              key={`cur-${previewKey}`}
+              initial={current.initial}
+              animate={current.animate || current.whileInView}
+              transition={{ ...current.transition, delay: 0.2 }}
+              className="w-7 h-7 rounded-lg bg-blue-500 flex-shrink-0"
+            />
+            <div className="flex-1 text-left">
+              <span className="font-medium">{current.name}</span>
+              <span className="text-zinc-500 ml-1.5 text-[10px]">{current.category}</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-7 h-7 rounded-lg bg-zinc-700/50 flex-shrink-0" />
+            <span className="flex-1 text-left text-zinc-500">Sin animacion</span>
+          </>
+        )}
+        <ChevronDown size={12} className={`text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Picker */}
+      {open && (
+        <div className="mt-1.5 border border-zinc-700/60 rounded-xl bg-zinc-900 overflow-hidden shadow-xl">
+          {/* None option */}
+          <button
+            onClick={() => { onChange("none"); setOpen(false) }}
+            className={`w-full flex items-center gap-2 px-3 py-2 text-xs border-b border-zinc-800/60 transition-colors ${value === "none" || !value ? "text-blue-400 bg-blue-500/5" : "text-zinc-400 hover:bg-zinc-800"}`}
+          >
+            <div className="w-5 h-5 rounded bg-zinc-700/50" />
+            <span>Sin animacion</span>
+          </button>
+
+          {/* Category filter */}
+          <div className="flex gap-1 p-2 border-b border-zinc-800/60">
+            <button
+              onClick={() => { setActiveCategory(null); replayAll() }}
+              className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider ${!activeCategory ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
+            >
+              Todos
+            </button>
+            {ANIMATION_CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                onClick={() => { setActiveCategory(cat); replayAll() }}
+                className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider capitalize ${activeCategory === cat ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
+              >
+                {cat}
+              </button>
+            ))}
+            <button onClick={replayAll} className="ml-auto px-2 py-1 text-[9px] text-zinc-500 hover:text-blue-400" title="Replay">
+              <Redo2 size={10} />
+            </button>
+          </div>
+
+          {/* Animation grid with live previews */}
+          <div className="grid grid-cols-2 gap-2 p-2 max-h-[360px] overflow-y-auto">
+            {filtered.map(preset => {
+              const isSelected = value === preset.id
+              return (
+                <button
+                  key={preset.id}
+                  onClick={() => { onChange(preset.id); setOpen(false) }}
+                  className={`relative flex flex-col items-center rounded-xl p-3 transition-all ${
+                    isSelected
+                      ? "bg-blue-500/10 ring-1 ring-blue-500/40"
+                      : "bg-zinc-800/30 hover:bg-zinc-800/60 border border-zinc-800/40 hover:border-zinc-700"
+                  }`}
+                >
+                  {/* Live preview box */}
+                  <div className="w-full h-16 rounded-lg bg-zinc-900 flex items-center justify-center overflow-hidden mb-2 relative">
+                    {/* Grid background */}
+                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, #fff 0.5px, transparent 0.5px)", backgroundSize: "8px 8px" }} />
+                    <motion.div
+                      key={`${preset.id}-${previewKey}`}
+                      initial={preset.initial}
+                      animate={preset.animate || preset.whileInView || {}}
+                      whileHover={preset.whileHover}
+                      whileTap={preset.whileTap}
+                      transition={{ ...preset.transition, delay: 0.3 }}
+                      className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/20 relative z-10"
+                    />
+                  </div>
+
+                  {/* Label */}
+                  <span className={`text-[10px] font-semibold ${isSelected ? "text-blue-400" : "text-zinc-300"}`}>{preset.name}</span>
+                  <span className="text-[8px] text-zinc-500 mt-0.5">{preset.description}</span>
+
+                  {/* Category badge */}
+                  <span className={`absolute top-1.5 right-1.5 text-[7px] px-1.5 py-0.5 rounded-full font-semibold uppercase ${
+                    preset.category === "entrada" ? "bg-emerald-500/10 text-emerald-400" :
+                    preset.category === "scroll" ? "bg-purple-500/10 text-purple-400" :
+                    preset.category === "hover" ? "bg-amber-500/10 text-amber-400" :
+                    "bg-rose-500/10 text-rose-400"
+                  }`}>
+                    {preset.category}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ═══════════════════════════════════════════════════════════════
 // ICON PICKER CONTROL — Lucide (90+) + Iconify API (275k+)

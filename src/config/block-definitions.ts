@@ -1,6 +1,6 @@
 export interface FieldDef {
   key: string
-  type: "text" | "textarea" | "number" | "slider" | "color" | "select" | "toggle" | "media" | "icon" | "array"
+  type: "text" | "textarea" | "number" | "slider" | "color" | "select" | "toggle" | "media" | "icon" | "animation" | "array"
   label: string
   placeholder?: string
   options?: string[]
@@ -23,7 +23,7 @@ const commonDesign: FieldDef[] = [
   { key: "bgColor", type: "color", label: "Color de Fondo" },
   { key: "paddingTop", type: "slider", label: "Padding Superior", min: 0, max: 200, defaultValue: 48 },
   { key: "paddingBottom", type: "slider", label: "Padding Inferior", min: 0, max: 200, defaultValue: 48 },
-  { key: "animation", type: "select", label: "Animacion", options: ["none", "fadeUp", "fadeIn", "slideLeft", "slideRight"] },
+  { key: "animation", type: "animation", label: "Animacion" },
 ]
 
 const commonAdvanced: FieldDef[] = [
