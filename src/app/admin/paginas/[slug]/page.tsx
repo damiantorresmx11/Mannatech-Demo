@@ -2,12 +2,19 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
-  GripVertical, Eye, EyeOff, Trash2, Plus, ChevronLeft,
-  Save, Globe, Monitor, Tablet, Smartphone, Undo2,
-  PanelLeftClose, PanelLeft, Loader2,
+  GripVertical, Eye, Trash2, Plus, ChevronLeft, Save, Globe,
+  Monitor, Tablet, Smartphone, Loader2, Layers, Search,
+  PanelRightClose, PanelRight, Sparkles, BarChart3, MousePointerClick,
+  Package, MessageSquareQuote, HelpCircle, ListChecks, UserPlus,
+  Users, Grid3x3, Award, Layout, Type, ImageIcon, Undo2, Redo2,
+  Copy, X, ChevronDown, ChevronUp,
 } from "lucide-react"
 import { blockDefMap, type FieldDef } from "@/config/block-definitions"
 import { blockDefinitions } from "@/config/block-definitions"
+
+// ═══════════════════════════════════════════════════════════════
+// TYPES
+// ═══════════════════════════════════════════════════════════════
 
 interface Block {
   id: string
@@ -32,21 +39,73 @@ const CMS_API = "/api/cms-proxy"
 const SITE_ID = "e1d8c609-d3ad-4a15-ab8c-18d031f10a09"
 
 // ═══════════════════════════════════════════════════════════════
+// BLOCK CATALOG DATA
+// ═══════════════════════════════════════════════════════════════
+
+const BLOCK_ICON_MAP: Record<string, any> = {
+  Sparkles, BarChart3, MousePointerClick, Package, MessageSquareQuote,
+  HelpCircle, ListChecks, UserPlus, Users, Grid3x3, Award, Layout,
+  Type, ImageIcon,
+}
+
+const BLOCK_CATEGORIES = [
+  {
+    name: "Principal",
+    color: "#3b82f6",
+    items: ["hero", "ctaBanner"],
+  },
+  {
+    name: "Contenido",
+    color: "#10b981",
+    items: ["stats", "howItWorks", "faq", "benefitsGrid", "joinSection"],
+  },
+  {
+    name: "Productos",
+    color: "#f59e0b",
+    items: ["featuredGrid", "categories"],
+  },
+  {
+    name: "Social",
+    color: "#8b5cf6",
+    items: ["testimonials", "teamGrid", "trustMarquee", "socialProof"],
+  },
+  {
+    name: "Ciencia",
+    color: "#06b6d4",
+    items: ["scienceSection", "glycansSection", "whyGlycansSection", "missionSection"],
+  },
+  {
+    name: "Otros",
+    color: "#6b7280",
+    items: ["newsletter", "quickCategoryMenu"],
+  },
+]
+
+// ═══════════════════════════════════════════════════════════════
 // EDITOR PAGE
 // ═══════════════════════════════════════════════════════════════
 
 export default function EditorPage({ params }: { params: Promise<{ slug: string }> }) {
-  const [slug, setSlug] = useState<string>("")
+  const [slug, setSlug] = useState("")
   const [page, setPage] = useState<PageData | null>(null)
   const [blocks, setBlocks] = useState<Block[]>([])
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<"content" | "design" | "seo" | "advanced">("content")
+  const [activeTab, setActiveTab] = useState<"content" | "design" | "advanced">("content")
   const [isDirty, setIsDirty] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [previewWidth, setPreviewWidth] = useState<number | "full">("full")
-  const [panelOpen, setPanelOpen] = useState(true)
-  const [showAddBlock, setShowAddBlock] = useState(false)
   const [previewReady, setPreviewReady] = useState(false)
+
+  // UI panels
+  const [rightPanelOpen, setRightPanelOpen] = useState(true)
+  const [leftPanel, setLeftPanel] = useState<"none" | "layers" | "catalog">("none")
+  const [catalogSearch, setCatalogSearch] = useState("")
+  const [addAtPosition, setAddAtPosition] = useState<number | null>(null)
+
+  // History for undo/redo
+  const [history, setHistory] = useState<Block[][]>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
@@ -62,27 +121,180 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
       .then((r) => r.json())
       .then((data) => {
         setPage(data)
-        setBlocks(data.blocks || [])
-        if (data.blocks?.length) setActiveBlockId(data.blocks[0].id)
+        const b = data.blocks || []
+        setBlocks(b)
+        setHistory([b])
+        setHistoryIndex(0)
       })
       .catch(console.error)
   }, [slug])
 
+  // Push to history
+  const pushHistory = useCallback((newBlocks: Block[]) => {
+    setHistory(prev => {
+      const trimmed = prev.slice(0, historyIndex + 1)
+      return [...trimmed, newBlocks].slice(-30)
+    })
+    setHistoryIndex(prev => Math.min(prev + 1, 29))
+  }, [historyIndex])
+
+  // Undo
+  const handleUndo = useCallback(() => {
+    if (historyIndex <= 0) return
+    const newIndex = historyIndex - 1
+    setHistoryIndex(newIndex)
+    setBlocks(history[newIndex])
+    setIsDirty(true)
+    reloadPreview()
+  }, [historyIndex, history])
+
+  // Redo
+  const handleRedo = useCallback(() => {
+    if (historyIndex >= history.length - 1) return
+    const newIndex = historyIndex + 1
+    setHistoryIndex(newIndex)
+    setBlocks(history[newIndex])
+    setIsDirty(true)
+    reloadPreview()
+  }, [historyIndex, history])
+
+  // Reload preview iframe
+  const reloadPreview = useCallback(() => {
+    setPreviewReady(false)
+    if (iframeRef.current) {
+      iframeRef.current.src = iframeRef.current.src
+    }
+  }, [])
+
   // Listen for preview messages
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
-      if (event.data?.type === "blockInView") {
-        setActiveBlockId(event.data.blockId)
-      }
-      if (event.data?.type === "previewReady") {
-        setPreviewReady(true)
+      const data = event.data
+      if (!data?.type) return
+
+      switch (data.type) {
+        case "previewReady":
+          setPreviewReady(true)
+          break
+
+        case "blockSelected":
+          setActiveBlockId(data.blockId)
+          setRightPanelOpen(true)
+          setActiveTab("content")
+          break
+
+        case "blockDeselected":
+          setActiveBlockId(null)
+          break
+
+        case "blockHovered":
+          // Could highlight in layers panel
+          break
+
+        case "inlineEditStart":
+          setActiveBlockId(data.blockId)
+          setActiveTab("content")
+          break
+
+        case "inlineEdit":
+          // Update block content from inline editing
+          setBlocks(prev => {
+            const updated = prev.map(b => {
+              if (b.id !== data.blockId) return b
+              if (data.field.includes(".")) {
+                const [parent, child] = data.field.split(".")
+                return { ...b, content: { ...b.content, [parent]: { ...b.content[parent], [child]: data.value } } }
+              }
+              return { ...b, content: { ...b.content, [data.field]: data.value } }
+            })
+            return updated
+          })
+          scheduleAutosave()
+          break
+
+        case "toolbarAction":
+          handleToolbarAction(data.action, data.blockId)
+          break
+
+        case "requestAddBlock":
+          setAddAtPosition(data.position)
+          setLeftPanel("catalog")
+          break
+
+        case "blockReordered":
+          handleBlockReorder(data.blockId, data.newPosition)
+          break
       }
     }
     window.addEventListener("message", handleMessage)
     return () => window.removeEventListener("message", handleMessage)
+  }, [blocks])
+
+  // Handle toolbar actions from preview
+  const handleToolbarAction = useCallback((action: string, blockId: string) => {
+    switch (action) {
+      case "moveUp": {
+        const idx = blocks.findIndex(b => b.id === blockId)
+        if (idx <= 0) return
+        const newBlocks = [...blocks]
+        ;[newBlocks[idx - 1], newBlocks[idx]] = [newBlocks[idx], newBlocks[idx - 1]]
+        newBlocks.forEach((b, i) => b.position = i)
+        setBlocks(newBlocks)
+        pushHistory(newBlocks)
+        scheduleAutosave()
+        reloadPreview()
+        break
+      }
+      case "moveDown": {
+        const idx = blocks.findIndex(b => b.id === blockId)
+        if (idx < 0 || idx >= blocks.length - 1) return
+        const newBlocks = [...blocks]
+        ;[newBlocks[idx], newBlocks[idx + 1]] = [newBlocks[idx + 1], newBlocks[idx]]
+        newBlocks.forEach((b, i) => b.position = i)
+        setBlocks(newBlocks)
+        pushHistory(newBlocks)
+        scheduleAutosave()
+        reloadPreview()
+        break
+      }
+      case "duplicate":
+        handleDuplicateBlock(blockId)
+        break
+      case "delete":
+        handleDeleteBlock(blockId)
+        break
+      case "settings":
+        setActiveBlockId(blockId)
+        setRightPanelOpen(true)
+        break
+    }
+  }, [blocks])
+
+  // Block reorder from drag
+  const handleBlockReorder = useCallback(async (blockId: string, newPosition: number) => {
+    const idx = blocks.findIndex(b => b.id === blockId)
+    if (idx < 0) return
+
+    const newBlocks = [...blocks]
+    const [moved] = newBlocks.splice(idx, 1)
+    const insertAt = newPosition > idx ? newPosition - 1 : newPosition
+    newBlocks.splice(insertAt, 0, moved)
+    newBlocks.forEach((b, i) => b.position = i)
+
+    setBlocks(newBlocks)
+    pushHistory(newBlocks)
+    scheduleAutosave()
+    reloadPreview()
+  }, [blocks])
+
+  // Auto-save debounced
+  const scheduleAutosave = useCallback(() => {
+    setIsDirty(true)
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    saveTimeoutRef.current = setTimeout(() => handleSave(), 2000)
   }, [])
 
-  // Send update to preview iframe
+  // Send update to preview
   const sendToPreview = useCallback((blockId: string, field: string, value: any) => {
     iframeRef.current?.contentWindow?.postMessage(
       { type: "update", blockId, field, value },
@@ -90,21 +302,11 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
     )
   }, [])
 
-  // Auto-save debounced
-  const scheduleAutosave = useCallback(() => {
-    setIsDirty(true)
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
-    saveTimeoutRef.current = setTimeout(() => {
-      handleSave()
-    }, 2000)
-  }, [])
-
   // Handle field change
   const handleFieldChange = useCallback((blockId: string, field: string, value: any) => {
-    setBlocks((prev) =>
-      prev.map((b) => {
+    setBlocks(prev =>
+      prev.map(b => {
         if (b.id !== blockId) return b
-        // Handle nested keys like "cta.label"
         if (field.includes(".")) {
           const [parent, child] = field.split(".")
           return { ...b, content: { ...b.content, [parent]: { ...b.content[parent], [child]: value } } }
@@ -118,8 +320,8 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
 
   // Handle style change
   const handleStyleChange = useCallback((blockId: string, field: string, value: any) => {
-    setBlocks((prev) =>
-      prev.map((b) => b.id !== blockId ? b : { ...b, styles: { ...b.styles, [field]: value } })
+    setBlocks(prev =>
+      prev.map(b => b.id !== blockId ? b : { ...b, styles: { ...b.styles, [field]: value } })
     )
     sendToPreview(blockId, field, value)
     scheduleAutosave()
@@ -135,7 +337,7 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
         await fetch(`${CMS_API}/blocks/${block.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ content: block.content, styles: block.styles }),
+          body: JSON.stringify({ content: block.content, styles: block.styles, position: block.position }),
         })
       }
       setIsDirty(false)
@@ -149,25 +351,19 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
   // Publish
   const handlePublish = useCallback(async () => {
     if (!page) return
+    await handleSave()
     const token = localStorage.getItem("cms-token") || ""
     await fetch(`${CMS_API}/pages/${page.id}/publish`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     })
-    setPage((p) => p ? { ...p, status: "published" } : p)
-  }, [page])
+    setPage(p => p ? { ...p, status: "published" } : p)
+  }, [page, handleSave])
 
-  // Scroll to block in preview
-  const scrollToBlock = useCallback((blockId: string) => {
+  // Select block from layers
+  const selectBlock = useCallback((blockId: string) => {
     setActiveBlockId(blockId)
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: "scrollToBlock", blockId },
-      "*"
-    )
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: "highlight", blockId },
-      "*"
-    )
+    iframeRef.current?.contentWindow?.postMessage({ type: "selectBlock", blockId }, "*")
   }, [])
 
   // Delete block
@@ -177,76 +373,165 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     })
-    setBlocks((prev) => prev.filter((b) => b.id !== blockId))
-    if (activeBlockId === blockId) setActiveBlockId(blocks[0]?.id || null)
+    const newBlocks = blocks.filter(b => b.id !== blockId)
+    setBlocks(newBlocks)
+    pushHistory(newBlocks)
+    if (activeBlockId === blockId) setActiveBlockId(null)
+    reloadPreview()
   }, [activeBlockId, blocks])
+
+  // Duplicate block
+  const handleDuplicateBlock = useCallback(async (blockId: string) => {
+    const block = blocks.find(b => b.id === blockId)
+    if (!block || !page) return
+    const token = localStorage.getItem("cms-token") || ""
+    const res = await fetch(`${CMS_API}/blocks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        pageId: page.id,
+        type: block.type,
+        content: block.content,
+        styles: block.styles,
+        position: block.position + 1,
+      }),
+    })
+    const newBlock = await res.json()
+    const newBlocks = [...blocks]
+    const idx = newBlocks.findIndex(b => b.id === blockId)
+    newBlocks.splice(idx + 1, 0, newBlock)
+    newBlocks.forEach((b, i) => b.position = i)
+    setBlocks(newBlocks)
+    pushHistory(newBlocks)
+    setActiveBlockId(newBlock.id)
+    reloadPreview()
+  }, [blocks, page])
 
   // Add block
   const handleAddBlock = useCallback(async (type: string) => {
     if (!page) return
     const token = localStorage.getItem("cms-token") || ""
+    const position = addAtPosition ?? blocks.length
     const res = await fetch(`${CMS_API}/blocks`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ pageId: page.id, type, content: {}, styles: {} }),
+      body: JSON.stringify({ pageId: page.id, type, content: {}, styles: {}, position }),
     })
     const block = await res.json()
-    setBlocks((prev) => [...prev, block])
+    const newBlocks = [...blocks]
+    newBlocks.splice(position, 0, block)
+    newBlocks.forEach((b, i) => b.position = i)
+    setBlocks(newBlocks)
+    pushHistory(newBlocks)
     setActiveBlockId(block.id)
-    setShowAddBlock(false)
-    // Reload preview
-    if (iframeRef.current) iframeRef.current.src = iframeRef.current.src
-  }, [page])
+    setLeftPanel("none")
+    setAddAtPosition(null)
+    reloadPreview()
+  }, [page, blocks, addAtPosition])
 
-  const activeBlock = blocks.find((b) => b.id === activeBlockId)
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey) { e.preventDefault(); handleUndo() }
+      if ((e.metaKey || e.ctrlKey) && e.key === "z" && e.shiftKey) { e.preventDefault(); handleRedo() }
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); handleSave() }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleUndo, handleRedo, handleSave])
+
+  const activeBlock = blocks.find(b => b.id === activeBlockId)
   const activeBlockDef = activeBlock ? blockDefMap[activeBlock.type] : null
 
   if (!page) {
     return (
       <div className="flex items-center justify-center h-screen bg-zinc-950">
-        <Loader2 className="animate-spin text-emerald-500" size={32} />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="animate-spin text-blue-500" size={28} />
+          <p className="text-xs text-zinc-500">Cargando editor...</p>
+        </div>
       </div>
     )
   }
 
-  const previewWidthPx = previewWidth === "full" ? "100%" : `${previewWidth}px`
+  const filteredCatalog = BLOCK_CATEGORIES.map(cat => ({
+    ...cat,
+    items: cat.items.filter(type => {
+      if (!catalogSearch) return true
+      const def = blockDefMap[type]
+      return def?.label.toLowerCase().includes(catalogSearch.toLowerCase()) ||
+        type.toLowerCase().includes(catalogSearch.toLowerCase())
+    }),
+  })).filter(cat => cat.items.length > 0)
 
   return (
-    <div className="flex flex-col h-screen bg-zinc-950 overflow-hidden">
-      {/* ── Top Bar ──────────────────────────────────────────────── */}
-      <div className="h-12 border-b border-zinc-800 flex items-center justify-between px-4 bg-zinc-900/50 shrink-0">
+    <div className="flex flex-col h-screen bg-zinc-950 overflow-hidden select-none">
+      {/* ══════════════════════════════════════════════════════════
+          TOP BAR
+      ═══════════════════════════════════════════════════════════ */}
+      <div className="h-12 border-b border-zinc-800/80 flex items-center justify-between px-3 bg-zinc-900/60 backdrop-blur-xl shrink-0 z-20">
         <div className="flex items-center gap-3">
-          <a href="/admin/paginas" className="text-zinc-400 hover:text-white transition-colors">
-            <ChevronLeft size={18} />
+          <a href="/admin/paginas" className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors text-xs">
+            <ChevronLeft size={14} />
+            <span className="hidden sm:inline">Paginas</span>
           </a>
-          <span className="text-sm font-medium text-white">{page.title}</span>
-          <span className="text-xs text-zinc-500 font-mono">/{page.slug}</span>
-          {isDirty && <span className="w-2 h-2 rounded-full bg-amber-500" title="Cambios sin guardar" />}
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Responsive toggles */}
-          <div className="flex items-center gap-1 mr-2 border-r border-zinc-800 pr-3">
-            <button onClick={() => setPreviewWidth("full")} className={`p-1.5 rounded ${previewWidth === "full" ? "text-emerald-400 bg-zinc-800" : "text-zinc-500 hover:text-zinc-300"}`}>
-              <Monitor size={14} />
-            </button>
-            <button onClick={() => setPreviewWidth(768)} className={`p-1.5 rounded ${previewWidth === 768 ? "text-emerald-400 bg-zinc-800" : "text-zinc-500 hover:text-zinc-300"}`}>
-              <Tablet size={14} />
-            </button>
-            <button onClick={() => setPreviewWidth(375)} className={`p-1.5 rounded ${previewWidth === 375 ? "text-emerald-400 bg-zinc-800" : "text-zinc-500 hover:text-zinc-300"}`}>
-              <Smartphone size={14} />
-            </button>
+          <div className="w-px h-5 bg-zinc-800" />
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-white">{page.title}</span>
+            <span className="text-[10px] text-zinc-500 font-mono bg-zinc-800/50 px-1.5 py-0.5 rounded">/{page.slug}</span>
           </div>
+          {isDirty && (
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-[10px] text-amber-500/80">Sin guardar</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1">
+          {/* Undo/Redo */}
+          <button onClick={handleUndo} disabled={historyIndex <= 0} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 disabled:opacity-30 transition-colors" title="Deshacer (Ctrl+Z)">
+            <Undo2 size={14} />
+          </button>
+          <button onClick={handleRedo} disabled={historyIndex >= history.length - 1} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 disabled:opacity-30 transition-colors" title="Rehacer (Ctrl+Shift+Z)">
+            <Redo2 size={14} />
+          </button>
+
+          <div className="w-px h-5 bg-zinc-800 mx-1" />
+
+          {/* Responsive toggles */}
+          <div className="flex items-center bg-zinc-800/40 rounded-lg p-0.5">
+            {([
+              { width: "full" as const, icon: Monitor, label: "Desktop" },
+              { width: 768 as const, icon: Tablet, label: "Tablet" },
+              { width: 375 as const, icon: Smartphone, label: "Movil" },
+            ] as const).map(({ width, icon: Icon, label }) => (
+              <button
+                key={label}
+                onClick={() => setPreviewWidth(width)}
+                className={`p-1.5 rounded-md transition-all ${previewWidth === width ? "text-blue-400 bg-zinc-700/50" : "text-zinc-500 hover:text-zinc-300"}`}
+                title={label}
+              >
+                <Icon size={14} />
+              </button>
+            ))}
+          </div>
+
+          <div className="w-px h-5 bg-zinc-800 mx-1" />
+
+          {/* Save & Publish */}
           <button
             onClick={handleSave}
             disabled={!isDirty || isSaving}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 disabled:opacity-40 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-700/60 text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-30 transition-all"
           >
             {isSaving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
             Guardar
           </button>
           <button
             onClick={handlePublish}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-lg shadow-blue-600/20"
           >
             <Globe size={12} />
             Publicar
@@ -254,87 +539,203 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
         </div>
       </div>
 
-      {/* ── Main Editor Area ─────────────────────────────────────── */}
+      {/* ══════════════════════════════════════════════════════════
+          MAIN EDITOR AREA
+      ═══════════════════════════════════════════════════════════ */}
       <div className="flex flex-1 overflow-hidden">
-        {/* ── Left Panel ──────────────────────────────────────────── */}
-        {panelOpen && (
-          <div className="w-[380px] shrink-0 border-r border-zinc-800 flex flex-col bg-zinc-900/30 overflow-hidden">
-            {/* Block Tree */}
-            <div className="border-b border-zinc-800 p-3 shrink-0">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Bloques</span>
-                <button onClick={() => setPanelOpen(false)} className="text-zinc-500 hover:text-zinc-300">
-                  <PanelLeftClose size={14} />
-                </button>
-              </div>
-              <div className="space-y-1 max-h-[240px] overflow-y-auto">
-                {blocks.map((block) => {
-                  const def = blockDefMap[block.type]
-                  const isActive = block.id === activeBlockId
-                  return (
-                    <button
-                      key={block.id}
-                      onClick={() => scrollToBlock(block.id)}
-                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-all ${
-                        isActive
-                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
-                          : "text-zinc-400 hover:bg-zinc-800 border border-transparent"
-                      }`}
-                    >
-                      <GripVertical size={12} className="text-zinc-600 shrink-0 cursor-grab" />
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-emerald-400" : "bg-zinc-600"}`} />
-                      <span className="truncate flex-1">{def?.label || block.type}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDeleteBlock(block.id) }}
-                        className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400"
-                      >
-                        <Trash2 size={11} />
-                      </button>
-                    </button>
-                  )
-                })}
-              </div>
-              <button
-                onClick={() => setShowAddBlock(true)}
-                className="w-full mt-2 flex items-center justify-center gap-1.5 px-3 py-2 text-xs text-zinc-400 hover:text-emerald-400 border border-dashed border-zinc-700 hover:border-emerald-500/50 rounded-lg transition-colors"
-              >
-                <Plus size={12} /> Agregar Bloque
+
+        {/* ── LEFT SIDEBAR (Tools) ─────────────────────────────── */}
+        <div className="w-12 shrink-0 border-r border-zinc-800/60 bg-zinc-900/40 flex flex-col items-center py-2 gap-1">
+          <button
+            onClick={() => setLeftPanel(leftPanel === "layers" ? "none" : "layers")}
+            className={`p-2 rounded-lg transition-all ${leftPanel === "layers" ? "bg-blue-600/20 text-blue-400" : "text-zinc-500 hover:text-white hover:bg-zinc-800"}`}
+            title="Capas"
+          >
+            <Layers size={18} />
+          </button>
+          <button
+            onClick={() => { setLeftPanel(leftPanel === "catalog" ? "none" : "catalog"); setAddAtPosition(null) }}
+            className={`p-2 rounded-lg transition-all ${leftPanel === "catalog" ? "bg-blue-600/20 text-blue-400" : "text-zinc-500 hover:text-white hover:bg-zinc-800"}`}
+            title="Agregar bloque"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+
+        {/* ── LEFT PANEL (Layers/Catalog) ──────────────────────── */}
+        {leftPanel !== "none" && (
+          <div className="w-[280px] shrink-0 border-r border-zinc-800/60 bg-zinc-900/60 backdrop-blur-xl flex flex-col overflow-hidden animate-in slide-in-from-left-2 duration-200">
+            {/* Panel header */}
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-zinc-800/60">
+              <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                {leftPanel === "layers" ? "Capas" : "Agregar Bloque"}
+              </span>
+              <button onClick={() => setLeftPanel("none")} className="p-1 text-zinc-500 hover:text-white rounded-md hover:bg-zinc-800 transition-colors">
+                <X size={14} />
               </button>
             </div>
 
-            {/* Add Block Modal */}
-            {showAddBlock && (
-              <div className="border-b border-zinc-800 p-3 shrink-0 bg-zinc-900">
-                <p className="text-xs font-semibold text-zinc-400 mb-2">Selecciona un tipo de bloque</p>
-                <div className="grid grid-cols-2 gap-1.5 max-h-[300px] overflow-y-auto">
-                  {blockDefinitions.map((def) => (
+            {/* ── LAYERS PANEL ── */}
+            {leftPanel === "layers" && (
+              <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+                {blocks.map((block, index) => {
+                  const def = blockDefMap[block.type]
+                  const isActive = block.id === activeBlockId
+                  const IconComp = BLOCK_ICON_MAP[def?.icon || ""] || Layout
+                  return (
                     <button
-                      key={def.type}
-                      onClick={() => handleAddBlock(def.type)}
-                      className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-zinc-700 hover:border-emerald-500/50 hover:bg-zinc-800 text-zinc-400 hover:text-emerald-400 transition-colors"
+                      key={block.id}
+                      onClick={() => selectBlock(block.id)}
+                      className={`group w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left transition-all ${
+                        isActive
+                          ? "bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/30"
+                          : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                      }`}
                     >
-                      <span className="text-[10px] text-center leading-tight">{def.label}</span>
+                      <GripVertical size={11} className="text-zinc-600 shrink-0 opacity-0 group-hover:opacity-100 cursor-grab transition-opacity" />
+                      <IconComp size={14} className={`shrink-0 ${isActive ? "text-blue-400" : "text-zinc-500"}`} />
+                      <span className="truncate flex-1 text-xs font-medium">{def?.label || block.type}</span>
+                      <span className="text-[9px] text-zinc-600 font-mono">{index + 1}</span>
                     </button>
-                  ))}
-                </div>
-                <button onClick={() => setShowAddBlock(false)} className="w-full mt-2 text-xs text-zinc-500 hover:text-zinc-300 py-1">
-                  Cancelar
+                  )
+                })}
+                <button
+                  onClick={() => { setLeftPanel("catalog"); setAddAtPosition(null) }}
+                  className="w-full flex items-center justify-center gap-1.5 mt-2 px-3 py-2.5 text-xs text-zinc-500 hover:text-blue-400 border border-dashed border-zinc-800 hover:border-blue-500/40 rounded-lg transition-all"
+                >
+                  <Plus size={12} /> Agregar bloque
                 </button>
               </div>
             )}
 
-            {/* Property Panel */}
-            {activeBlock && activeBlockDef && (
+            {/* ── BLOCK CATALOG ── */}
+            {leftPanel === "catalog" && (
               <div className="flex-1 overflow-y-auto">
+                {/* Search */}
+                <div className="p-2 border-b border-zinc-800/60">
+                  <div className="relative">
+                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <input
+                      type="text"
+                      value={catalogSearch}
+                      onChange={e => setCatalogSearch(e.target.value)}
+                      placeholder="Buscar bloques..."
+                      className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg pl-8 pr-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none transition-colors"
+                    />
+                  </div>
+                  {addAtPosition !== null && (
+                    <p className="text-[10px] text-blue-400 mt-1.5 px-1">
+                      Se insertara en posicion {addAtPosition + 1}
+                    </p>
+                  )}
+                </div>
+
+                {/* Categories */}
+                <div className="p-2 space-y-3">
+                  {filteredCatalog.map(cat => (
+                    <div key={cat.name}>
+                      <div className="flex items-center gap-2 px-1 mb-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: cat.color }} />
+                        <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">{cat.name}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1">
+                        {cat.items.map(type => {
+                          const def = blockDefMap[type]
+                          if (!def) return null
+                          const IconComp = BLOCK_ICON_MAP[def.icon] || Layout
+                          return (
+                            <button
+                              key={type}
+                              onClick={() => handleAddBlock(type)}
+                              className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-zinc-800/60 hover:border-blue-500/40 hover:bg-blue-500/5 text-zinc-400 hover:text-blue-400 transition-all group"
+                            >
+                              <div className="w-8 h-8 rounded-lg bg-zinc-800/60 group-hover:bg-blue-500/10 flex items-center justify-center transition-colors">
+                                <IconComp size={16} />
+                              </div>
+                              <span className="text-[10px] font-medium text-center leading-tight">{def.label}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════
+            CANVAS AREA
+        ═══════════════════════════════════════════════════════ */}
+        <div className="flex-1 bg-zinc-950 flex items-start justify-center overflow-auto relative">
+          {/* Canvas background pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }} />
+
+          <div
+            className="relative bg-white shadow-2xl overflow-hidden transition-all duration-500 ease-out mx-auto my-4"
+            style={{
+              width: previewWidth === "full" ? "100%" : `${previewWidth}px`,
+              maxWidth: "100%",
+              height: previewWidth === "full" ? "calc(100vh - 96px)" : "calc(100vh - 110px)",
+              borderRadius: previewWidth === "full" ? 0 : "12px",
+              margin: previewWidth === "full" ? 0 : undefined,
+            }}
+          >
+            {/* Loading overlay */}
+            {!previewReady && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/90 z-10 gap-3">
+                <Loader2 className="animate-spin text-blue-500" size={24} />
+                <p className="text-xs text-zinc-500">Cargando preview...</p>
+              </div>
+            )}
+
+            <iframe
+              ref={iframeRef}
+              src={`/preview/${slug}`}
+              className="w-full h-full border-0 bg-white"
+              title="Preview"
+            />
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════
+            RIGHT PANEL (Properties)
+        ═══════════════════════════════════════════════════════ */}
+        {rightPanelOpen && (
+          <div className="w-[320px] shrink-0 border-l border-zinc-800/60 bg-zinc-900/60 backdrop-blur-xl flex flex-col overflow-hidden">
+            {/* Panel header */}
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-zinc-800/60 shrink-0">
+              {activeBlock && activeBlockDef ? (
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const IconComp = BLOCK_ICON_MAP[activeBlockDef.icon] || Layout
+                    return <IconComp size={14} className="text-blue-400" />
+                  })()}
+                  <span className="text-xs font-semibold text-zinc-300">{activeBlockDef.label}</span>
+                </div>
+              ) : (
+                <span className="text-xs text-zinc-500">Selecciona un bloque</span>
+              )}
+              <button onClick={() => setRightPanelOpen(false)} className="p-1 text-zinc-500 hover:text-white rounded-md hover:bg-zinc-800 transition-colors">
+                <PanelRightClose size={14} />
+              </button>
+            </div>
+
+            {activeBlock && activeBlockDef ? (
+              <>
                 {/* Tabs */}
-                <div className="flex border-b border-zinc-800 sticky top-0 bg-zinc-900/80 backdrop-blur-sm z-10">
-                  {(["content", "design", "advanced"] as const).map((tab) => (
+                <div className="flex border-b border-zinc-800/60 shrink-0">
+                  {(["content", "design", "advanced"] as const).map(tab => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex-1 py-2.5 text-[11px] font-semibold uppercase tracking-wider transition-all ${
                         activeTab === tab
-                          ? "text-emerald-400 border-b-2 border-emerald-400"
+                          ? "text-blue-400 border-b-2 border-blue-400 bg-blue-500/5"
                           : "text-zinc-500 hover:text-zinc-300"
                       }`}
                     >
@@ -344,100 +745,101 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
                 </div>
 
                 {/* Fields */}
-                <div className="p-3 space-y-3">
-                  {(activeTab === "content" ? activeBlockDef.content : activeTab === "design" ? activeBlockDef.design : activeBlockDef.advanced).map((field) => (
-                    <FieldControl
-                      key={field.key}
-                      field={field}
-                      value={activeTab === "design" ? activeBlock.styles[field.key] : getNestedValue(activeBlock.content, field.key)}
-                      onChange={(value) => {
-                        if (activeTab === "design") {
-                          handleStyleChange(activeBlock.id, field.key, value)
-                        } else {
-                          handleFieldChange(activeBlock.id, field.key, value)
-                        }
-                      }}
-                    />
-                  ))}
-                  {((activeTab === "content" ? activeBlockDef.content : activeTab === "design" ? activeBlockDef.design : activeBlockDef.advanced).length === 0) && (
-                    <p className="text-xs text-zinc-600 text-center py-8">
-                      Este bloque no tiene propiedades editables en esta seccion
-                    </p>
+                <div className="flex-1 overflow-y-auto">
+                  <div className="p-3 space-y-3">
+                    {(activeTab === "content" ? activeBlockDef.content : activeTab === "design" ? activeBlockDef.design : activeBlockDef.advanced).map(field => (
+                      <FieldControl
+                        key={field.key}
+                        field={field}
+                        value={activeTab === "design" ? activeBlock.styles[field.key] : getNestedValue(activeBlock.content, field.key)}
+                        onChange={value => {
+                          if (activeTab === "design") {
+                            handleStyleChange(activeBlock.id, field.key, value)
+                          } else {
+                            handleFieldChange(activeBlock.id, field.key, value)
+                          }
+                        }}
+                      />
+                    ))}
+                    {(activeTab === "content" ? activeBlockDef.content : activeTab === "design" ? activeBlockDef.design : activeBlockDef.advanced).length === 0 && (
+                      <div className="text-center py-10">
+                        <p className="text-xs text-zinc-600">Sin propiedades editables</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Visibility controls in design tab */}
+                  {activeTab === "design" && (
+                    <div className="p-3 border-t border-zinc-800/60">
+                      <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Visibilidad</p>
+                      <div className="flex gap-3">
+                        {(["desktop", "tablet", "mobile"] as const).map(device => (
+                          <label key={device} className="flex items-center gap-1.5 text-xs text-zinc-400 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={activeBlock.visibility?.[device] ?? true}
+                              onChange={e => {
+                                setBlocks(prev =>
+                                  prev.map(b =>
+                                    b.id !== activeBlock.id ? b : { ...b, visibility: { ...b.visibility, [device]: e.target.checked } }
+                                  )
+                                )
+                                scheduleAutosave()
+                              }}
+                              className="accent-blue-500 rounded"
+                            />
+                            {device === "desktop" ? "Desktop" : device === "tablet" ? "Tablet" : "Movil"}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
-
-                {/* Visibility */}
-                {activeTab === "design" && (
-                  <div className="p-3 border-t border-zinc-800">
-                    <p className="text-xs font-semibold text-zinc-400 mb-2">Visibilidad</p>
-                    <div className="flex gap-3">
-                      {(["desktop", "tablet", "mobile"] as const).map((device) => (
-                        <label key={device} className="flex items-center gap-1.5 text-xs text-zinc-400">
-                          <input
-                            type="checkbox"
-                            checked={activeBlock.visibility[device]}
-                            onChange={(e) => {
-                              setBlocks((prev) =>
-                                prev.map((b) =>
-                                  b.id !== activeBlock.id ? b : { ...b, visibility: { ...b.visibility, [device]: e.target.checked } }
-                                )
-                              )
-                              scheduleAutosave()
-                            }}
-                            className="accent-emerald-500"
-                          />
-                          {device === "desktop" ? "Desktop" : device === "tablet" ? "Tablet" : "Movil"}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-zinc-800/40 flex items-center justify-center">
+                  <MousePointerClick size={24} className="text-zinc-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-zinc-400 mb-1">Selecciona un bloque</p>
+                  <p className="text-xs text-zinc-600 leading-relaxed">
+                    Haz clic en cualquier bloque del canvas para editar sus propiedades.
+                    Doble clic para edicion inline.
+                  </p>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* ── Toggle Panel Button ─────────────────────────────────── */}
-        {!panelOpen && (
+        {/* Toggle right panel button */}
+        {!rightPanelOpen && (
           <button
-            onClick={() => setPanelOpen(true)}
-            className="absolute left-0 top-16 z-10 p-2 bg-zinc-800 border border-zinc-700 rounded-r-lg text-zinc-400 hover:text-white"
+            onClick={() => setRightPanelOpen(true)}
+            className="absolute right-0 top-20 z-10 p-2 bg-zinc-800/80 backdrop-blur border border-zinc-700/60 rounded-l-lg text-zinc-400 hover:text-white transition-colors"
           >
-            <PanelLeft size={14} />
+            <PanelRight size={14} />
           </button>
         )}
-
-        {/* ── Preview (Right Panel) ───────────────────────────────── */}
-        <div className="flex-1 bg-zinc-950 flex items-start justify-center overflow-hidden p-4">
-          <div
-            className="bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
-            style={{ width: previewWidthPx, height: "calc(100vh - 80px)" }}
-          >
-            {!previewReady && (
-              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/80 z-10">
-                <Loader2 className="animate-spin text-emerald-500" size={24} />
-              </div>
-            )}
-            <iframe
-              ref={iframeRef}
-              src={`/preview/${slug}`}
-              className="w-full h-full border-0"
-              title="Preview"
-            />
-          </div>
-        </div>
       </div>
 
-      {/* ── Bottom Bar ────────────────────────────────────────────── */}
-      <div className="h-10 border-t border-zinc-800 flex items-center justify-between px-4 bg-zinc-900/50 shrink-0">
+      {/* ══════════════════════════════════════════════════════════
+          STATUS BAR
+      ═══════════════════════════════════════════════════════════ */}
+      <div className="h-8 border-t border-zinc-800/60 flex items-center justify-between px-4 bg-zinc-900/40 shrink-0">
         <div className="flex items-center gap-3">
-          <span className={`w-2 h-2 rounded-full ${page.status === "published" ? "bg-emerald-500" : "bg-amber-500"}`} />
-          <span className="text-xs text-zinc-400">
-            {page.status === "published" ? "Publicado" : "Borrador"}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${page.status === "published" ? "bg-emerald-500" : "bg-amber-500"}`} />
+            <span className="text-[10px] text-zinc-500 font-medium">
+              {page.status === "published" ? "Publicado" : "Borrador"}
+            </span>
+          </div>
         </div>
-        <div className="text-xs text-zinc-600">
-          {blocks.length} bloques
+        <div className="flex items-center gap-4 text-[10px] text-zinc-600">
+          <span>{blocks.length} bloques</span>
+          <span>Doble clic = edicion inline</span>
+          <span>Ctrl+Z = deshacer</span>
         </div>
       </div>
     </div>
@@ -445,7 +847,7 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
 }
 
 // ═══════════════════════════════════════════════════════════════
-// FIELD CONTROL COMPONENT
+// FIELD CONTROL
 // ═══════════════════════════════════════════════════════════════
 
 function FieldControl({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
@@ -453,13 +855,13 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "text":
       return (
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1">{field.label}</label>
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
           <input
             type="text"
             value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             placeholder={field.placeholder}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder:text-zinc-600 focus:border-emerald-500 focus:outline-none"
+            className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 transition-all"
           />
         </div>
       )
@@ -467,12 +869,12 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "textarea":
       return (
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1">{field.label}</label>
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
           <textarea
             value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             rows={3}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder:text-zinc-600 focus:border-emerald-500 focus:outline-none resize-none"
+            className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 resize-none transition-all"
           />
         </div>
       )
@@ -480,14 +882,14 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "number":
       return (
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1">{field.label}</label>
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
           <input
             type="number"
             value={value ?? field.defaultValue ?? ""}
-            onChange={(e) => onChange(Number(e.target.value))}
+            onChange={e => onChange(Number(e.target.value))}
             min={field.min}
             max={field.max}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:border-emerald-500 focus:outline-none"
+            className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-2 text-xs text-white focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 transition-all"
           />
         </div>
       )
@@ -495,17 +897,17 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "slider":
       return (
         <div>
-          <div className="flex justify-between mb-1">
-            <label className="text-xs font-medium text-zinc-400">{field.label}</label>
-            <span className="text-xs text-zinc-500">{value ?? field.defaultValue ?? 0}px</span>
+          <div className="flex justify-between mb-1.5">
+            <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">{field.label}</label>
+            <span className="text-[10px] text-zinc-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">{value ?? field.defaultValue ?? 0}px</span>
           </div>
           <input
             type="range"
             value={value ?? field.defaultValue ?? 0}
-            onChange={(e) => onChange(Number(e.target.value))}
+            onChange={e => onChange(Number(e.target.value))}
             min={field.min ?? 0}
             max={field.max ?? 100}
-            className="w-full accent-emerald-500 h-1"
+            className="w-full accent-blue-500 h-1.5 rounded-full"
           />
         </div>
       )
@@ -513,20 +915,22 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "color":
       return (
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1">{field.label}</label>
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
           <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={value || "#000000"}
-              onChange={(e) => onChange(e.target.value)}
-              className="w-8 h-8 rounded border border-zinc-700 cursor-pointer bg-transparent"
-            />
+            <div className="relative">
+              <input
+                type="color"
+                value={value || "#000000"}
+                onChange={e => onChange(e.target.value)}
+                className="w-9 h-9 rounded-lg border border-zinc-700/60 cursor-pointer bg-transparent"
+              />
+            </div>
             <input
               type="text"
               value={value || ""}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={e => onChange(e.target.value)}
               placeholder="#000000"
-              className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:border-emerald-500 focus:outline-none"
+              className="flex-1 bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-2 text-xs text-white font-mono focus:border-blue-500/50 focus:outline-none transition-all"
             />
           </div>
         </div>
@@ -535,14 +939,14 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     case "select":
       return (
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1">{field.label}</label>
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
           <select
             value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:border-emerald-500 focus:outline-none"
+            onChange={e => onChange(e.target.value)}
+            className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-2 text-xs text-white focus:border-blue-500/50 focus:outline-none transition-all"
           >
             <option value="">Seleccionar...</option>
-            {field.options?.map((opt) => (
+            {field.options?.map(opt => (
               <option key={opt} value={opt}>{opt}</option>
             ))}
           </select>
@@ -551,14 +955,18 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
 
     case "toggle":
       return (
-        <label className="flex items-center justify-between py-1">
-          <span className="text-xs font-medium text-zinc-400">{field.label}</span>
-          <input
-            type="checkbox"
-            checked={value ?? field.defaultValue ?? false}
-            onChange={(e) => onChange(e.target.checked)}
-            className="accent-emerald-500"
-          />
+        <label className="flex items-center justify-between py-1.5 cursor-pointer group">
+          <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">{field.label}</span>
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={value ?? field.defaultValue ?? false}
+              onChange={e => onChange(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-8 h-4.5 bg-zinc-700 rounded-full peer-checked:bg-blue-600 transition-colors" />
+            <div className="absolute top-0.5 left-0.5 w-3.5 h-3.5 bg-white rounded-full shadow peer-checked:translate-x-3.5 transition-transform" />
+          </div>
         </label>
       )
 
@@ -576,11 +984,13 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
 
 function ArrayFieldControl({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
   const items = Array.isArray(value) ? value : []
+  const [expanded, setExpanded] = useState<number | null>(null)
 
   const addItem = () => {
     const newItem: Record<string, any> = {}
-    field.arrayFields?.forEach((f) => { newItem[f.key] = "" })
+    field.arrayFields?.forEach(f => { newItem[f.key] = "" })
     onChange([...items, newItem])
+    setExpanded(items.length)
   }
 
   const updateItem = (index: number, key: string, val: any) => {
@@ -592,42 +1002,63 @@ function ArrayFieldControl({ field, value, onChange }: { field: FieldDef; value:
 
   const removeItem = (index: number) => {
     onChange(items.filter((_: any, i: number) => i !== index))
+    if (expanded === index) setExpanded(null)
   }
 
   return (
     <div>
-      <label className="block text-xs font-semibold text-zinc-400 mb-2">{field.label}</label>
-      <div className="space-y-2">
-        {items.map((item: any, i: number) => (
-          <div key={i} className="p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/50 space-y-1.5">
-            {field.arrayFields?.map((subField) => (
-              <div key={subField.key}>
-                <label className="block text-[10px] text-zinc-500 mb-0.5">{subField.label}</label>
-                {subField.type === "textarea" ? (
-                  <textarea
-                    value={item[subField.key] || ""}
-                    onChange={(e) => updateItem(i, subField.key, e.target.value)}
-                    rows={2}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none resize-none"
-                  />
-                ) : (
-                  <input
-                    type={subField.type === "number" ? "number" : "text"}
-                    value={item[subField.key] || ""}
-                    onChange={(e) => updateItem(i, subField.key, subField.type === "number" ? Number(e.target.value) : e.target.value)}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none"
-                  />
-                )}
-              </div>
-            ))}
-            <button onClick={() => removeItem(i)} className="text-[10px] text-red-400 hover:text-red-300">
-              Eliminar
-            </button>
-          </div>
-        ))}
+      <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">{field.label}</label>
+      <div className="space-y-1">
+        {items.map((item: any, i: number) => {
+          const isOpen = expanded === i
+          const preview = Object.values(item).find(v => typeof v === "string" && v.length > 0) as string || `Item ${i + 1}`
+          return (
+            <div key={i} className="rounded-lg border border-zinc-800/60 overflow-hidden">
+              <button
+                onClick={() => setExpanded(isOpen ? null : i)}
+                className="w-full flex items-center justify-between px-2.5 py-2 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/30 transition-all"
+              >
+                <span className="truncate flex-1 text-left">{typeof preview === "string" ? preview.slice(0, 40) : `Item ${i + 1}`}</span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={e => { e.stopPropagation(); removeItem(i) }}
+                    className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 size={11} />
+                  </button>
+                  {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                </div>
+              </button>
+              {isOpen && (
+                <div className="px-2.5 pb-2.5 space-y-2 border-t border-zinc-800/40">
+                  {field.arrayFields?.map(subField => (
+                    <div key={subField.key} className="mt-2">
+                      <label className="block text-[9px] text-zinc-600 mb-1">{subField.label}</label>
+                      {subField.type === "textarea" ? (
+                        <textarea
+                          value={item[subField.key] || ""}
+                          onChange={e => updateItem(i, subField.key, e.target.value)}
+                          rows={2}
+                          className="w-full bg-zinc-900/60 border border-zinc-800/60 rounded-md px-2 py-1.5 text-xs text-white focus:border-blue-500/50 focus:outline-none resize-none"
+                        />
+                      ) : (
+                        <input
+                          type={subField.type === "number" ? "number" : "text"}
+                          value={item[subField.key] || ""}
+                          onChange={e => updateItem(i, subField.key, subField.type === "number" ? Number(e.target.value) : e.target.value)}
+                          className="w-full bg-zinc-900/60 border border-zinc-800/60 rounded-md px-2 py-1.5 text-xs text-white focus:border-blue-500/50 focus:outline-none"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
-      <button onClick={addItem} className="mt-1.5 text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
-        <Plus size={10} /> Agregar {field.label.toLowerCase().replace(/s$/, "")}
+      <button onClick={addItem} className="mt-2 w-full flex items-center justify-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 py-2 border border-dashed border-zinc-800 hover:border-blue-500/40 rounded-lg transition-all">
+        <Plus size={12} /> Agregar
       </button>
     </div>
   )

@@ -8,13 +8,15 @@ import { CartDrawer } from "@/components/shop/cart/CartDrawer";
 export function CartButton() {
   const [mounted, setMounted] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const getTotalItems = useCartStore((s) => s.getTotalItems);
+  const items = useCartStore((s) => s.items);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const totalItems = mounted ? getTotalItems() : 0;
+  const totalItems = mounted
+    ? items.reduce((sum, item) => sum + item.cantidad, 0)
+    : 0;
 
   return (
     <>
