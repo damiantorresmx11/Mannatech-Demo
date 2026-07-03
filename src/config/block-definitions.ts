@@ -1,6 +1,6 @@
 export interface FieldDef {
   key: string
-  type: "text" | "textarea" | "number" | "slider" | "color" | "select" | "toggle" | "media" | "array"
+  type: "text" | "textarea" | "number" | "slider" | "color" | "select" | "toggle" | "media" | "icon" | "array"
   label: string
   placeholder?: string
   options?: string[]
@@ -225,7 +225,7 @@ export const blockDefinitions: BlockDefinition[] = [
         arrayFields: [
           { key: "name", type: "text", label: "Nombre" },
           { key: "href", type: "text", label: "URL" },
-          { key: "icon", type: "select", label: "Icono", options: ["Sparkles", "TrendingUp", "HeartPulse", "Dumbbell", "Droplets", "Package", "ShoppingBag"] },
+          { key: "icon", type: "icon", label: "Icono" },
         ],
       },
     ],
@@ -263,7 +263,7 @@ export const blockDefinitions: BlockDefinition[] = [
       {
         key: "benefits", type: "array", label: "Beneficios",
         arrayFields: [
-          { key: "icon", type: "select", label: "Icono", options: ["Heart", "Brain", "Smile", "Shield", "Leaf"] },
+          { key: "icon", type: "icon", label: "Icono" },
           { key: "label", type: "text", label: "Titulo" },
           { key: "desc", type: "text", label: "Descripcion" },
         ],
@@ -288,7 +288,7 @@ export const blockDefinitions: BlockDefinition[] = [
       {
         key: "benefits", type: "array", label: "Beneficios",
         arrayFields: [
-          { key: "icon", type: "select", label: "Icono", options: ["Radio", "Shield", "Brain", "HeartPulse", "Sparkles"] },
+          { key: "icon", type: "icon", label: "Icono" },
           { key: "title", type: "text", label: "Titulo" },
           { key: "desc", type: "text", label: "Descripcion" },
         ],
@@ -323,7 +323,7 @@ export const blockDefinitions: BlockDefinition[] = [
       {
         key: "benefits", type: "array", label: "Beneficios",
         arrayFields: [
-          { key: "icon", type: "select", label: "Icono", options: ["Heart", "Percent", "Truck", "ShieldCheck"] },
+          { key: "icon", type: "icon", label: "Icono" },
           { key: "text", type: "text", label: "Texto" },
         ],
       },
@@ -344,7 +344,7 @@ export const blockDefinitions: BlockDefinition[] = [
           { key: "name", type: "text", label: "Nombre" },
           { key: "desc", type: "text", label: "Descripcion" },
           { key: "href", type: "text", label: "URL" },
-          { key: "icon", type: "select", label: "Icono", options: ["HeartPulse", "Dumbbell", "Sparkles", "Package"] },
+          { key: "icon", type: "icon", label: "Icono" },
         ],
       },
     ],
@@ -389,7 +389,7 @@ export const blockDefinitions: BlockDefinition[] = [
           { key: "year", type: "text", label: "Ano" },
           { key: "title", type: "text", label: "Titulo" },
           { key: "desc", type: "textarea", label: "Descripcion" },
-          { key: "icon", type: "select", label: "Icono", options: ["Star", "Award", "Globe", "Users", "FlaskConical", "Leaf"] },
+          { key: "icon", type: "icon", label: "Icono" },
         ],
       },
     ],

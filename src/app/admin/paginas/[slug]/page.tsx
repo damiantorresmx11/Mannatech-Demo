@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { blockDefMap, type FieldDef } from "@/config/block-definitions"
 import { blockDefinitions } from "@/config/block-definitions"
+import { ICON_LIBRARY, ICON_MAP, ICON_CATEGORIES } from "@/config/icon-library"
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -970,6 +971,9 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
         </label>
       )
 
+    case "icon":
+      return <IconPickerControl field={field} value={value} onChange={onChange} />
+
     case "media":
       return <MediaFieldControl field={field} value={value} onChange={onChange} />
 
@@ -979,6 +983,125 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
     default:
       return null
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MEDIA FIELD CONTROL (Upload + Gallery)
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// ICON PICKER CONTROL
+// ═══════════════════════════════════════════════════════════════
+
+function IconPickerControl({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("")
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+
+  const CurrentIcon = value ? ICON_MAP[value] : null
+
+  const filtered = ICON_LIBRARY.filter(icon => {
+    if (search) return icon.name.toLowerCase().includes(search.toLowerCase())
+    if (activeCategory) return icon.category === activeCategory
+    return true
+  })
+
+  return (
+    <div>
+      <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
+
+      {/* Current selection */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-zinc-800/60 border border-zinc-700/40 rounded-lg text-xs text-white hover:border-blue-500/50 transition-all"
+      >
+        {CurrentIcon ? (
+          <>
+            <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <CurrentIcon size={16} className="text-blue-400" />
+            </div>
+            <span className="flex-1 text-left">{value}</span>
+          </>
+        ) : (
+          <>
+            <div className="w-7 h-7 rounded-lg bg-zinc-700/50 flex items-center justify-center">
+              <Search size={14} className="text-zinc-500" />
+            </div>
+            <span className="flex-1 text-left text-zinc-500">Elegir icono...</span>
+          </>
+        )}
+        <ChevronDown size={12} className={`text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Picker dropdown */}
+      {open && (
+        <div className="mt-1.5 border border-zinc-700/60 rounded-xl bg-zinc-900 overflow-hidden shadow-xl">
+          {/* Search */}
+          <div className="p-2 border-b border-zinc-800/60">
+            <div className="relative">
+              <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => { setSearch(e.target.value); setActiveCategory(null) }}
+                placeholder="Buscar icono..."
+                className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg pl-7 pr-3 py-1.5 text-xs text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none"
+                autoFocus
+              />
+            </div>
+          </div>
+
+          {/* Category tabs */}
+          {!search && (
+            <div className="flex flex-wrap gap-1 p-2 border-b border-zinc-800/60">
+              <button
+                onClick={() => setActiveCategory(null)}
+                className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider transition-colors ${!activeCategory ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
+              >
+                Todos
+              </button>
+              {ICON_CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider transition-colors ${activeCategory === cat ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Icon grid */}
+          <div className="grid grid-cols-6 gap-1 p-2 max-h-[240px] overflow-y-auto">
+            {filtered.map(icon => {
+              const Icon = icon.component
+              const isSelected = value === icon.name
+              return (
+                <button
+                  key={icon.name}
+                  onClick={() => { onChange(icon.name); setOpen(false); setSearch("") }}
+                  title={icon.name}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+                    isSelected
+                      ? "bg-blue-500/20 ring-1 ring-blue-500/40 text-blue-400"
+                      : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                  }`}
+                >
+                  <Icon size={18} />
+                  <span className="text-[7px] leading-tight truncate w-full text-center">{icon.name}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {filtered.length === 0 && (
+            <p className="text-xs text-zinc-600 text-center py-4">No se encontraron iconos</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ═══════════════════════════════════════════════════════════════
