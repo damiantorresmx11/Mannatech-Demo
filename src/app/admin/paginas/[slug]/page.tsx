@@ -1173,26 +1173,14 @@ function ArrayFieldControl({ field, value, onChange }: { field: FieldDef; value:
                 </div>
               </button>
               {isOpen && (
-                <div className="px-2.5 pb-2.5 space-y-2 border-t border-zinc-800/40">
+                <div className="px-2.5 pb-2.5 space-y-2 border-t border-zinc-800/40 mt-2">
                   {field.arrayFields?.map(subField => (
-                    <div key={subField.key} className="mt-2">
-                      <label className="block text-[9px] text-zinc-600 mb-1">{subField.label}</label>
-                      {subField.type === "textarea" ? (
-                        <textarea
-                          value={item[subField.key] || ""}
-                          onChange={e => updateItem(i, subField.key, e.target.value)}
-                          rows={2}
-                          className="w-full bg-zinc-900/60 border border-zinc-800/60 rounded-md px-2 py-1.5 text-xs text-white focus:border-blue-500/50 focus:outline-none resize-none"
-                        />
-                      ) : (
-                        <input
-                          type={subField.type === "number" ? "number" : "text"}
-                          value={item[subField.key] || ""}
-                          onChange={e => updateItem(i, subField.key, subField.type === "number" ? Number(e.target.value) : e.target.value)}
-                          className="w-full bg-zinc-900/60 border border-zinc-800/60 rounded-md px-2 py-1.5 text-xs text-white focus:border-blue-500/50 focus:outline-none"
-                        />
-                      )}
-                    </div>
+                    <FieldControl
+                      key={subField.key}
+                      field={subField}
+                      value={item[subField.key]}
+                      onChange={(val) => updateItem(i, subField.key, val)}
+                    />
                   ))}
                 </div>
               )}
