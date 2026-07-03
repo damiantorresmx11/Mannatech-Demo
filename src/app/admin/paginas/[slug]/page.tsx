@@ -28,7 +28,7 @@ interface PageData {
   blocks: Block[]
 }
 
-const CMS_API = process.env.NEXT_PUBLIC_CMS_API_URL || "http://127.0.0.1:3002"
+const CMS_API = "/api/cms-proxy"
 const SITE_ID = "e1d8c609-d3ad-4a15-ab8c-18d031f10a09"
 
 // ═══════════════════════════════════════════════════════════════
