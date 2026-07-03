@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import { getCMSPageForPreview } from "@/lib/cms-api"
 import { PreviewClient } from "@/components/cms/PreviewClient"
+import { AnimatedBlock } from "@/components/cms/AnimatedBlock"
 import { COMPANY_COOKIE } from "@/config/companies"
 import type { CompanyId } from "@/lib/types"
 import {
@@ -67,36 +68,40 @@ export default async function PreviewPage({ params }: Props) {
         {page.blocks.map((block) => {
           const Component = COMPONENT_MAP[block.type]
 
+          const anim = block.styles?.animation
+
           // Special cases that need props
           if (block.type === "featuredGrid") {
             return (
-              <div key={block.id} data-block-id={block.id} data-block-type={block.type}>
+              <AnimatedBlock key={block.id} blockId={block.id} blockType={block.type} animation={anim}>
                 <FeaturedGrid productos={productosDestacados} allProductos={todosProductos} />
-              </div>
+              </AnimatedBlock>
             )
           }
           if (block.type === "categories") {
             return (
-              <div key={block.id} data-block-id={block.id} data-block-type={block.type}>
+              <AnimatedBlock key={block.id} blockId={block.id} blockType={block.type} animation={anim}>
                 <Categories categorias={categorias} cms={block.content} />
-              </div>
+              </AnimatedBlock>
             )
           }
 
           // Standard components — pass CMS content
           if (Component) {
             return (
-              <div key={block.id} data-block-id={block.id} data-block-type={block.type}>
+              <AnimatedBlock key={block.id} blockId={block.id} blockType={block.type} animation={anim}>
                 <Component cms={block.content} />
-              </div>
+              </AnimatedBlock>
             )
           }
 
           // Unknown block type
           return (
-            <div key={block.id} data-block-id={block.id} data-block-type={block.type} className="py-8 text-center border-y border-dashed border-zinc-200">
-              <p className="text-zinc-400 text-sm">Bloque: <strong>{block.type}</strong></p>
-            </div>
+            <AnimatedBlock key={block.id} blockId={block.id} blockType={block.type} animation={anim}>
+              <div className="py-8 text-center border-y border-dashed border-zinc-200">
+                <p className="text-zinc-400 text-sm">Bloque: <strong>{block.type}</strong></p>
+              </div>
+            </AnimatedBlock>
           )
         })}
         <PreviewClient />
