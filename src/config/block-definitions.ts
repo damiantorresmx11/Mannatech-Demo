@@ -215,6 +215,93 @@ export const blockDefinitions: BlockDefinition[] = [
     design: commonDesign,
     advanced: commonAdvanced,
   })),
+  // New premium blocks
+  {
+    type: "videoHero",
+    label: "Video Hero",
+    icon: "Play",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "textarea", label: "Subtitulo" },
+      { key: "videoUrl", type: "text", label: "URL del Video (YouTube embed)" },
+      { key: "videoPoster", type: "text", label: "Imagen de Fondo" },
+      { key: "cta.text", type: "text", label: "Texto Boton" },
+      { key: "cta.href", type: "text", label: "URL Boton" },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "timeline",
+    label: "Linea de Tiempo",
+    icon: "Clock",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      {
+        key: "events", type: "array", label: "Eventos",
+        arrayFields: [
+          { key: "year", type: "text", label: "Ano" },
+          { key: "title", type: "text", label: "Titulo" },
+          { key: "desc", type: "textarea", label: "Descripcion" },
+          { key: "icon", type: "select", label: "Icono", options: ["Star", "Award", "Globe", "Users", "FlaskConical", "Leaf"] },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "pricingTable",
+    label: "Tabla de Precios",
+    icon: "CreditCard",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "text", label: "Subtitulo" },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "parallaxBanner",
+    label: "Banner Parallax",
+    icon: "Image",
+    content: [
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "textarea", label: "Subtitulo" },
+      { key: "image", type: "text", label: "URL Imagen de Fondo" },
+      { key: "cta.text", type: "text", label: "Texto Boton" },
+      { key: "cta.href", type: "text", label: "URL Boton" },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "logoGrid",
+    label: "Logos y Certificaciones",
+    icon: "Award",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "text", label: "Subtitulo" },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "animatedFeatures",
+    label: "Features Animadas",
+    icon: "Sparkles",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "textarea", label: "Subtitulo" },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
 ]
 
 export const blockDefMap = Object.fromEntries(blockDefinitions.map((b) => [b.type, b]))

@@ -20,6 +20,12 @@ import { Categories } from "@/components/landing/Categories"
 import { TrustMarquee } from "@/components/landing/TrustMarquee"
 import { Testimonials } from "@/components/landing/Testimonials"
 import { CTABanner } from "@/components/landing/CTABanner"
+import { VideoHero } from "@/components/landing/VideoHero"
+import { Timeline } from "@/components/landing/Timeline"
+import { PricingTable } from "@/components/landing/PricingTable"
+import { ParallaxBanner } from "@/components/landing/ParallaxBanner"
+import { LogoGrid } from "@/components/landing/LogoGrid"
+import { AnimatedFeatures } from "@/components/landing/AnimatedFeatures"
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -36,6 +42,12 @@ const COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
   trustMarquee: TrustMarquee,
   testimonials: Testimonials,
   ctaBanner: CTABanner,
+  videoHero: VideoHero,
+  timeline: Timeline,
+  pricingTable: PricingTable,
+  parallaxBanner: ParallaxBanner,
+  logoGrid: LogoGrid,
+  animatedFeatures: AnimatedFeatures,
 }
 
 export default async function PreviewPage({ params }: Props) {
