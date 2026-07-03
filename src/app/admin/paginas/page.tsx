@@ -14,10 +14,8 @@ interface PageItem {
 
 const CMS_API = "/api/cms-proxy"
 
-async function fetchPages(token: string): Promise<PageItem[]> {
-  const res = await fetch(`${CMS_API}/pages?siteId=e1d8c609-d3ad-4a15-ab8c-18d031f10a09`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+async function fetchPages(): Promise<PageItem[]> {
+  const res = await fetch(`${CMS_API}/pages?siteId=e1d8c609-d3ad-4a15-ab8c-18d031f10a09`)
   if (!res.ok) return []
   const data = await res.json()
   return data.pages || []
@@ -31,8 +29,7 @@ export default function PaginasPage() {
   const [newSlug, setNewSlug] = useState("")
 
   useEffect(() => {
-    const token = localStorage.getItem("cms-token") || localStorage.getItem("admin-token") || ""
-    fetchPages(token).then(setPages).finally(() => setLoading(false))
+    fetchPages().then(setPages).finally(() => setLoading(false))
   }, [])
 
   const statusBadge = (status: string) => {
