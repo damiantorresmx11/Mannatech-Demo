@@ -23,7 +23,7 @@ const fadeUp = {
   },
 };
 
-export function ScienceSection() {
+export function ScienceSection({ cms }: { cms?: Record<string, any> }) {
   return (
     <section
       id="ciencia"

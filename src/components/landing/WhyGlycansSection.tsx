@@ -12,7 +12,7 @@ const fadeUp = {
   },
 };
 
-export function WhyGlycansSection() {
+export function WhyGlycansSection({ cms }: { cms?: Record<string, any> }) {
   return (
     <section className="relative py-20 sm:py-28 overflow-hidden">
       {/* Warm gradient background */}

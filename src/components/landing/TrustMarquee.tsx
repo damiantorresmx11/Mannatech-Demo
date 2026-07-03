@@ -9,17 +9,19 @@ const benefits = [
   { icon: ShieldCheck, text: "¡Garantía de satisfacción de 180 días!" },
 ];
 
-export function TrustMarquee() {
+export function TrustMarquee({ cms }: { cms?: Record<string, any> }) {
+  const overlineText = cms?.overline || "Bienestar";
+  const headingText = cms?.heading || "Sin Esfuerzo";
   return (
     <section className="py-10 sm:py-14 bg-[#FAF9F7] dark:bg-zinc-900 border-y border-border/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-6">
           <p className="text-mannatech text-xs font-semibold uppercase tracking-[0.35em] mb-2">
-            Bienestar
+            {overlineText}
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-            <span className="font-heading italic font-normal">Sin Esfuerzo</span>
+            <span className="font-heading italic font-normal">{headingText}</span>
           </h2>
         </div>
 

@@ -14,7 +14,7 @@ const categories = [
   { name: "Todo", href: "/productos", icon: ShoppingBag, gradient: "from-zinc-500 to-zinc-600 dark:from-zinc-600 dark:to-zinc-500" },
 ];
 
-export function QuickCategoryMenu() {
+export function QuickCategoryMenu({ cms }: { cms?: Record<string, any> }) {
   return (
     <nav className="bg-white dark:bg-zinc-950 border-b border-border/30" aria-label="Menú rápido de categorías">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

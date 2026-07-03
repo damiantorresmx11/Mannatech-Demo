@@ -52,7 +52,10 @@ const cardVariants = {
   },
 };
 
-export function Testimonials() {
+export function Testimonials({ cms }: { cms?: Record<string, any> }) {
+  const items = cms?.testimonials?.length ? cms.testimonials : testimonials;
+  const headingText = cms?.heading || "Lo Que la Gente Dice";
+  const overlineText = cms?.overline || "Lo Que Dicen Nuestros Clientes";
   return (
     <section id="historia" className="py-20 sm:py-28 bg-[#FAFAF8] dark:bg-zinc-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,10 +63,10 @@ export function Testimonials() {
         <BlurFade delay={0.1}>
           <div className="text-center mb-14">
             <p className="text-mannatech text-xs font-semibold uppercase tracking-[0.35em] mb-3">
-              Lo Que Dicen Nuestros Clientes
+              {overlineText}
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              Lo Que la Gente Dice
+              {headingText}
             </h2>
           </div>
         </BlurFade>
@@ -76,7 +79,7 @@ export function Testimonials() {
           viewport={{ once: true, margin: "-60px" }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
         >
-          {testimonials.map((t, i) => (
+          {items.map((t: any, i: number) => (
             <motion.div
               key={t.name}
               variants={cardVariants}

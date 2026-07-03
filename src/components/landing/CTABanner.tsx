@@ -13,13 +13,19 @@ const fadeUp = {
   },
 };
 
-export function CTABanner() {
+export function CTABanner({ cms }: { cms?: Record<string, any> }) {
+  const heading = cms?.heading || "Gana dinero globalmente";
+  const subheading = cms?.subheading || "La Oportunidad Definitiva";
+  const bgImage = cms?.backgroundImage || "https://mx.mannatech.com/wp-content/themes/mannatech/img/transform-03.jpg";
+  const ctaText = cms?.cta?.text || "Conoce Más";
+  const ctaHref = cms?.cta?.href || "/distribuidores/maria-lopez";
+
   return (
     <section id="unete" className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src="https://mx.mannatech.com/wp-content/themes/mannatech/img/transform-03.jpg"
+          src={bgImage}
           alt=""
           fill
           className="object-cover"
@@ -37,16 +43,16 @@ export function CTABanner() {
           viewport={{ once: true, margin: "-80px" }}
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Gana dinero globalmente
+            {heading}
           </h2>
           <h3 className="text-xl sm:text-2xl font-light text-white/80 mb-8">
-            La Oportunidad Definitiva
+            {subheading}
           </h3>
           <Link
-            href="/distribuidores/maria-lopez"
+            href={ctaHref}
             className="btn-magnetic btn-ripple inline-flex items-center px-8 py-4 bg-white text-mannatech-dark font-bold rounded-xl hover:bg-white/90 transition-colors text-base shadow-xl"
           >
-            Conoce Más
+            {ctaText}
           </Link>
         </motion.div>
       </div>

@@ -57,7 +57,7 @@ interface CategoriesProps {
   categorias?: unknown[];
 }
 
-export function Categories(_props: CategoriesProps) {
+export function Categories(_props: CategoriesProps & { cms?: Record<string, any> }) {
   return (
     <section className="py-16 sm:py-20 bg-white dark:bg-zinc-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -4,6 +4,7 @@ import {
   getProductosDestacados,
   getProductosCombined,
 } from "@/lib/data";
+import { getCMSPage } from "@/lib/cms-api";
 import { COMPANY_COOKIE } from "@/config/companies";
 import type { CompanyId } from "@/lib/types";
 import { Hero } from "@/components/landing/Hero";
@@ -25,19 +26,25 @@ export default async function HomePage() {
   const productosDestacados = getProductosDestacados(companyId);
   const todosProductos = await getProductosCombined(companyId);
 
+  // Fetch CMS content to override defaults (won't change design, only content)
+  const cmsPage = await getCMSPage("home");
+  const cms = Object.fromEntries(
+    (cmsPage?.blocks || []).map((b) => [b.type, b.content])
+  );
+
   return (
     <>
-      <Hero />
-      <QuickCategoryMenu />
+      <Hero cms={cms.hero} />
+      <QuickCategoryMenu cms={cms.quickCategoryMenu} />
       <FeaturedGrid productos={productosDestacados} allProductos={todosProductos} />
-      <MissionSection />
-      <ScienceSection />
-      <GlycansSection />
-      <WhyGlycansSection />
-      <Categories categorias={categorias} />
-      <TrustMarquee />
-      <Testimonials />
-      <CTABanner />
+      <MissionSection cms={cms.missionSection} />
+      <ScienceSection cms={cms.scienceSection} />
+      <GlycansSection cms={cms.glycansSection} />
+      <WhyGlycansSection cms={cms.whyGlycansSection} />
+      <Categories categorias={categorias} cms={cms.categories} />
+      <TrustMarquee cms={cms.trustMarquee} />
+      <Testimonials cms={cms.testimonials} />
+      <CTABanner cms={cms.ctaBanner} />
     </>
   );
 }

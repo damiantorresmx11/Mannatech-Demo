@@ -66,16 +66,16 @@ export default async function PreviewPage({ params }: Props) {
           if (block.type === "categories") {
             return (
               <div key={block.id} data-block-id={block.id} data-block-type={block.type}>
-                <Categories categorias={categorias} />
+                <Categories categorias={categorias} cms={block.content} />
               </div>
             )
           }
 
-          // Standard components (no props needed)
+          // Standard components — pass CMS content
           if (Component) {
             return (
               <div key={block.id} data-block-id={block.id} data-block-type={block.type}>
-                <Component />
+                <Component cms={block.content} />
               </div>
             )
           }

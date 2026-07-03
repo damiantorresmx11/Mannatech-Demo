@@ -49,14 +49,15 @@ const SLIDES: Slide[] = [
 
 const INTERVAL = 5500;
 
-export function Hero() {
+export function Hero({ cms }: { cms?: Record<string, any> }) {
+  const slides = (cms?.slides?.length ? cms.slides as Slide[] : SLIDES);
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const goTo = useCallback((i: number) => setCurrent(i), []);
-  const goNext = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), []);
-  const goPrev = useCallback(() => setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length), []);
+  const goNext = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
+  const goPrev = useCallback(() => setCurrent((c) => (c - 1 + slides.length) % slides.length), [slides.length]);
 
   useEffect(() => {
     if (paused) return;
@@ -108,16 +109,16 @@ export function Hero() {
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="absolute inset-0"
           >
-            <Link href={SLIDES[current].href} className="block w-full h-full">
+            <Link href={slides[current].href} className="block w-full h-full">
               <picture>
                 <source
                   media="(max-width: 768px)"
-                  srcSet={SLIDES[current].srcMobile || SLIDES[current].src}
+                  srcSet={slides[current].srcMobile || slides[current].src}
                 />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={SLIDES[current].src}
-                  alt={SLIDES[current].alt}
+                  src={slides[current].src}
+                  alt={slides[current].alt}
                   className="w-full h-full object-cover"
                 />
               </picture>
@@ -155,7 +156,7 @@ export function Hero() {
 
       {/* Dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}
