@@ -35,15 +35,24 @@ const commonAdvanced: FieldDef[] = [
 export const blockDefinitions: BlockDefinition[] = [
   {
     type: "hero",
-    label: "Hero",
+    label: "Hero / Banner",
     icon: "Sparkles",
     content: [
-      { key: "heading", type: "text", label: "Titulo" },
+      {
+        key: "slides", type: "array", label: "Slides del Banner",
+        arrayFields: [
+          { key: "src", type: "text", label: "URL Imagen" },
+          { key: "alt", type: "text", label: "Texto Alternativo" },
+          { key: "href", type: "text", label: "Link al hacer clic" },
+        ],
+      },
+      { key: "heading", type: "text", label: "Titulo (modo texto)" },
       { key: "subheading", type: "textarea", label: "Subtitulo" },
       { key: "badge", type: "text", label: "Badge" },
       { key: "cta.label", type: "text", label: "Texto del Boton" },
       { key: "cta.url", type: "text", label: "URL del Boton" },
-      { key: "style", type: "select", label: "Estilo", options: ["centered", "left", "video"] },
+      { key: "interval", type: "number", label: "Intervalo (ms)", min: 1000, max: 15000 },
+      { key: "style", type: "select", label: "Estilo", options: ["slider", "centered", "left", "video"] },
     ],
     design: [
       { key: "bgType", type: "select", label: "Tipo de Fondo", options: ["color", "gradient", "image"] },
