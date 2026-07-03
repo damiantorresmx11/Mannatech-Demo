@@ -38,19 +38,30 @@ async function proxyRequest(request: NextRequest, params: { path: string[] }) {
     headers,
   }
 
+  // Forward body as raw bytes (supports file uploads)
   if (request.method !== "GET" && request.method !== "HEAD") {
     try {
-      fetchOptions.body = await request.text()
+      fetchOptions.body = await request.arrayBuffer()
     } catch {}
   }
 
   try {
     const res = await fetch(url.toString(), fetchOptions)
-    const data = await res.text()
+    const resContentType = res.headers.get("Content-Type") || "application/json"
 
+    // For binary responses (images, etc.), return as-is
+    if (resContentType.startsWith("image/") || resContentType.startsWith("application/octet")) {
+      const buffer = await res.arrayBuffer()
+      return new NextResponse(buffer, {
+        status: res.status,
+        headers: { "Content-Type": resContentType },
+      })
+    }
+
+    const data = await res.text()
     return new NextResponse(data, {
       status: res.status,
-      headers: { "Content-Type": res.headers.get("Content-Type") || "application/json" },
+      headers: { "Content-Type": resContentType },
     })
   } catch (error) {
     return NextResponse.json({ error: "CMS API unavailable" }, { status: 502 })
