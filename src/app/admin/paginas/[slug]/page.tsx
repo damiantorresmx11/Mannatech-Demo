@@ -990,21 +990,65 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
 // ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
-// ICON PICKER CONTROL
+// ICON PICKER CONTROL — Lucide (90+) + Iconify API (275k+)
 // ═══════════════════════════════════════════════════════════════
+
+function IconPreview({ name, size = 20 }: { name: string; size?: number }) {
+  if (!name) return null
+  // Iconify format: "prefix:icon-name"
+  if (name.includes(":")) {
+    return <img src={`https://api.iconify.design/${name.replace(":", "/")}.svg?color=%2360a5fa`} alt={name} width={size} height={size} className="inline-block" />
+  }
+  // Lucide format
+  const LucideIcon = ICON_MAP[name]
+  if (LucideIcon) return <LucideIcon size={size} />
+  return <span className="text-[8px]">{name}</span>
+}
 
 function IconPickerControl({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
   const [open, setOpen] = useState(false)
+  const [tab, setTab] = useState<"lucide" | "iconify">("lucide")
   const [search, setSearch] = useState("")
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [iconifyResults, setIconifyResults] = useState<any[]>([])
+  const [iconifyLoading, setIconifyLoading] = useState(false)
+  const searchTimeout = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const CurrentIcon = value ? ICON_MAP[value] : null
-
+  // Lucide filtered
   const filtered = ICON_LIBRARY.filter(icon => {
-    if (search) return icon.name.toLowerCase().includes(search.toLowerCase())
+    if (search && tab === "lucide") return icon.name.toLowerCase().includes(search.toLowerCase())
     if (activeCategory) return icon.category === activeCategory
     return true
   })
+
+  // Iconify search
+  const searchIconify = useCallback((query: string) => {
+    if (!query || query.length < 2) { setIconifyResults([]); return }
+    setIconifyLoading(true)
+    fetch(`https://api.iconify.design/search?query=${encodeURIComponent(query)}&limit=60`)
+      .then(r => r.json())
+      .then(data => {
+        setIconifyResults(data.icons || [])
+        setIconifyLoading(false)
+      })
+      .catch(() => setIconifyLoading(false))
+  }, [])
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val)
+    setActiveCategory(null)
+    if (tab === "iconify") {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current)
+      searchTimeout.current = setTimeout(() => searchIconify(val), 400)
+    }
+  }
+
+  const selectIcon = (name: string) => {
+    onChange(name)
+    setOpen(false)
+    setSearch("")
+    setIconifyResults([])
+  }
 
   return (
     <div>
@@ -1015,12 +1059,12 @@ function IconPickerControl({ field, value, onChange }: { field: FieldDef; value:
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-zinc-800/60 border border-zinc-700/40 rounded-lg text-xs text-white hover:border-blue-500/50 transition-all"
       >
-        {CurrentIcon ? (
+        {value ? (
           <>
-            <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <CurrentIcon size={16} className="text-blue-400" />
+            <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+              <IconPreview name={value} size={16} />
             </div>
-            <span className="flex-1 text-left">{value}</span>
+            <span className="flex-1 text-left truncate">{value}</span>
           </>
         ) : (
           <>
@@ -1036,6 +1080,22 @@ function IconPickerControl({ field, value, onChange }: { field: FieldDef; value:
       {/* Picker dropdown */}
       {open && (
         <div className="mt-1.5 border border-zinc-700/60 rounded-xl bg-zinc-900 overflow-hidden shadow-xl">
+          {/* Tabs: Lucide / Iconify */}
+          <div className="flex border-b border-zinc-800/60">
+            <button
+              onClick={() => { setTab("lucide"); setSearch(""); setIconifyResults([]) }}
+              className={`flex-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${tab === "lucide" ? "text-blue-400 border-b-2 border-blue-400 bg-blue-500/5" : "text-zinc-500 hover:text-zinc-300"}`}
+            >
+              Lucide (90+)
+            </button>
+            <button
+              onClick={() => { setTab("iconify"); setSearch("") }}
+              className={`flex-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${tab === "iconify" ? "text-blue-400 border-b-2 border-blue-400 bg-blue-500/5" : "text-zinc-500 hover:text-zinc-300"}`}
+            >
+              Iconify (275k+)
+            </button>
+          </div>
+
           {/* Search */}
           <div className="p-2 border-b border-zinc-800/60">
             <div className="relative">
@@ -1043,60 +1103,104 @@ function IconPickerControl({ field, value, onChange }: { field: FieldDef; value:
               <input
                 type="text"
                 value={search}
-                onChange={e => { setSearch(e.target.value); setActiveCategory(null) }}
-                placeholder="Buscar icono..."
+                onChange={e => handleSearchChange(e.target.value)}
+                placeholder={tab === "lucide" ? "Buscar icono..." : "Buscar en 275,000+ iconos..."}
                 className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg pl-7 pr-3 py-1.5 text-xs text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none"
                 autoFocus
               />
             </div>
           </div>
 
-          {/* Category tabs */}
-          {!search && (
-            <div className="flex flex-wrap gap-1 p-2 border-b border-zinc-800/60">
-              <button
-                onClick={() => setActiveCategory(null)}
-                className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider transition-colors ${!activeCategory ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
-              >
-                Todos
-              </button>
-              {ICON_CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider transition-colors ${activeCategory === cat ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+          {/* ── LUCIDE TAB ── */}
+          {tab === "lucide" && (
+            <>
+              {/* Category tabs */}
+              {!search && (
+                <div className="flex flex-wrap gap-1 p-2 border-b border-zinc-800/60">
+                  <button
+                    onClick={() => setActiveCategory(null)}
+                    className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider transition-colors ${!activeCategory ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
+                  >
+                    Todos
+                  </button>
+                  {ICON_CATEGORIES.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`px-2 py-1 rounded-md text-[9px] font-semibold uppercase tracking-wider transition-colors ${activeCategory === cat ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="grid grid-cols-6 gap-1 p-2 max-h-[240px] overflow-y-auto">
+                {filtered.map(icon => {
+                  const Icon = icon.component
+                  const isSelected = value === icon.name
+                  return (
+                    <button
+                      key={icon.name}
+                      onClick={() => selectIcon(icon.name)}
+                      title={icon.name}
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${isSelected ? "bg-blue-500/20 ring-1 ring-blue-500/40 text-blue-400" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"}`}
+                    >
+                      <Icon size={18} />
+                      <span className="text-[7px] leading-tight truncate w-full text-center">{icon.name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+              {filtered.length === 0 && <p className="text-xs text-zinc-600 text-center py-4">No se encontraron iconos</p>}
+            </>
           )}
 
-          {/* Icon grid */}
-          <div className="grid grid-cols-6 gap-1 p-2 max-h-[240px] overflow-y-auto">
-            {filtered.map(icon => {
-              const Icon = icon.component
-              const isSelected = value === icon.name
-              return (
-                <button
-                  key={icon.name}
-                  onClick={() => { onChange(icon.name); setOpen(false); setSearch("") }}
-                  title={icon.name}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
-                    isSelected
-                      ? "bg-blue-500/20 ring-1 ring-blue-500/40 text-blue-400"
-                      : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                  }`}
-                >
-                  <Icon size={18} />
-                  <span className="text-[7px] leading-tight truncate w-full text-center">{icon.name}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          {filtered.length === 0 && (
-            <p className="text-xs text-zinc-600 text-center py-4">No se encontraron iconos</p>
+          {/* ── ICONIFY TAB ── */}
+          {tab === "iconify" && (
+            <div className="max-h-[300px] overflow-y-auto">
+              {!search && (
+                <div className="p-4 text-center">
+                  <p className="text-xs text-zinc-500 mb-1">Escribe para buscar en 275,000+ iconos</p>
+                  <p className="text-[10px] text-zinc-600">Prueba: heart, arrow, user, check, star, home...</p>
+                </div>
+              )}
+              {iconifyLoading && (
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 size={16} className="animate-spin text-blue-400" />
+                  <span className="text-xs text-zinc-500 ml-2">Buscando...</span>
+                </div>
+              )}
+              {!iconifyLoading && iconifyResults.length > 0 && (
+                <div className="grid grid-cols-5 gap-1 p-2">
+                  {iconifyResults.map((iconName: string) => {
+                    const isSelected = value === iconName
+                    return (
+                      <button
+                        key={iconName}
+                        onClick={() => selectIcon(iconName)}
+                        title={iconName}
+                        className={`flex flex-col items-center gap-1.5 p-2.5 rounded-lg transition-all ${isSelected ? "bg-blue-500/20 ring-1 ring-blue-500/40" : "hover:bg-zinc-800"}`}
+                      >
+                        <img
+                          src={`https://api.iconify.design/${iconName.replace(":", "/")}.svg?color=%23a1a1aa`}
+                          alt={iconName}
+                          width={22}
+                          height={22}
+                          className="inline-block"
+                          loading="lazy"
+                          onMouseOver={e => (e.currentTarget.src = `https://api.iconify.design/${iconName.replace(":", "/")}.svg?color=%2360a5fa`)}
+                          onMouseOut={e => (e.currentTarget.src = `https://api.iconify.design/${iconName.replace(":", "/")}.svg?color=%23a1a1aa`)}
+                        />
+                        <span className="text-[7px] text-zinc-500 leading-tight truncate w-full text-center">{iconName.split(":")[1]}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+              {!iconifyLoading && search.length >= 2 && iconifyResults.length === 0 && (
+                <p className="text-xs text-zinc-600 text-center py-4">Sin resultados para &quot;{search}&quot;</p>
+              )}
+            </div>
           )}
         </div>
       )}
