@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { AdminAuthProvider, useAdminAuth } from "@/providers/AdminAuthProvider";
 import { useSidebar } from "@/components/dashboard/DashboardSidebar";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 const sidebarItems: SidebarItem[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -164,18 +165,26 @@ function AdminLoginGate({ children }: { children: React.ReactNode }) {
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  // Editor pages get fullscreen (no sidebar) — matches /admin/paginas/some-slug but NOT /admin/paginas
+  const isEditor = /^\/admin\/paginas\/[^/]+$/.test(pathname || "");
+
   return (
     <AdminAuthProvider>
       <AdminLoginGate>
-        <DashboardShell
-          sidebarItems={sidebarItems}
-          sidebarTheme="dark"
-          sidebarLogo={<SidebarLogo />}
-          sidebarFooter={<SidebarFooter />}
-          user={adminUser}
-        >
-          {children}
-        </DashboardShell>
+        {isEditor ? (
+          children
+        ) : (
+          <DashboardShell
+            sidebarItems={sidebarItems}
+            sidebarTheme="dark"
+            sidebarLogo={<SidebarLogo />}
+            sidebarFooter={<SidebarFooter />}
+            user={adminUser}
+          >
+            {children}
+          </DashboardShell>
+        )}
       </AdminLoginGate>
     </AdminAuthProvider>
   );
