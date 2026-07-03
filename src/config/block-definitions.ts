@@ -206,8 +206,143 @@ export const blockDefinitions: BlockDefinition[] = [
     design: commonDesign,
     advanced: commonAdvanced,
   },
-  // Self-contained components (no editable content fields, just design)
-  ...["quickCategoryMenu", "missionSection", "scienceSection", "glycansSection", "whyGlycansSection", "trustMarquee", "newsletter", "socialProof", "categories"].map((type) => ({
+  {
+    type: "quickCategoryMenu",
+    label: "Menu Categorias",
+    icon: "LayoutGrid",
+    content: [
+      {
+        key: "categories", type: "array", label: "Categorias",
+        arrayFields: [
+          { key: "name", type: "text", label: "Nombre" },
+          { key: "href", type: "text", label: "URL" },
+          { key: "icon", type: "select", label: "Icono", options: ["Sparkles", "TrendingUp", "HeartPulse", "Dumbbell", "Droplets", "Package", "ShoppingBag"] },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "missionSection",
+    label: "Mision / Stats",
+    icon: "BarChart3",
+    content: [
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "text", label: "Subtitulo" },
+      {
+        key: "stats", type: "array", label: "Estadisticas",
+        arrayFields: [
+          { key: "value", type: "number", label: "Valor" },
+          { key: "suffix", type: "text", label: "Sufijo" },
+          { key: "label", type: "text", label: "Etiqueta" },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "scienceSection",
+    label: "Ciencia",
+    icon: "FlaskConical",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "text", label: "Subtitulo" },
+      { key: "description", type: "textarea", label: "Descripcion" },
+      {
+        key: "benefits", type: "array", label: "Beneficios",
+        arrayFields: [
+          { key: "icon", type: "select", label: "Icono", options: ["Heart", "Brain", "Smile", "Shield", "Leaf"] },
+          { key: "label", type: "text", label: "Titulo" },
+          { key: "desc", type: "text", label: "Descripcion" },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "glycansSection",
+    label: "Glicanos",
+    icon: "Dna",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      {
+        key: "paragraphs", type: "array", label: "Parrafos",
+        arrayFields: [
+          { key: "text", type: "textarea", label: "Texto" },
+        ],
+      },
+      {
+        key: "benefits", type: "array", label: "Beneficios",
+        arrayFields: [
+          { key: "icon", type: "select", label: "Icono", options: ["Radio", "Shield", "Brain", "HeartPulse", "Sparkles"] },
+          { key: "title", type: "text", label: "Titulo" },
+          { key: "desc", type: "text", label: "Descripcion" },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "whyGlycansSection",
+    label: "Por Que Glicanos",
+    icon: "HelpCircle",
+    content: [
+      { key: "heading", type: "text", label: "Titulo" },
+      {
+        key: "paragraphs", type: "array", label: "Parrafos",
+        arrayFields: [
+          { key: "text", type: "textarea", label: "Texto" },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "trustMarquee",
+    label: "Beneficios / Trust",
+    icon: "ShieldCheck",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      {
+        key: "benefits", type: "array", label: "Beneficios",
+        arrayFields: [
+          { key: "icon", type: "select", label: "Icono", options: ["Heart", "Percent", "Truck", "ShieldCheck"] },
+          { key: "text", type: "text", label: "Texto" },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  {
+    type: "categories",
+    label: "Categorias de Compra",
+    icon: "LayoutGrid",
+    content: [
+      { key: "overline", type: "text", label: "Overline" },
+      { key: "heading", type: "text", label: "Titulo" },
+      {
+        key: "categories", type: "array", label: "Categorias",
+        arrayFields: [
+          { key: "name", type: "text", label: "Nombre" },
+          { key: "desc", type: "text", label: "Descripcion" },
+          { key: "href", type: "text", label: "URL" },
+          { key: "icon", type: "select", label: "Icono", options: ["HeartPulse", "Dumbbell", "Sparkles", "Package"] },
+        ],
+      },
+    ],
+    design: commonDesign,
+    advanced: commonAdvanced,
+  },
+  ...["newsletter", "socialProof"].map((type) => ({
     type,
     label: type.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()).trim(),
     icon: "Component",

@@ -39,6 +39,18 @@ export function PreviewClient() {
 
     console.log("[CMS Editor] PreviewClient initializing...")
 
+    // ═══════ VISIBLE DEBUG BADGE ═══════
+    const badge = document.createElement("div")
+    badge.id = "cms-active-badge"
+    badge.textContent = "Editor Activo"
+    badge.style.cssText = "position:fixed;bottom:12px;right:12px;z-index:999999;background:#3b82f6;color:white;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;font-family:system-ui;box-shadow:0 4px 12px rgba(59,130,246,0.4);pointer-events:none;opacity:0.9;"
+    document.body.appendChild(badge)
+
+    // Count blocks found
+    const blockCount = document.querySelectorAll("[data-block-id]").length
+    console.log("[CMS Editor] Found", blockCount, "blocks")
+    badge.textContent = `Editor Activo · ${blockCount} bloques`
+
     // ═══════ STATE ═══════
     let selectedId: string | null = null
     let hoveredId: string | null = null
@@ -689,13 +701,24 @@ export function PreviewClient() {
     }
 
     // ═══════ ATTACH ALL EVENT LISTENERS ═══════
-    document.addEventListener("mousemove", handleMouseMove, { passive: true })
+    // Use capture phase to intercept before landing component handlers
+    document.addEventListener("mousemove", handleMouseMove, { passive: true, capture: true })
     document.addEventListener("mouseleave", handleMouseLeave)
-    document.addEventListener("click", handleClick)
-    document.addEventListener("dblclick", handleDblClick)
+    document.addEventListener("click", handleClick, { capture: true })
+    document.addEventListener("dblclick", handleDblClick, { capture: true })
     document.addEventListener("focusout", handleFocusOut)
-    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("keydown", handleKeyDown, { capture: true })
     window.addEventListener("message", handleMessage)
+
+    // Prevent links from navigating in editor mode
+    document.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement).closest("a[href]") as HTMLAnchorElement | null
+      if (link && !link.closest(".cms-toolbar, .cms-add-zone")) {
+        e.preventDefault()
+        e.stopPropagation()
+        console.log("[CMS Editor] Blocked navigation to:", link.href)
+      }
+    }, { capture: true })
 
     // Create add zones once blocks have rendered
     const zoneTimer1 = setTimeout(createAddZones, 800)
@@ -711,15 +734,16 @@ export function PreviewClient() {
       clearTimeout(zoneTimer1)
       clearTimeout(zoneTimer2)
       if (editHintTimeout) clearTimeout(editHintTimeout)
-      document.removeEventListener("mousemove", handleMouseMove)
+      document.removeEventListener("mousemove", handleMouseMove, { capture: true } as EventListenerOptions)
       document.removeEventListener("mouseleave", handleMouseLeave)
-      document.removeEventListener("click", handleClick)
-      document.removeEventListener("dblclick", handleDblClick)
+      document.removeEventListener("click", handleClick, { capture: true } as EventListenerOptions)
+      document.removeEventListener("dblclick", handleDblClick, { capture: true } as EventListenerOptions)
       document.removeEventListener("focusout", handleFocusOut)
-      document.removeEventListener("keydown", handleKeyDown)
+      document.removeEventListener("keydown", handleKeyDown, { capture: true } as EventListenerOptions)
       window.removeEventListener("message", handleMessage)
       overlay.remove()
       styleEl.remove()
+      badge.remove()
       document.querySelectorAll(".cms-add-zone").forEach(z => z.remove())
     }
   }, [])
