@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send } from "lucide-react";
 
@@ -16,12 +17,18 @@ const botMessages = [
 ];
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<
     { text: string; from: "bot" | "user" }[]
   >([]);
   const [input, setInput] = useState("");
   const [showMessages, setShowMessages] = useState(false);
+
+  // No mostrar en admin, preview, ni dashboards
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/preview") || pathname?.startsWith("/socio") || pathname?.startsWith("/cuenta")) {
+    return null;
+  }
 
   const handleOpen = () => {
     setOpen(true);
