@@ -19,6 +19,7 @@ import {
 import type { SidebarItem } from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
 import { AdminAuthProvider, useAdminAuth } from "@/providers/AdminAuthProvider";
+import { useSidebar } from "@/components/dashboard/DashboardSidebar";
 import { useState } from "react";
 
 const sidebarItems: SidebarItem[] = [
@@ -42,7 +43,22 @@ const adminUser = {
   role: "Administrador",
 };
 
+function MannatechM({ className = "h-8 w-8" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M8 52 L24 8 L32 28 L40 8 L56 52" stroke="#00A88F" strokeWidth="5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 52 L32 12 L48 52" stroke="#69CA98" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+    </svg>
+  );
+}
+
 function SidebarLogo() {
+  const { collapsed } = useSidebar();
+
+  if (collapsed) {
+    return <MannatechM className="h-8 w-8" />;
+  }
+
   return (
     <div className="flex items-center gap-2">
       <MannatechLogo className="h-7 text-white" variant="white" />

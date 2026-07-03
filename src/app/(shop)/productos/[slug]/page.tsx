@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { getProductoBySlug, getProductos } from "@/lib/data";
+import { getProductoBySlug, getProductos, getProductoBySlugCombined, getProductosCombined } from "@/lib/data";
 import { COMPANY_COOKIE } from "@/config/companies";
 import type { CompanyId } from "@/lib/types";
 import { ProductDetail } from "./ProductDetail";
@@ -30,14 +30,14 @@ export default async function ProductoPage({ params }: PageProps) {
   const { slug } = await params;
   const store = await cookies();
   const companyId = (store.get(COMPANY_COOKIE)?.value ?? "mx") as CompanyId;
-  const producto = getProductoBySlug(slug, companyId);
+  const producto = await getProductoBySlugCombined(slug, companyId);
 
   if (!producto) {
     notFound();
   }
 
   // Get 3 related products (different from current)
-  const todos = getProductos(companyId);
+  const todos = await getProductosCombined(companyId);
   const otros = todos.filter((p) => p.slug !== slug);
   // Deterministic: pick products from same category first, then fill
   const mismaCategoria = otros.filter((p) => p.categoria === producto.categoria);

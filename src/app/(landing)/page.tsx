@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import {
   getCategorias,
   getProductosDestacados,
-  getProductos,
+  getProductosCombined,
 } from "@/lib/data";
 import { COMPANY_COOKIE } from "@/config/companies";
 import type { CompanyId } from "@/lib/types";
@@ -24,7 +24,7 @@ export default async function HomePage() {
 
   const categorias = getCategorias(companyId);
   const productosDestacados = getProductosDestacados(companyId);
-  const todosProductos = getProductos(companyId);
+  const todosProductos = await getProductosCombined(companyId);
 
   return (
     <>
