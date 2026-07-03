@@ -41,7 +41,7 @@ export const blockDefinitions: BlockDefinition[] = [
       {
         key: "slides", type: "array", label: "Slides del Banner",
         arrayFields: [
-          { key: "src", type: "text", label: "URL Imagen" },
+          { key: "src", type: "media", label: "Imagen del Slide" },
           { key: "alt", type: "text", label: "Texto Alternativo" },
           { key: "href", type: "text", label: "Link al hacer clic" },
         ],
@@ -369,7 +369,7 @@ export const blockDefinitions: BlockDefinition[] = [
       { key: "heading", type: "text", label: "Titulo" },
       { key: "subheading", type: "textarea", label: "Subtitulo" },
       { key: "videoUrl", type: "text", label: "URL del Video (YouTube embed)" },
-      { key: "videoPoster", type: "text", label: "Imagen de Fondo" },
+      { key: "videoPoster", type: "media", label: "Imagen de Fondo" },
       { key: "cta.text", type: "text", label: "Texto Boton" },
       { key: "cta.href", type: "text", label: "URL Boton" },
     ],
@@ -415,7 +415,7 @@ export const blockDefinitions: BlockDefinition[] = [
     content: [
       { key: "heading", type: "text", label: "Titulo" },
       { key: "subheading", type: "textarea", label: "Subtitulo" },
-      { key: "image", type: "text", label: "URL Imagen de Fondo" },
+      { key: "image", type: "media", label: "Imagen de Fondo" },
       { key: "cta.text", type: "text", label: "Texto Boton" },
       { key: "cta.href", type: "text", label: "URL Boton" },
     ],

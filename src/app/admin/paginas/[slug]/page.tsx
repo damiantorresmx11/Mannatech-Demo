@@ -970,12 +970,155 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
         </label>
       )
 
+    case "media":
+      return <MediaFieldControl field={field} value={value} onChange={onChange} />
+
     case "array":
       return <ArrayFieldControl field={field} value={value} onChange={onChange} />
 
     default:
       return null
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MEDIA FIELD CONTROL (Upload + Gallery)
+// ═══════════════════════════════════════════════════════════════
+
+function MediaFieldControl({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
+  const [uploading, setUploading] = useState(false)
+  const [gallery, setGallery] = useState<any[]>([])
+  const [showGallery, setShowGallery] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const CMS_MEDIA_URL = "/api/cms-proxy"
+  const cmsBaseUrl = typeof window !== "undefined" ? "" : ""
+
+  // Load gallery
+  const loadGallery = useCallback(async () => {
+    const token = localStorage.getItem("cms-token") || ""
+    const res = await fetch(`${CMS_MEDIA_URL}/media?siteId=${SITE_ID}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setGallery(data.media || [])
+    }
+    setShowGallery(true)
+  }, [])
+
+  // Upload file
+  const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    const token = localStorage.getItem("cms-token") || ""
+    const formData = new FormData()
+    formData.append("file", file)
+
+    try {
+      const res = await fetch(`${CMS_MEDIA_URL}/media/upload?siteId=${SITE_ID}&folder=banners`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+      if (res.ok) {
+        const item = await res.json()
+        // Use the CMS API URL for the image
+        const imageUrl = `/api/cms-proxy/media${item.url}`
+        onChange(imageUrl)
+      }
+    } catch (err) {
+      console.error("Upload failed:", err)
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+  }, [onChange])
+
+  const selectFromGallery = (item: any) => {
+    const imageUrl = `/api/cms-proxy/media${item.url}`
+    onChange(imageUrl)
+    setShowGallery(false)
+  }
+
+  return (
+    <div>
+      <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
+
+      {/* Preview */}
+      {value && (
+        <div className="relative mb-2 rounded-lg overflow-hidden border border-zinc-700/40 bg-zinc-800/30">
+          <img src={value} alt="" className="w-full h-32 object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }} />
+          <button
+            onClick={() => onChange("")}
+            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500/80 text-white flex items-center justify-center text-xs hover:bg-red-500"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* URL input */}
+      <input
+        type="text"
+        value={value || ""}
+        onChange={e => onChange(e.target.value)}
+        placeholder="URL de imagen o sube un archivo"
+        className="w-full bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-2.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none mb-2"
+      />
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <label className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-dashed border-zinc-700 hover:border-blue-500/40 text-zinc-400 hover:text-blue-400 cursor-pointer transition-all ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+          <ImageIcon size={12} />
+          {uploading ? "Subiendo..." : "Subir Imagen"}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleUpload}
+            className="hidden"
+          />
+        </label>
+        <button
+          onClick={loadGallery}
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-zinc-700 text-zinc-400 hover:text-blue-400 hover:border-blue-500/40 transition-all"
+        >
+          <Layout size={12} />
+          Galeria
+        </button>
+      </div>
+
+      {/* Gallery modal */}
+      {showGallery && (
+        <div className="mt-2 border border-zinc-700/60 rounded-lg bg-zinc-900 p-2 max-h-[300px] overflow-y-auto">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-semibold text-zinc-400">Galeria de Medios</span>
+            <button onClick={() => setShowGallery(false)} className="text-zinc-500 hover:text-white text-xs">✕</button>
+          </div>
+          {gallery.length === 0 ? (
+            <p className="text-xs text-zinc-600 text-center py-4">No hay imagenes. Sube una primero.</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-1.5">
+              {gallery.map((item: any) => (
+                <button
+                  key={item.id}
+                  onClick={() => selectFromGallery(item)}
+                  className="relative aspect-square rounded-md overflow-hidden border border-zinc-800 hover:border-blue-500 transition-colors group"
+                >
+                  <img src={`/api/cms-proxy/media${item.variants?.thumbnail || item.url}`} alt={item.alt || item.originalName} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/20 transition-colors" />
+                  <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] text-white px-1 py-0.5 truncate">{item.originalName}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ═══════════════════════════════════════════════════════════════
