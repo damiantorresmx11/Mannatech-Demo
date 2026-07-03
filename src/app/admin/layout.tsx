@@ -15,6 +15,7 @@ import {
   Settings,
   Headphones,
   Shield,
+  FileText,
 } from "lucide-react";
 import type { SidebarItem } from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,7 @@ import { useState } from "react";
 
 const sidebarItems: SidebarItem[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { label: "Paginas", href: "/admin/paginas", icon: FileText },
   { label: "Productos", href: "/admin/productos", icon: Package },
   { label: "Inventario", href: "/admin/inventario", icon: Warehouse },
   { label: "Pedidos", href: "/admin/pedidos", icon: ShoppingCart, badge: "23" },
