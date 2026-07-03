@@ -4,6 +4,8 @@ import {
   getProductosDestacados,
   getProductosCombined,
 } from "@/lib/data";
+import { getCMSPage } from "@/lib/cms-api";
+import { CMSPageRenderer } from "@/components/cms/CMSPageRenderer";
 import { COMPANY_COOKIE } from "@/config/companies";
 import type { CompanyId } from "@/lib/types";
 import { Hero } from "@/components/landing/Hero";
@@ -19,9 +21,15 @@ import { Testimonials } from "@/components/landing/Testimonials";
 import { CTABanner } from "@/components/landing/CTABanner";
 
 export default async function HomePage() {
+  // Try CMS first — renders using same components but with CMS data
+  const cmsPage = await getCMSPage("home");
+  if (cmsPage?.blocks?.length) {
+    return <CMSPageRenderer blocks={cmsPage.blocks} />;
+  }
+
+  // Fallback to hardcoded layout
   const store = await cookies();
   const companyId = (store.get(COMPANY_COOKIE)?.value ?? "mx") as CompanyId;
-
   const categorias = getCategorias(companyId);
   const productosDestacados = getProductosDestacados(companyId);
   const todosProductos = await getProductosCombined(companyId);
