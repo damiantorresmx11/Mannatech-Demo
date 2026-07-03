@@ -96,3 +96,46 @@ export async function getPaymentProviders() {
 export async function getOrdersByDateRange(from: string, to: string) {
   return adminFetch(`/admin/orders?limit=100&created_at[gte]=${from}&created_at[lte]=${to}`)
 }
+
+// ── Product CRUD ──────────────────────────────────────────────────────
+
+export async function createProduct(data: {
+  title: string;
+  description?: string;
+  handle?: string;
+  status?: string;
+  options?: { title: string; values: string[] }[];
+  variants?: { title: string; prices: { amount: number; currency_code: string }[]; options?: Record<string, string>; manage_inventory?: boolean }[];
+}) {
+  return adminFetch("/admin/products", { method: "POST", body: JSON.stringify(data) })
+}
+
+export async function updateProduct(id: string, data: Record<string, unknown>) {
+  return adminFetch(`/admin/products/${id}`, { method: "POST", body: JSON.stringify(data) })
+}
+
+export async function deleteProduct(id: string) {
+  return adminFetch(`/admin/products/${id}`, { method: "DELETE" })
+}
+
+// ── Stock ─────────────────────────────────────────────────────────────
+
+export async function updateInventoryLevel(inventoryItemId: string, locationId: string, quantity: number) {
+  return adminFetch(`/admin/inventory-items/${inventoryItemId}/location-levels/${locationId}`, {
+    method: "POST",
+    body: JSON.stringify({ stocked_quantity: quantity }),
+  })
+}
+
+// ── Order actions ─────────────────────────────────────────────────────
+
+export async function cancelOrder(id: string) {
+  return adminFetch(`/admin/orders/${id}/cancel`, { method: "POST" })
+}
+
+export async function createFulfillment(orderId: string, items: { id: string; quantity: number }[]) {
+  return adminFetch(`/admin/orders/${orderId}/fulfillments`, {
+    method: "POST",
+    body: JSON.stringify({ items }),
+  })
+}
