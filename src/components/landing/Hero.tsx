@@ -49,8 +49,50 @@ const SLIDES: Slide[] = [
 
 const INTERVAL = 5500;
 
+// Slide transition presets
+const SLIDE_TRANSITIONS: Record<string, {
+  initial: Record<string, any>
+  animate: Record<string, any>
+  exit: Record<string, any>
+  transition: Record<string, any>
+}> = {
+  fade: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+  slideHorizontal: {
+    initial: { opacity: 0, x: "100%" },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: "-100%" },
+    transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
+  },
+  zoom: {
+    initial: { opacity: 0, scale: 1.15 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.9 },
+    transition: { duration: 0.9, ease: "easeInOut" },
+  },
+  flipVertical: {
+    initial: { opacity: 0, rotateX: 90 },
+    animate: { opacity: 1, rotateX: 0 },
+    exit: { opacity: 0, rotateX: -90 },
+    transition: { duration: 0.7, ease: "easeOut" },
+  },
+  slideUp: {
+    initial: { opacity: 0, y: "100%" },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: "-100%" },
+    transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
+  },
+};
+
 export function Hero({ cms }: { cms?: Record<string, any> }) {
   const slides = (cms?.slides?.length ? cms.slides as Slide[] : SLIDES);
+  const slideTransition = cms?.slideTransition || "zoom";
+  const interval = cms?.interval || INTERVAL;
+  const trans = SLIDE_TRANSITIONS[slideTransition] || SLIDE_TRANSITIONS.zoom;
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -61,7 +103,7 @@ export function Hero({ cms }: { cms?: Record<string, any> }) {
 
   useEffect(() => {
     if (paused) return;
-    const id = setTimeout(goNext, INTERVAL);
+    const id = setTimeout(goNext, interval);
     return () => clearTimeout(id);
   }, [current, paused, goNext]);
 
@@ -103,11 +145,12 @@ export function Hero({ cms }: { cms?: Record<string, any> }) {
         <AnimatePresence mode="sync">
           <motion.div
             key={current}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={trans.initial}
+            animate={trans.animate}
+            exit={trans.exit}
+            transition={trans.transition}
             className="absolute inset-0"
+            style={{ perspective: slideTransition === "flipVertical" ? 1000 : undefined }}
           >
             <Link href={slides[current].href} className="block w-full h-full">
               <picture>
@@ -150,7 +193,7 @@ export function Hero({ cms }: { cms?: Record<string, any> }) {
           className="h-full bg-mannatech"
           initial={{ width: "0%" }}
           animate={{ width: paused ? undefined : "100%" }}
-          transition={{ duration: INTERVAL / 1000, ease: "linear" }}
+          transition={{ duration: interval / 1000, ease: "linear" }}
         />
       </div>
 
