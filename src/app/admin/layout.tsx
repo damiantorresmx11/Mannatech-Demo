@@ -19,10 +19,9 @@ import {
 } from "lucide-react";
 import type { SidebarItem } from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
-import { AdminAuthProvider, useAdminAuth } from "@/providers/AdminAuthProvider";
 import { useSidebar } from "@/components/dashboard/DashboardSidebar";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { SessionProvider, useSession, signOut } from "next-auth/react";
 
 const sidebarItems: SidebarItem[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -78,84 +77,17 @@ function SidebarFooter() {
   );
 }
 
-function AdminLoginGate({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, login, error } = useAdminAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+function AdminSessionGate({ children }: { children: React.ReactNode }) {
+  const { status } = useSession();
 
-  if (isLoading) {
+  if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950">
         <div className="flex flex-col items-center gap-4">
           <MannatechLogo className="h-10 text-white" variant="white" />
           <div className="h-1 w-32 overflow-hidden rounded-full bg-zinc-800">
-            <div className="h-full w-1/2 animate-pulse rounded-full bg-emerald-500" />
+            <div className="h-full w-1/2 animate-pulse rounded-full bg-blue-500" />
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setSubmitting(true);
-      try {
-        await login(email, password);
-      } catch {
-        // error handled by provider
-      } finally {
-        setSubmitting(false);
-      }
-    };
-
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="w-full max-w-sm space-y-8">
-          <div className="flex flex-col items-center gap-3">
-            <MannatechLogo className="h-10 text-white" variant="white" />
-            <p className="text-sm text-zinc-500">Panel de Administración</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-zinc-400">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                placeholder="admin@dmlabs.mx"
-                required
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-zinc-400">Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-
-            {error && (
-              <p className="text-sm text-red-400">{error}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-500 disabled:opacity-50"
-            >
-              {submitting ? "Ingresando..." : "Ingresar"}
-            </button>
-          </form>
-
-          <p className="text-center text-xs text-zinc-600">Mannatech Admin · Powered by Medusa</p>
         </div>
       </div>
     );
@@ -169,9 +101,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Editor pages get fullscreen (no sidebar) — matches /admin/paginas/some-slug but NOT /admin/paginas
   const isEditor = /^\/admin\/paginas\/[^/]+$/.test(pathname || "");
 
+  const isLogin = pathname === "/admin/login";
+
+  if (isLogin) {
+    return children;
+  }
+
   return (
-    <AdminAuthProvider>
-      <AdminLoginGate>
+    <SessionProvider>
+      <AdminSessionGate>
         {isEditor ? (
           children
         ) : (
@@ -185,7 +123,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {children}
           </DashboardShell>
         )}
-      </AdminLoginGate>
-    </AdminAuthProvider>
+      </AdminSessionGate>
+    </SessionProvider>
   );
 }
