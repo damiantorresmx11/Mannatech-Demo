@@ -941,6 +941,9 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
       )
 
     case "select":
+      if (field.key === "slideTransition") {
+        return <SlideTransitionPicker field={field} value={value} onChange={onChange} />
+      }
       return (
         <div>
           <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">{field.label}</label>
@@ -994,6 +997,89 @@ function FieldControl({ field, value, onChange }: { field: FieldDef; value: any;
 // ═══════════════════════════════════════════════════════════════
 // MEDIA FIELD CONTROL (Upload + Gallery)
 // ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// SLIDE TRANSITION PICKER — Visual preview of slide transitions
+// ═══════════════════════════════════════════════════════════════
+
+const SLIDE_TRANSITION_INFO = [
+  { id: "fade", name: "Fade", desc: "Crossfade suave", css: "cms-slide-fade" },
+  { id: "zoom", name: "Zoom", desc: "Zoom in/out con fade", css: "cms-slide-zoom" },
+  { id: "slideHorizontal", name: "Slide Horizontal", desc: "Desliza de derecha a izquierda", css: "cms-slide-horizontal" },
+  { id: "slideUp", name: "Slide Up", desc: "Desliza de abajo hacia arriba", css: "cms-slide-up" },
+  { id: "flipVertical", name: "Flip 3D", desc: "Giro 3D con perspectiva", css: "cms-slide-flip" },
+]
+
+const SLIDE_TRANSITION_STYLES = `
+@keyframes cms-sf-a { 0%,45% { opacity:1 } 50%,95% { opacity:0 } 100% { opacity:1 } }
+@keyframes cms-sf-b { 0%,45% { opacity:0 } 50%,95% { opacity:1 } 100% { opacity:0 } }
+@keyframes cms-sz-a { 0%,45% { opacity:1;transform:scale(1) } 50%,95% { opacity:0;transform:scale(1.15) } 100% { opacity:1;transform:scale(1) } }
+@keyframes cms-sz-b { 0%,45% { opacity:0;transform:scale(0.85) } 50%,95% { opacity:1;transform:scale(1) } 100% { opacity:0;transform:scale(0.85) } }
+@keyframes cms-sh-a { 0%,45% { transform:translateX(0) } 50%,95% { transform:translateX(-110%) } 100% { transform:translateX(0) } }
+@keyframes cms-sh-b { 0%,45% { transform:translateX(110%) } 50%,95% { transform:translateX(0) } 100% { transform:translateX(110%) } }
+@keyframes cms-su-a { 0%,45% { transform:translateY(0) } 50%,95% { transform:translateY(-110%) } 100% { transform:translateY(0) } }
+@keyframes cms-su-b { 0%,45% { transform:translateY(110%) } 50%,95% { transform:translateY(0) } 100% { transform:translateY(110%) } }
+@keyframes cms-sfl-a { 0%,45% { transform:perspective(600px) rotateX(0) } 50%,95% { transform:perspective(600px) rotateX(90deg) } 100% { transform:perspective(600px) rotateX(0) } }
+@keyframes cms-sfl-b { 0%,45% { transform:perspective(600px) rotateX(-90deg) } 50%,95% { transform:perspective(600px) rotateX(0) } 100% { transform:perspective(600px) rotateX(-90deg) } }
+.cms-slide-fade .cms-sa { animation: cms-sf-a 3s ease-in-out infinite }
+.cms-slide-fade .cms-sb { animation: cms-sf-b 3s ease-in-out infinite }
+.cms-slide-zoom .cms-sa { animation: cms-sz-a 3s ease-in-out infinite }
+.cms-slide-zoom .cms-sb { animation: cms-sz-b 3s ease-in-out infinite }
+.cms-slide-horizontal .cms-sa { animation: cms-sh-a 3s ease-in-out infinite }
+.cms-slide-horizontal .cms-sb { animation: cms-sh-b 3s ease-in-out infinite }
+.cms-slide-up .cms-sa { animation: cms-su-a 3s ease-in-out infinite }
+.cms-slide-up .cms-sb { animation: cms-su-b 3s ease-in-out infinite }
+.cms-slide-flip .cms-sa { animation: cms-sfl-a 3s ease-in-out infinite }
+.cms-slide-flip .cms-sb { animation: cms-sfl-b 3s ease-in-out infinite }
+`
+
+function SlideTransitionPicker({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
+  return (
+    <div>
+      <style dangerouslySetInnerHTML={{ __html: SLIDE_TRANSITION_STYLES }} />
+      <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">{field.label}</label>
+      <div className="grid grid-cols-1 gap-2">
+        {SLIDE_TRANSITION_INFO.map(t => {
+          const isSelected = value === t.id
+          return (
+            <button
+              key={t.id}
+              onClick={() => onChange(t.id)}
+              className={`flex items-center gap-3 p-2.5 rounded-xl transition-all ${
+                isSelected
+                  ? "bg-blue-500/10 ring-1 ring-blue-500/40"
+                  : "bg-zinc-800/30 hover:bg-zinc-800/60 border border-zinc-800/40 hover:border-zinc-700"
+              }`}
+            >
+              {/* Mini animated preview */}
+              <div className={`w-14 h-10 rounded-lg bg-zinc-950 overflow-hidden relative flex-shrink-0 ${t.css}`}>
+                <div className="cms-sa absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white text-[7px] font-bold">A</span>
+                </div>
+                <div className="cms-sb absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded flex items-center justify-center">
+                  <span className="text-white text-[7px] font-bold">B</span>
+                </div>
+              </div>
+
+              {/* Label */}
+              <div className="flex-1 text-left">
+                <span className={`text-xs font-semibold ${isSelected ? "text-blue-400" : "text-zinc-300"}`}>{t.name}</span>
+                <p className="text-[9px] text-zinc-500">{t.desc}</p>
+              </div>
+
+              {/* Check */}
+              {isSelected && (
+                <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="w-3 h-3"><path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 // ═══════════════════════════════════════════════════════════════
 // ANIMATION PICKER — Visual preview with CSS animations
