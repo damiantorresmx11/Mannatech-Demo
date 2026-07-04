@@ -343,12 +343,14 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
         })
       }
       setIsDirty(false)
+      // Reload preview to apply animation/style changes
+      reloadPreview()
     } catch (err) {
       console.error("Save failed:", err)
     } finally {
       setIsSaving(false)
     }
-  }, [page, blocks])
+  }, [page, blocks, reloadPreview])
 
   // Publish
   const handlePublish = useCallback(async () => {
