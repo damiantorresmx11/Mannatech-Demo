@@ -195,7 +195,7 @@ export default function AnalyticsPage() {
             <motion.div variants={itemVariants} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
               <h2 className="text-sm font-medium text-zinc-300 mb-4">Paginas Vistas</h2>
               <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minHeight={200}>
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
                     <XAxis dataKey="date" stroke="#71717a" tick={{ fontSize: 12 }} />
@@ -267,7 +267,7 @@ export default function AnalyticsPage() {
               <motion.div variants={itemVariants} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                 <h2 className="text-sm font-medium text-zinc-300 mb-4">Navegadores</h2>
                 <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={200}>
                     <PieChart>
                       <Pie
                         data={(Array.isArray(data?.browsers) ? data.browsers : []).map((b) => ({ name: b.x || "Otro", value: b.y }))}
@@ -301,7 +301,7 @@ export default function AnalyticsPage() {
               <motion.div variants={itemVariants} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                 <h2 className="text-sm font-medium text-zinc-300 mb-4">Dispositivos</h2>
                 <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={200}>
                     <PieChart>
                       <Pie
                         data={(Array.isArray(data?.devices) ? data.devices : []).map((d) => ({ name: d.x || "Otro", value: d.y }))}
