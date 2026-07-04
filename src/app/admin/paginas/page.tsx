@@ -20,13 +20,29 @@ interface PageItem {
 const CMS_API = "/api/cms-proxy"
 const SITE_ID = "e1d8c609-d3ad-4a15-ab8c-18d031f10a09"
 
-// Thumbnail colors for pages without images
+// Thumbnail colors — subtle dark tones that match the admin theme
 const PAGE_COLORS: Record<string, string> = {
-  home: "from-blue-500 to-indigo-600",
-  productos: "from-emerald-500 to-teal-600",
-  "quienes-somos": "from-purple-500 to-violet-600",
-  unete: "from-amber-500 to-orange-600",
-  impacto: "from-rose-500 to-pink-600",
+  home: "from-zinc-800 to-zinc-900",
+  productos: "from-zinc-800 to-zinc-900",
+  "quienes-somos": "from-zinc-800 to-zinc-900",
+  unete: "from-zinc-800 to-zinc-900",
+  impacto: "from-zinc-800 to-zinc-900",
+}
+
+const PAGE_ACCENTS: Record<string, string> = {
+  home: "text-blue-400",
+  productos: "text-emerald-400",
+  "quienes-somos": "text-violet-400",
+  unete: "text-amber-400",
+  impacto: "text-rose-400",
+}
+
+const PAGE_ACCENT_BG: Record<string, string> = {
+  home: "bg-blue-500/10",
+  productos: "bg-emerald-500/10",
+  "quienes-somos": "bg-violet-500/10",
+  unete: "bg-amber-500/10",
+  impacto: "bg-rose-500/10",
 }
 
 const PAGE_ICONS: Record<string, string> = {
@@ -105,8 +121,7 @@ export default function PaginasPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <FileText size={24} className="text-blue-400" />
+          <h1 className="text-2xl font-bold text-white">
             Paginas
           </h1>
           <p className="text-sm text-zinc-500 mt-1">
@@ -222,19 +237,26 @@ export default function PaginasPage() {
       {!loading && filtered.length > 0 && view === "grid" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(page => {
-            const gradient = PAGE_COLORS[page.slug] || "from-zinc-600 to-zinc-700"
+            const gradient = PAGE_COLORS[page.slug] || "from-zinc-800 to-zinc-900"
+            const accent = PAGE_ACCENTS[page.slug] || "text-zinc-500"
+            const accentBg = PAGE_ACCENT_BG[page.slug] || "bg-zinc-500/10"
             const label = PAGE_ICONS[page.slug] || page.slug
             return (
               <Link
                 key={page.id}
                 href={`/admin/paginas/${page.slug}`}
-                className="group relative bg-zinc-800/30 hover:bg-zinc-800/60 border border-zinc-800/60 hover:border-zinc-700 rounded-2xl overflow-hidden transition-all hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5"
+                className="group relative bg-zinc-900/60 hover:bg-zinc-800/60 border border-zinc-800/50 hover:border-zinc-700/70 rounded-2xl overflow-hidden transition-all hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5"
               >
                 {/* Thumbnail */}
                 <div className={`h-32 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
-                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
+                  <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white/30 text-4xl font-bold uppercase tracking-wider">{label}</span>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className={`w-12 h-12 rounded-2xl ${accentBg} flex items-center justify-center`}>
+                        <FileText size={22} className={accent} />
+                      </div>
+                      <span className={`text-xs font-semibold ${accent} opacity-60 uppercase tracking-widest`}>{label}</span>
+                    </div>
                   </div>
                   {/* Status badge */}
                   <div className="absolute top-3 right-3">
@@ -323,18 +345,19 @@ export default function PaginasPage() {
           </div>
 
           {filtered.map((page, i) => {
-            const gradient = PAGE_COLORS[page.slug] || "from-zinc-600 to-zinc-700"
+            const accent = PAGE_ACCENTS[page.slug] || "text-zinc-500"
+            const accentBg = PAGE_ACCENT_BG[page.slug] || "bg-zinc-500/10"
             return (
               <Link
                 key={page.id}
                 href={`/admin/paginas/${page.slug}`}
-                className={`grid grid-cols-[1fr_100px_100px_80px] gap-4 items-center px-5 py-3.5 hover:bg-zinc-800/40 transition-colors group ${
+                className={`grid grid-cols-[1fr_100px_100px_80px] gap-4 items-center px-5 py-3.5 hover:bg-zinc-800/30 transition-colors group ${
                   i < filtered.length - 1 ? "border-b border-zinc-800/30" : ""
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
-                    <FileText size={14} className="text-white/70" />
+                  <div className={`w-8 h-8 rounded-lg ${accentBg} flex items-center justify-center flex-shrink-0`}>
+                    <FileText size={14} className={accent} />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">{page.title}</p>
