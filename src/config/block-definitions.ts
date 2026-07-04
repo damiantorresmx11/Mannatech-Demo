@@ -52,7 +52,7 @@ export const blockDefinitions: BlockDefinition[] = [
       { key: "cta.label", type: "text", label: "Texto del Boton" },
       { key: "cta.url", type: "text", label: "URL del Boton" },
       { key: "interval", type: "number", label: "Intervalo (ms)", min: 1000, max: 15000 },
-      { key: "slideTransition", type: "select", label: "Transicion de Slides", options: ["fade", "slideHorizontal", "zoom", "flipVertical", "slideUp"] },
+      { key: "slideTransition", type: "select", label: "Transicion de Slides", options: ["fade", "zoom", "slideHorizontal", "slideUp", "flipVertical", "zoomRotate", "blur", "elastic", "curtain", "crossZoom", "swingIn", "bounceSlide", "diagonal", "kenBurns"] },
       { key: "style", type: "select", label: "Estilo", options: ["slider", "centered", "left", "video"] },
     ],
     design: [

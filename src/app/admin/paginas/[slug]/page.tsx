@@ -1008,29 +1008,60 @@ const SLIDE_TRANSITION_INFO = [
   { id: "slideHorizontal", name: "Slide Horizontal", desc: "Desliza de derecha a izquierda", css: "cms-slide-horizontal" },
   { id: "slideUp", name: "Slide Up", desc: "Desliza de abajo hacia arriba", css: "cms-slide-up" },
   { id: "flipVertical", name: "Flip 3D", desc: "Giro 3D con perspectiva", css: "cms-slide-flip" },
+  { id: "zoomRotate", name: "Zoom + Rotacion", desc: "Zoom con giro sutil", css: "cms-slide-zoomrot" },
+  { id: "blur", name: "Blur", desc: "Desenfoque cinematografico", css: "cms-slide-blur" },
+  { id: "elastic", name: "Elastico", desc: "Rebote elastico tipo spring", css: "cms-slide-elastic" },
+  { id: "curtain", name: "Cortina", desc: "Se abre como una cortina", css: "cms-slide-curtain" },
+  { id: "crossZoom", name: "Cross Zoom", desc: "Zoom extremo con blur", css: "cms-slide-crosszoom" },
+  { id: "swingIn", name: "Swing 3D", desc: "Giro horizontal tipo puerta", css: "cms-slide-swing" },
+  { id: "bounceSlide", name: "Bounce Slide", desc: "Desliza con rebote", css: "cms-slide-bounce" },
+  { id: "diagonal", name: "Diagonal", desc: "Entra desde la esquina", css: "cms-slide-diagonal" },
+  { id: "kenBurns", name: "Ken Burns", desc: "Zoom lento cinematografico", css: "cms-slide-ken" },
 ]
 
 const SLIDE_TRANSITION_STYLES = `
-@keyframes cms-sf-a { 0%,45% { opacity:1 } 50%,95% { opacity:0 } 100% { opacity:1 } }
-@keyframes cms-sf-b { 0%,45% { opacity:0 } 50%,95% { opacity:1 } 100% { opacity:0 } }
-@keyframes cms-sz-a { 0%,45% { opacity:1;transform:scale(1) } 50%,95% { opacity:0;transform:scale(1.15) } 100% { opacity:1;transform:scale(1) } }
-@keyframes cms-sz-b { 0%,45% { opacity:0;transform:scale(0.85) } 50%,95% { opacity:1;transform:scale(1) } 100% { opacity:0;transform:scale(0.85) } }
-@keyframes cms-sh-a { 0%,45% { transform:translateX(0) } 50%,95% { transform:translateX(-110%) } 100% { transform:translateX(0) } }
-@keyframes cms-sh-b { 0%,45% { transform:translateX(110%) } 50%,95% { transform:translateX(0) } 100% { transform:translateX(110%) } }
-@keyframes cms-su-a { 0%,45% { transform:translateY(0) } 50%,95% { transform:translateY(-110%) } 100% { transform:translateY(0) } }
-@keyframes cms-su-b { 0%,45% { transform:translateY(110%) } 50%,95% { transform:translateY(0) } 100% { transform:translateY(110%) } }
-@keyframes cms-sfl-a { 0%,45% { transform:perspective(600px) rotateX(0) } 50%,95% { transform:perspective(600px) rotateX(90deg) } 100% { transform:perspective(600px) rotateX(0) } }
-@keyframes cms-sfl-b { 0%,45% { transform:perspective(600px) rotateX(-90deg) } 50%,95% { transform:perspective(600px) rotateX(0) } 100% { transform:perspective(600px) rotateX(-90deg) } }
-.cms-slide-fade .cms-sa { animation: cms-sf-a 3s ease-in-out infinite }
-.cms-slide-fade .cms-sb { animation: cms-sf-b 3s ease-in-out infinite }
-.cms-slide-zoom .cms-sa { animation: cms-sz-a 3s ease-in-out infinite }
-.cms-slide-zoom .cms-sb { animation: cms-sz-b 3s ease-in-out infinite }
-.cms-slide-horizontal .cms-sa { animation: cms-sh-a 3s ease-in-out infinite }
-.cms-slide-horizontal .cms-sb { animation: cms-sh-b 3s ease-in-out infinite }
-.cms-slide-up .cms-sa { animation: cms-su-a 3s ease-in-out infinite }
-.cms-slide-up .cms-sb { animation: cms-su-b 3s ease-in-out infinite }
-.cms-slide-flip .cms-sa { animation: cms-sfl-a 3s ease-in-out infinite }
-.cms-slide-flip .cms-sb { animation: cms-sfl-b 3s ease-in-out infinite }
+@keyframes cms-sf-a { 0%,45%{opacity:1} 50%,95%{opacity:0} 100%{opacity:1} }
+@keyframes cms-sf-b { 0%,45%{opacity:0} 50%,95%{opacity:1} 100%{opacity:0} }
+@keyframes cms-sz-a { 0%,45%{opacity:1;transform:scale(1)} 50%,95%{opacity:0;transform:scale(1.15)} 100%{opacity:1;transform:scale(1)} }
+@keyframes cms-sz-b { 0%,45%{opacity:0;transform:scale(0.85)} 50%,95%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(0.85)} }
+@keyframes cms-sh-a { 0%,45%{transform:translateX(0)} 50%,95%{transform:translateX(-110%)} 100%{transform:translateX(0)} }
+@keyframes cms-sh-b { 0%,45%{transform:translateX(110%)} 50%,95%{transform:translateX(0)} 100%{transform:translateX(110%)} }
+@keyframes cms-su-a { 0%,45%{transform:translateY(0)} 50%,95%{transform:translateY(-110%)} 100%{transform:translateY(0)} }
+@keyframes cms-su-b { 0%,45%{transform:translateY(110%)} 50%,95%{transform:translateY(0)} 100%{transform:translateY(110%)} }
+@keyframes cms-sfl-a { 0%,45%{transform:perspective(600px) rotateX(0)} 50%,95%{transform:perspective(600px) rotateX(90deg)} 100%{transform:perspective(600px) rotateX(0)} }
+@keyframes cms-sfl-b { 0%,45%{transform:perspective(600px) rotateX(-90deg)} 50%,95%{transform:perspective(600px) rotateX(0)} 100%{transform:perspective(600px) rotateX(-90deg)} }
+@keyframes cms-szr-a { 0%,45%{opacity:1;transform:scale(1) rotate(0)} 50%,95%{opacity:0;transform:scale(0.6) rotate(-8deg)} 100%{opacity:1;transform:scale(1) rotate(0)} }
+@keyframes cms-szr-b { 0%,45%{opacity:0;transform:scale(1.3) rotate(5deg)} 50%,95%{opacity:1;transform:scale(1) rotate(0)} 100%{opacity:0;transform:scale(1.3) rotate(5deg)} }
+@keyframes cms-sbl-a { 0%,45%{opacity:1;filter:blur(0)} 50%,95%{opacity:0;filter:blur(12px);transform:scale(1.1)} 100%{opacity:1;filter:blur(0)} }
+@keyframes cms-sbl-b { 0%,45%{opacity:0;filter:blur(12px);transform:scale(0.9)} 50%,95%{opacity:1;filter:blur(0);transform:scale(1)} 100%{opacity:0;filter:blur(12px)} }
+@keyframes cms-sel-a { 0%,40%{transform:translateX(0);opacity:1} 50%,90%{transform:translateX(-60%);opacity:0} 100%{transform:translateX(0);opacity:1} }
+@keyframes cms-sel-b { 0%,40%{transform:translateX(110%);opacity:0} 45%{transform:translateX(5%);opacity:1} 55%{transform:translateX(-3%)} 60%,90%{transform:translateX(0);opacity:1} 100%{transform:translateX(110%);opacity:0} }
+@keyframes cms-scu-a { 0%,45%{transform:scaleX(1)} 50%,95%{transform:scaleX(0)} 100%{transform:scaleX(1)} }
+@keyframes cms-scu-b { 0%,45%{transform:scaleX(0)} 50%,95%{transform:scaleX(1)} 100%{transform:scaleX(0)} }
+@keyframes cms-scz-a { 0%,45%{opacity:1;transform:scale(1);filter:blur(0)} 50%,95%{opacity:0;transform:scale(0.5);filter:blur(6px)} 100%{opacity:1;transform:scale(1);filter:blur(0)} }
+@keyframes cms-scz-b { 0%,45%{opacity:0;transform:scale(2);filter:blur(6px)} 50%,95%{opacity:1;transform:scale(1);filter:blur(0)} 100%{opacity:0;transform:scale(2);filter:blur(6px)} }
+@keyframes cms-ssw-a { 0%,45%{transform:perspective(600px) rotateY(0)} 50%,95%{transform:perspective(600px) rotateY(-90deg)} 100%{transform:perspective(600px) rotateY(0)} }
+@keyframes cms-ssw-b { 0%,45%{transform:perspective(600px) rotateY(90deg)} 50%,95%{transform:perspective(600px) rotateY(0)} 100%{transform:perspective(600px) rotateY(90deg)} }
+@keyframes cms-sbn-a { 0%,45%{transform:translateX(0)} 48%{transform:translateX(-3%)} 50%,95%{transform:translateX(-110%)} 100%{transform:translateX(0)} }
+@keyframes cms-sbn-b { 0%,45%{transform:translateX(110%)} 50%{transform:translateX(-4%)} 55%{transform:translateX(2%)} 58%,95%{transform:translateX(0)} 100%{transform:translateX(110%)} }
+@keyframes cms-sdg-a { 0%,45%{transform:translate(0,0);opacity:1} 50%,95%{transform:translate(-60%,-60%);opacity:0} 100%{transform:translate(0,0);opacity:1} }
+@keyframes cms-sdg-b { 0%,45%{transform:translate(60%,60%);opacity:0} 50%,95%{transform:translate(0,0);opacity:1} 100%{transform:translate(60%,60%);opacity:0} }
+@keyframes cms-skb-a { 0%,45%{opacity:1;transform:scale(1)} 50%,95%{opacity:0;transform:scale(1.12)} 100%{opacity:1;transform:scale(1)} }
+@keyframes cms-skb-b { 0%,45%{opacity:0;transform:scale(1)} 50%,95%{opacity:1;transform:scale(1.08)} 100%{opacity:0;transform:scale(1)} }
+.cms-slide-fade .cms-sa{animation:cms-sf-a 3s ease-in-out infinite} .cms-slide-fade .cms-sb{animation:cms-sf-b 3s ease-in-out infinite}
+.cms-slide-zoom .cms-sa{animation:cms-sz-a 3s ease-in-out infinite} .cms-slide-zoom .cms-sb{animation:cms-sz-b 3s ease-in-out infinite}
+.cms-slide-horizontal .cms-sa{animation:cms-sh-a 3s ease-in-out infinite} .cms-slide-horizontal .cms-sb{animation:cms-sh-b 3s ease-in-out infinite}
+.cms-slide-up .cms-sa{animation:cms-su-a 3s ease-in-out infinite} .cms-slide-up .cms-sb{animation:cms-su-b 3s ease-in-out infinite}
+.cms-slide-flip .cms-sa{animation:cms-sfl-a 3s ease-in-out infinite} .cms-slide-flip .cms-sb{animation:cms-sfl-b 3s ease-in-out infinite}
+.cms-slide-zoomrot .cms-sa{animation:cms-szr-a 3s ease-in-out infinite} .cms-slide-zoomrot .cms-sb{animation:cms-szr-b 3s ease-in-out infinite}
+.cms-slide-blur .cms-sa{animation:cms-sbl-a 3s ease-in-out infinite} .cms-slide-blur .cms-sb{animation:cms-sbl-b 3s ease-in-out infinite}
+.cms-slide-elastic .cms-sa{animation:cms-sel-a 3s ease-in-out infinite} .cms-slide-elastic .cms-sb{animation:cms-sel-b 3s ease-in-out infinite}
+.cms-slide-curtain .cms-sa{animation:cms-scu-a 3s ease-in-out infinite} .cms-slide-curtain .cms-sb{animation:cms-scu-b 3s ease-in-out infinite}
+.cms-slide-crosszoom .cms-sa{animation:cms-scz-a 3s ease-in-out infinite} .cms-slide-crosszoom .cms-sb{animation:cms-scz-b 3s ease-in-out infinite}
+.cms-slide-swing .cms-sa{animation:cms-ssw-a 3s ease-in-out infinite} .cms-slide-swing .cms-sb{animation:cms-ssw-b 3s ease-in-out infinite}
+.cms-slide-bounce .cms-sa{animation:cms-sbn-a 3s ease-in-out infinite} .cms-slide-bounce .cms-sb{animation:cms-sbn-b 3s ease-in-out infinite}
+.cms-slide-diagonal .cms-sa{animation:cms-sdg-a 3s ease-in-out infinite} .cms-slide-diagonal .cms-sb{animation:cms-sdg-b 3s ease-in-out infinite}
+.cms-slide-ken .cms-sa{animation:cms-skb-a 4s ease-in-out infinite} .cms-slide-ken .cms-sb{animation:cms-skb-b 4s ease-in-out infinite}
 `
 
 function SlideTransitionPicker({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {

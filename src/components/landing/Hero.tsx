@@ -86,6 +86,60 @@ const SLIDE_TRANSITIONS: Record<string, {
     exit: { opacity: 0, y: "-100%" },
     transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
   },
+  zoomRotate: {
+    initial: { opacity: 0, scale: 0.6, rotate: -8 },
+    animate: { opacity: 1, scale: 1, rotate: 0 },
+    exit: { opacity: 0, scale: 1.3, rotate: 5 },
+    transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
+  },
+  blur: {
+    initial: { opacity: 0, filter: "blur(20px)", scale: 1.1 },
+    animate: { opacity: 1, filter: "blur(0px)", scale: 1 },
+    exit: { opacity: 0, filter: "blur(20px)", scale: 0.95 },
+    transition: { duration: 0.7, ease: "easeInOut" },
+  },
+  elastic: {
+    initial: { opacity: 0, x: "100%", scale: 0.8 },
+    animate: { opacity: 1, x: 0, scale: 1 },
+    exit: { opacity: 0, x: "-50%", scale: 0.8 },
+    transition: { type: "spring", stiffness: 200, damping: 20 },
+  },
+  curtain: {
+    initial: { opacity: 0, scaleX: 0 },
+    animate: { opacity: 1, scaleX: 1 },
+    exit: { opacity: 0, scaleX: 0 },
+    transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
+  },
+  crossZoom: {
+    initial: { opacity: 0, scale: 2, filter: "blur(8px)" },
+    animate: { opacity: 1, scale: 1, filter: "blur(0px)" },
+    exit: { opacity: 0, scale: 0.5, filter: "blur(8px)" },
+    transition: { duration: 0.8, ease: "easeOut" },
+  },
+  swingIn: {
+    initial: { opacity: 0, rotateY: -90 },
+    animate: { opacity: 1, rotateY: 0 },
+    exit: { opacity: 0, rotateY: 90 },
+    transition: { duration: 0.7, ease: "easeOut" },
+  },
+  bounceSlide: {
+    initial: { opacity: 0, x: "100%" },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: "-100%" },
+    transition: { type: "spring", stiffness: 300, damping: 25 },
+  },
+  diagonal: {
+    initial: { opacity: 0, x: "60%", y: "60%" },
+    animate: { opacity: 1, x: 0, y: 0 },
+    exit: { opacity: 0, x: "-60%", y: "-60%" },
+    transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] },
+  },
+  kenBurns: {
+    initial: { opacity: 0, scale: 1 },
+    animate: { opacity: 1, scale: 1.08 },
+    exit: { opacity: 0, scale: 1.15 },
+    transition: { duration: 1.2, ease: "linear" },
+  },
 };
 
 export function Hero({ cms }: { cms?: Record<string, any> }) {
