@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Plus, FileText, Eye, Pencil, Globe, FileX, Search,
-  LayoutGrid, List, Clock, ArrowUpRight, Loader2, MoreVertical,
-  Trash2, Copy, Archive,
+  LayoutGrid, List, Clock, ArrowUpRight, Loader2, X,
 } from "lucide-react"
 
 interface PageItem {
@@ -20,38 +20,23 @@ interface PageItem {
 const CMS_API = "/api/cms-proxy"
 const SITE_ID = "e1d8c609-d3ad-4a15-ab8c-18d031f10a09"
 
-// Thumbnail colors — subtle dark tones that match the admin theme
-const PAGE_COLORS: Record<string, string> = {
-  home: "from-zinc-800 to-zinc-900",
-  productos: "from-zinc-800 to-zinc-900",
-  "quienes-somos": "from-zinc-800 to-zinc-900",
-  unete: "from-zinc-800 to-zinc-900",
-  impacto: "from-zinc-800 to-zinc-900",
+const PAGE_ACCENTS: Record<string, { text: string; bg: string; border: string; glow: string }> = {
+  home: { text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", glow: "shadow-blue-500/10" },
+  productos: { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", glow: "shadow-emerald-500/10" },
+  "quienes-somos": { text: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", glow: "shadow-violet-500/10" },
+  unete: { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", glow: "shadow-amber-500/10" },
+  impacto: { text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", glow: "shadow-rose-500/10" },
 }
 
-const PAGE_ACCENTS: Record<string, string> = {
-  home: "text-blue-400",
-  productos: "text-emerald-400",
-  "quienes-somos": "text-violet-400",
-  unete: "text-amber-400",
-  impacto: "text-rose-400",
-}
-
-const PAGE_ACCENT_BG: Record<string, string> = {
-  home: "bg-blue-500/10",
-  productos: "bg-emerald-500/10",
-  "quienes-somos": "bg-violet-500/10",
-  unete: "bg-amber-500/10",
-  impacto: "bg-rose-500/10",
-}
-
-const PAGE_ICONS: Record<string, string> = {
+const PAGE_LABELS: Record<string, string> = {
   home: "Inicio",
   productos: "Tienda",
   "quienes-somos": "Nosotros",
   unete: "Registro",
   impacto: "Social",
 }
+
+const DEFAULT_ACCENT = { text: "text-zinc-400", bg: "bg-zinc-500/10", border: "border-zinc-500/20", glow: "shadow-zinc-500/10" }
 
 async function fetchPages(): Promise<PageItem[]> {
   const res = await fetch(`${CMS_API}/pages?siteId=${SITE_ID}`)
@@ -72,16 +57,56 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("es-MX", { day: "numeric", month: "short" })
 }
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring" as const, stiffness: 300, damping: 24 },
+  },
+}
+
+const listItemVariants = {
+  hidden: { opacity: 0, x: -12 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { type: "spring" as const, stiffness: 400, damping: 28 },
+  },
+}
+
+const modalVariants = {
+  hidden: { opacity: 0, y: -20, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring" as const, stiffness: 400, damping: 26 } },
+  exit: { opacity: 0, y: -10, scale: 0.97, transition: { duration: 0.15 } },
+}
+
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+  exit: { opacity: 0 },
+}
+
 export default function PaginasPage() {
   const [pages, setPages] = useState<PageItem[]>([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<"grid" | "list">("grid")
   const [search, setSearch] = useState("")
+  const [searchFocused, setSearchFocused] = useState(false)
   const [showNew, setShowNew] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [newSlug, setNewSlug] = useState("")
   const [creating, setCreating] = useState(false)
-  const [menuOpen, setMenuOpen] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPages().then(setPages).finally(() => setLoading(false))
@@ -117,282 +142,440 @@ export default function PaginasPage() {
   const drafts = filtered.filter(p => p.status === "draft").length
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="p-6 lg:p-8 max-w-7xl mx-auto"
+    >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
+      >
         <div>
-          <h1 className="text-2xl font-bold text-white">
-            Paginas
-          </h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Paginas</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            {pages.length} paginas · {published} publicadas · {drafts} borradores
+            {pages.length} paginas &middot; {published} publicadas &middot; {drafts} borradores
           </p>
         </div>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setShowNew(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30"
+          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-blue-600/20"
         >
           <Plus size={16} />
           Nueva Pagina
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Search + View toggle */}
-      <div className="flex items-center gap-3 mb-6">
+      <motion.div
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.35 }}
+        className="flex items-center gap-3 mb-6"
+      >
         <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-          <input
+          <Search size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 ${searchFocused ? "text-blue-400" : "text-zinc-500"}`} />
+          <motion.input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             placeholder="Buscar paginas..."
-            className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 transition-all"
+            animate={{
+              borderColor: searchFocused ? "rgba(59,130,246,0.5)" : "rgba(63,63,70,0.5)",
+              boxShadow: searchFocused ? "0 0 0 3px rgba(59,130,246,0.1)" : "0 0 0 0px rgba(59,130,246,0)",
+            }}
+            transition={{ duration: 0.2 }}
+            className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none transition-all"
           />
         </div>
         <div className="flex items-center bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-1">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setView("grid")}
             className={`p-2 rounded-lg transition-all ${view === "grid" ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
           >
             <LayoutGrid size={16} />
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setView("list")}
             className={`p-2 rounded-lg transition-all ${view === "list" ? "bg-blue-500/20 text-blue-400" : "text-zinc-500 hover:text-zinc-300"}`}
           >
             <List size={16} />
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Create new page modal */}
-      {showNew && (
-        <div className="mb-6 p-5 bg-zinc-800/60 backdrop-blur border border-zinc-700/60 rounded-2xl space-y-4">
-          <h3 className="text-sm font-semibold text-white">Crear Nueva Pagina</h3>
-          <input
-            value={newTitle}
-            onChange={(e) => {
-              setNewTitle(e.target.value)
-              setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
-            }}
-            placeholder="Titulo de la pagina"
-            className="w-full bg-zinc-900/60 border border-zinc-700/40 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none"
-            autoFocus
-          />
-          <div className="flex items-center gap-2 bg-zinc-900/40 rounded-xl px-4 py-2 border border-zinc-700/30">
-            <span className="text-xs text-zinc-500">mannatech.dmlabs.mx/</span>
-            <input
-              value={newSlug}
-              onChange={(e) => setNewSlug(e.target.value)}
-              placeholder="slug"
-              className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none font-mono"
+      {/* Create new page modal overlay */}
+      <AnimatePresence>
+        {showNew && (
+          <>
+            <motion.div
+              variants={overlayVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             />
-          </div>
-          <div className="flex justify-end gap-2">
-            <button onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }} className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors">
-              Cancelar
-            </button>
-            <button
-              onClick={handleCreate}
-              disabled={!newTitle || !newSlug || creating}
-              className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-sm font-semibold rounded-xl transition-all"
+            <motion.div
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
             >
-              {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-              Crear Pagina
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/60 rounded-2xl p-6 shadow-2xl shadow-black/40">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-base font-semibold text-white">Crear Nueva Pagina</h3>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }}
+                    className="p-1.5 text-zinc-500 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+                  >
+                    <X size={16} />
+                  </motion.button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Titulo</label>
+                    <input
+                      value={newTitle}
+                      onChange={(e) => {
+                        setNewTitle(e.target.value)
+                        setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
+                      }}
+                      placeholder="Titulo de la pagina"
+                      className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 transition-all"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-zinc-400 mb-1.5 block">URL</label>
+                    <div className="flex items-center gap-2 bg-zinc-800/60 rounded-xl px-4 py-3 border border-zinc-700/50 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
+                      <span className="text-xs text-zinc-500 whitespace-nowrap">mannatech.dmlabs.mx/</span>
+                      <input
+                        value={newSlug}
+                        onChange={(e) => setNewSlug(e.target.value)}
+                        placeholder="slug"
+                        className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none font-mono"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }}
+                      className="px-4 py-2.5 text-sm text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+                    >
+                      Cancelar
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleCreate}
+                      disabled={!newTitle || !newSlug || creating}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:hover:bg-blue-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-blue-600/20"
+                    >
+                      {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                      Crear Pagina
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
-      {/* Loading */}
+      {/* Loading skeleton */}
       {loading && (
-        <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+        <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" : "space-y-3"}>
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className={`bg-zinc-800/30 rounded-2xl animate-pulse ${view === "grid" ? "h-48" : "h-16"}`} />
+            <div
+              key={i}
+              className={`bg-zinc-800/20 border border-zinc-800/40 rounded-2xl animate-pulse ${view === "grid" ? "h-56" : "h-16"}`}
+            />
           ))}
         </div>
       )}
 
       {/* Empty state */}
-      {!loading && filtered.length === 0 && (
-        <div className="text-center py-24">
-          <div className="w-20 h-20 rounded-3xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-5">
-            <FileX size={36} className="text-zinc-600" />
-          </div>
-          <h3 className="text-lg font-semibold text-zinc-300 mb-2">
-            {search ? "Sin resultados" : "No hay paginas"}
-          </h3>
-          <p className="text-sm text-zinc-600 mb-6">
-            {search ? `No se encontraron paginas para "${search}"` : "Crea tu primera pagina para empezar"}
-          </p>
-          {!search && (
-            <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl">
-              <Plus size={16} /> Crear Pagina
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* ═══ GRID VIEW ═══ */}
-      {!loading && filtered.length > 0 && view === "grid" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(page => {
-            const gradient = PAGE_COLORS[page.slug] || "from-zinc-800 to-zinc-900"
-            const accent = PAGE_ACCENTS[page.slug] || "text-zinc-500"
-            const accentBg = PAGE_ACCENT_BG[page.slug] || "bg-zinc-500/10"
-            const label = PAGE_ICONS[page.slug] || page.slug
-            return (
-              <Link
-                key={page.id}
-                href={`/admin/paginas/${page.slug}`}
-                className="group relative bg-zinc-900/60 hover:bg-zinc-800/60 border border-zinc-800/50 hover:border-zinc-700/70 rounded-2xl overflow-hidden transition-all hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5"
+      <AnimatePresence>
+        {!loading && filtered.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className="text-center py-24"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+              className="w-24 h-24 rounded-3xl bg-zinc-800/40 border border-zinc-700/30 flex items-center justify-center mx-auto mb-6"
+            >
+              <FileX size={40} className="text-zinc-600" />
+            </motion.div>
+            <motion.h3
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-lg font-semibold text-zinc-300 mb-2"
+            >
+              {search ? "Sin resultados" : "No hay paginas"}
+            </motion.h3>
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-sm text-zinc-600 mb-6 max-w-xs mx-auto"
+            >
+              {search ? `No se encontraron paginas para "${search}"` : "Crea tu primera pagina para empezar a construir tu sitio"}
+            </motion.p>
+            {!search && (
+              <motion.button
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowNew(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/20"
               >
-                {/* Thumbnail */}
-                <div className={`h-32 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
-                  <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className={`w-12 h-12 rounded-2xl ${accentBg} flex items-center justify-center`}>
-                        <FileText size={22} className={accent} />
-                      </div>
-                      <span className={`text-xs font-semibold ${accent} opacity-60 uppercase tracking-widest`}>{label}</span>
-                    </div>
-                  </div>
-                  {/* Status badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold backdrop-blur-sm ${
-                      page.status === "published"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                        : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                    }`}>
-                      {page.status === "published" ? "Publicado" : "Borrador"}
-                    </span>
-                  </div>
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 px-4 py-2 bg-white/90 text-zinc-900 rounded-xl text-xs font-semibold shadow-lg">
-                      <Pencil size={12} />
-                      Editar Pagina
-                    </div>
-                  </div>
-                </div>
+                <Plus size={16} /> Crear Pagina
+              </motion.button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-                {/* Info */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-white truncate group-hover:text-blue-400 transition-colors">
-                        {page.title}
-                      </h3>
-                      <p className="text-[11px] text-zinc-500 font-mono mt-0.5">/{page.slug}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-800/60">
-                    <div className="flex items-center gap-1.5 text-[10px] text-zinc-600">
-                      <Clock size={10} />
-                      {timeAgo(page.updatedAt)}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {page.status === "published" && (
+      {/* GRID VIEW */}
+      <AnimatePresence mode="wait">
+        {!loading && filtered.length > 0 && view === "grid" && (
+          <motion.div
+            key="grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+          >
+            {filtered.map(page => {
+              const accent = PAGE_ACCENTS[page.slug] || DEFAULT_ACCENT
+              const label = PAGE_LABELS[page.slug] || page.slug
+              return (
+                <motion.div key={page.id} variants={cardVariants} layout>
+                  <Link
+                    href={`/admin/paginas/${page.slug}`}
+                    className="group relative block bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/60 rounded-2xl overflow-hidden transition-all duration-300 hover:border-zinc-600/60 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-1 hover:scale-[1.02]"
+                  >
+                    {/* Card header area with icon */}
+                    <div className="h-36 relative flex items-center justify-center bg-zinc-900/80">
+                      {/* Subtle dot pattern */}
+                      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
+                      {/* Subtle radial glow behind icon */}
+                      <div className={`absolute w-32 h-32 rounded-full ${accent.bg} blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500`} />
+                      {/* Icon */}
+                      <div className="relative flex flex-col items-center gap-2.5">
+                        <motion.div
+                          whileHover={{ rotate: 3 }}
+                          className={`w-14 h-14 rounded-2xl ${accent.bg} border ${accent.border} flex items-center justify-center transition-all duration-300 group-hover:scale-110`}
+                        >
+                          <FileText size={24} className={accent.text} />
+                        </motion.div>
+                        <span className={`text-[10px] font-bold ${accent.text} uppercase tracking-[0.2em] opacity-50 group-hover:opacity-80 transition-opacity`}>
+                          {label}
+                        </span>
+                      </div>
+
+                      {/* Status badge */}
+                      <div className="absolute top-3.5 right-3.5">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold backdrop-blur-md ${
+                          page.status === "published"
+                            ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25"
+                            : "bg-amber-500/15 text-amber-300 border border-amber-500/25"
+                        }`}>
+                          {page.status === "published" && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          )}
+                          {page.status === "published" ? "Publicado" : "Borrador"}
+                        </span>
+                      </div>
+
+                      {/* Quick actions — slide in on hover */}
+                      <div className="absolute bottom-3 right-3 flex items-center gap-1.5 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                        {page.status === "published" && (
+                          <a
+                            href={`/${page.slug === "home" ? "" : page.slug}`}
+                            target="_blank"
+                            onClick={e => e.stopPropagation()}
+                            className="p-2 bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50 text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/30 rounded-xl transition-colors"
+                            title="Ver en sitio"
+                          >
+                            <Globe size={13} />
+                          </a>
+                        )}
                         <a
-                          href={`/${page.slug === "home" ? "" : page.slug}`}
+                          href={`/preview/${page.slug}`}
                           target="_blank"
                           onClick={e => e.stopPropagation()}
-                          className="p-1.5 text-zinc-600 hover:text-emerald-400 rounded-lg hover:bg-zinc-800 transition-colors"
-                          title="Ver en sitio"
+                          className="p-2 bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50 text-zinc-400 hover:text-blue-400 hover:border-blue-500/30 rounded-xl transition-colors"
+                          title="Vista previa"
                         >
-                          <ArrowUpRight size={12} />
+                          <Eye size={13} />
                         </a>
-                      )}
-                      <a
-                        href={`/preview/${page.slug}`}
-                        target="_blank"
-                        onClick={e => e.stopPropagation()}
-                        className="p-1.5 text-zinc-600 hover:text-blue-400 rounded-lg hover:bg-zinc-800 transition-colors"
-                        title="Vista previa"
-                      >
-                        <Eye size={12} />
-                      </a>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
 
-          {/* Add new page card */}
-          <button
-            onClick={() => setShowNew(true)}
-            className="flex flex-col items-center justify-center h-full min-h-[200px] border-2 border-dashed border-zinc-800 hover:border-blue-500/40 rounded-2xl text-zinc-600 hover:text-blue-400 transition-all hover:bg-blue-500/5 group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-zinc-800/50 group-hover:bg-blue-500/10 flex items-center justify-center mb-3 transition-colors">
-              <Plus size={24} />
-            </div>
-            <span className="text-xs font-semibold">Nueva Pagina</span>
-          </button>
-        </div>
-      )}
+                    {/* Card content */}
+                    <div className="p-4 border-t border-zinc-800/50">
+                      <h3 className="text-sm font-semibold text-white truncate group-hover:text-blue-400 transition-colors duration-200">
+                        {page.title}
+                      </h3>
+                      <p className="text-[11px] text-zinc-600 font-mono mt-0.5">/{page.slug}</p>
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-800/40">
+                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-600">
+                          <Clock size={11} />
+                          {timeAgo(page.updatedAt)}
+                        </div>
+                        <div className="flex items-center gap-1 text-[11px] text-zinc-600">
+                          <FileText size={11} />
+                          {page.blocks?.length || 0} bloques
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              )
+            })}
 
-      {/* ═══ LIST VIEW ═══ */}
-      {!loading && filtered.length > 0 && view === "list" && (
-        <div className="bg-zinc-800/20 border border-zinc-800/60 rounded-2xl overflow-hidden">
-          {/* Table header */}
-          <div className="grid grid-cols-[1fr_100px_100px_80px] gap-4 px-5 py-3 border-b border-zinc-800/60 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-            <span>Pagina</span>
-            <span>Estado</span>
-            <span>Modificado</span>
-            <span className="text-right">Acciones</span>
-          </div>
-
-          {filtered.map((page, i) => {
-            const accent = PAGE_ACCENTS[page.slug] || "text-zinc-500"
-            const accentBg = PAGE_ACCENT_BG[page.slug] || "bg-zinc-500/10"
-            return (
-              <Link
-                key={page.id}
-                href={`/admin/paginas/${page.slug}`}
-                className={`grid grid-cols-[1fr_100px_100px_80px] gap-4 items-center px-5 py-3.5 hover:bg-zinc-800/30 transition-colors group ${
-                  i < filtered.length - 1 ? "border-b border-zinc-800/30" : ""
-                }`}
+            {/* Add new page card */}
+            <motion.div variants={cardVariants}>
+              <motion.button
+                whileHover={{ scale: 1.02, borderColor: "rgba(59,130,246,0.4)" }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowNew(true)}
+                className="flex flex-col items-center justify-center w-full h-full min-h-[240px] border-2 border-dashed border-zinc-800 rounded-2xl text-zinc-600 hover:text-blue-400 transition-all duration-300 hover:bg-blue-500/[0.03] group"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-8 h-8 rounded-lg ${accentBg} flex items-center justify-center flex-shrink-0`}>
-                    <FileText size={14} className={accent} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">{page.title}</p>
-                    <p className="text-[10px] text-zinc-600 font-mono">/{page.slug}</p>
-                  </div>
-                </div>
-                <span className={`inline-flex items-center w-fit px-2.5 py-1 rounded-full text-[10px] font-semibold ${
-                  page.status === "published"
-                    ? "bg-emerald-500/10 text-emerald-400"
-                    : "bg-amber-500/10 text-amber-400"
-                }`}>
-                  {page.status === "published" ? "Publicado" : "Borrador"}
-                </span>
-                <span className="text-xs text-zinc-600">{timeAgo(page.updatedAt)}</span>
-                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="p-1.5 text-zinc-500 hover:text-blue-400 rounded-lg hover:bg-zinc-700/50 transition-colors" title="Editar">
-                    <Pencil size={13} />
-                  </span>
-                  {page.status === "published" && (
-                    <a
-                      href={`/${page.slug === "home" ? "" : page.slug}`}
-                      target="_blank"
-                      onClick={e => e.stopPropagation()}
-                      className="p-1.5 text-zinc-500 hover:text-emerald-400 rounded-lg hover:bg-zinc-700/50 transition-colors"
-                      title="Ver en sitio"
+                <motion.div
+                  whileHover={{ rotate: 90 }}
+                  transition={{ type: "spring" as const, stiffness: 300 }}
+                  className="w-14 h-14 rounded-2xl bg-zinc-800/40 group-hover:bg-blue-500/10 border border-zinc-700/30 group-hover:border-blue-500/20 flex items-center justify-center mb-3 transition-colors duration-300"
+                >
+                  <Plus size={24} />
+                </motion.div>
+                <span className="text-xs font-semibold">Nueva Pagina</span>
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* LIST VIEW */}
+      <AnimatePresence mode="wait">
+        {!loading && filtered.length > 0 && view === "list" && (
+          <motion.div
+            key="list"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/60 rounded-2xl overflow-hidden"
+          >
+            {/* Table header */}
+            <div className="grid grid-cols-[1fr_100px_120px_90px] gap-4 px-5 py-3.5 border-b border-zinc-800/50 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+              <span>Pagina</span>
+              <span>Estado</span>
+              <span>Modificado</span>
+              <span className="text-right">Acciones</span>
+            </div>
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+            >
+              {filtered.map((page, i) => {
+                const accent = PAGE_ACCENTS[page.slug] || DEFAULT_ACCENT
+                return (
+                  <motion.div key={page.id} variants={listItemVariants}>
+                    <Link
+                      href={`/admin/paginas/${page.slug}`}
+                      className={`grid grid-cols-[1fr_100px_120px_90px] gap-4 items-center px-5 py-4 hover:bg-zinc-800/30 transition-all duration-200 group ${
+                        i < filtered.length - 1 ? "border-b border-zinc-800/30" : ""
+                      }`}
                     >
-                      <ArrowUpRight size={13} />
-                    </a>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      )}
-    </div>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-9 h-9 rounded-xl ${accent.bg} border ${accent.border} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}>
+                          <FileText size={15} className={accent.text} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors duration-200">{page.title}</p>
+                          <p className="text-[10px] text-zinc-600 font-mono">/{page.slug}</p>
+                        </div>
+                      </div>
+
+                      <span className={`inline-flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full text-[10px] font-semibold ${
+                        page.status === "published"
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                      }`}>
+                        {page.status === "published" && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        )}
+                        {page.status === "published" ? "Publicado" : "Borrador"}
+                      </span>
+
+                      <span className="flex items-center gap-1.5 text-xs text-zinc-600">
+                        <Clock size={11} />
+                        {timeAgo(page.updatedAt)}
+                      </span>
+
+                      {/* Actions — slide in */}
+                      <div className="flex items-center justify-end gap-1 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
+                        <span className="p-1.5 text-zinc-500 hover:text-blue-400 rounded-lg hover:bg-zinc-700/50 transition-colors" title="Editar">
+                          <Pencil size={13} />
+                        </span>
+                        <a
+                          href={`/preview/${page.slug}`}
+                          target="_blank"
+                          onClick={e => e.stopPropagation()}
+                          className="p-1.5 text-zinc-500 hover:text-blue-400 rounded-lg hover:bg-zinc-700/50 transition-colors"
+                          title="Vista previa"
+                        >
+                          <Eye size={13} />
+                        </a>
+                        {page.status === "published" && (
+                          <a
+                            href={`/${page.slug === "home" ? "" : page.slug}`}
+                            target="_blank"
+                            onClick={e => e.stopPropagation()}
+                            className="p-1.5 text-zinc-500 hover:text-emerald-400 rounded-lg hover:bg-zinc-700/50 transition-colors"
+                            title="Ver en sitio"
+                          >
+                            <ArrowUpRight size={13} />
+                          </a>
+                        )}
+                      </div>
+                    </Link>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
