@@ -138,7 +138,7 @@ export default function ReportesPage() {
           <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
               title="Ingresos Totales"
-              value={`$${data.totalRevenue.toLocaleString("es-MX", { minimumFractionDigits: 2 })} ${data.currency}`}
+              value={`$${(data?.totalRevenue || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })} ${data.currency}`}
               icon={DollarSign}
               color="emerald"
             />
@@ -150,7 +150,7 @@ export default function ReportesPage() {
             />
             <KPICard
               title="Ticket Promedio"
-              value={`$${data.avgOrderValue.toLocaleString("es-MX", { minimumFractionDigits: 2 })} ${data.currency}`}
+              value={`$${(data?.avgOrderValue || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })} ${data.currency}`}
               icon={TrendingUp}
               color="purple"
             />
@@ -265,7 +265,7 @@ export default function ReportesPage() {
                         <td className="py-3 px-4 font-medium text-zinc-100">{p.name}</td>
                         <td className="py-3 px-4 text-right text-zinc-300">{p.quantity}</td>
                         <td className="py-3 px-4 text-right text-zinc-300">
-                          ${p.revenue.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                          ${(p?.revenue || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                         </td>
                       </tr>
                     ))}
