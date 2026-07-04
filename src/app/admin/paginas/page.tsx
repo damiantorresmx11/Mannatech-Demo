@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Plus, FileText, Eye, Pencil, Globe, FileX, Search,
   LayoutGrid, List, Clock, ArrowUpRight, Loader2, X,
+  FileCode, Package, Users, Rocket, FlaskConical, BookOpen, ChevronLeft,
 } from "lucide-react"
 
 interface PageItem {
@@ -37,6 +38,101 @@ const PAGE_LABELS: Record<string, string> = {
 }
 
 const DEFAULT_ACCENT = { text: "text-zinc-400", bg: "bg-zinc-500/10", border: "border-zinc-500/20", glow: "shadow-zinc-500/10" }
+
+// Page templates
+interface TemplateDefinition {
+  id: string
+  name: string
+  description: string
+  icon: React.ReactNode
+  color: string
+  blocks: { type: string; content: Record<string, any>; styles: Record<string, any> }[]
+}
+
+const PAGE_TEMPLATES: TemplateDefinition[] = [
+  {
+    id: "blank",
+    name: "Pagina en Blanco",
+    description: "Empieza desde cero sin bloques predefinidos",
+    icon: <FileCode size={28} />,
+    color: "zinc",
+    blocks: [],
+  },
+  {
+    id: "landing-producto",
+    name: "Landing de Producto",
+    description: "Hero, productos destacados, testimonios y llamada a la accion",
+    icon: <Package size={28} />,
+    color: "emerald",
+    blocks: [
+      { type: "hero", content: {}, styles: {} },
+      { type: "featured-grid", content: {}, styles: {} },
+      { type: "testimonials", content: {}, styles: {} },
+      { type: "cta-banner", content: {}, styles: {} },
+    ],
+  },
+  {
+    id: "sobre-nosotros",
+    name: "Sobre Nosotros",
+    description: "Mision, historia, equipo y llamada a la accion",
+    icon: <Users size={28} />,
+    color: "violet",
+    blocks: [
+      { type: "hero", content: {}, styles: {} },
+      { type: "mission-section", content: {}, styles: {} },
+      { type: "timeline", content: {}, styles: {} },
+      { type: "team-grid", content: {}, styles: {} },
+      { type: "cta-banner", content: {}, styles: {} },
+    ],
+  },
+  {
+    id: "unete-oportunidad",
+    name: "Unete / Oportunidad",
+    description: "Video, precios, caracteristicas animadas y testimonios",
+    icon: <Rocket size={28} />,
+    color: "amber",
+    blocks: [
+      { type: "video-hero", content: {}, styles: {} },
+      { type: "pricing-table", content: {}, styles: {} },
+      { type: "animated-features", content: {}, styles: {} },
+      { type: "testimonials", content: {}, styles: {} },
+      { type: "cta-banner", content: {}, styles: {} },
+    ],
+  },
+  {
+    id: "ciencia",
+    name: "Pagina de Ciencia",
+    description: "Ciencia, gliconutrientes y logos de respaldo",
+    icon: <FlaskConical size={28} />,
+    color: "blue",
+    blocks: [
+      { type: "hero", content: {}, styles: {} },
+      { type: "science-section", content: {}, styles: {} },
+      { type: "glycans-section", content: {}, styles: {} },
+      { type: "why-glycans-section", content: {}, styles: {} },
+      { type: "logo-grid", content: {}, styles: {} },
+    ],
+  },
+  {
+    id: "blog-articulo",
+    name: "Blog / Articulo",
+    description: "Hero con area de contenido libre para articulos",
+    icon: <BookOpen size={28} />,
+    color: "rose",
+    blocks: [
+      { type: "hero", content: {}, styles: {} },
+    ],
+  },
+]
+
+const TEMPLATE_COLORS: Record<string, { text: string; bg: string; border: string }> = {
+  zinc: { text: "text-zinc-400", bg: "bg-zinc-500/10", border: "border-zinc-500/20" },
+  emerald: { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+  violet: { text: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+  amber: { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+  blue: { text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+  rose: { text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
+}
 
 async function fetchPages(): Promise<PageItem[]> {
   const res = await fetch(`${CMS_API}/pages?siteId=${SITE_ID}`)
@@ -107,27 +203,57 @@ export default function PaginasPage() {
   const [newTitle, setNewTitle] = useState("")
   const [newSlug, setNewSlug] = useState("")
   const [creating, setCreating] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateDefinition | null>(null)
+  const [modalStep, setModalStep] = useState<"template" | "details">("template")
 
   useEffect(() => {
     fetchPages().then(setPages).finally(() => setLoading(false))
   }, [])
 
+  const resetModal = () => {
+    setShowNew(false)
+    setNewTitle("")
+    setNewSlug("")
+    setSelectedTemplate(null)
+    setModalStep("template")
+  }
+
   const handleCreate = async () => {
-    if (!newTitle || !newSlug) return
+    if (!newTitle || !newSlug || !selectedTemplate) return
     setCreating(true)
     try {
       const token = localStorage.getItem("cms-token") || ""
+      const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+
+      // 1. Create the page
       const res = await fetch(`${CMS_API}/pages`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ siteId: SITE_ID, title: newTitle, slug: newSlug }),
       })
       if (res.ok) {
         const page = await res.json()
+
+        // 2. Create template blocks
+        if (selectedTemplate.blocks.length > 0) {
+          for (let i = 0; i < selectedTemplate.blocks.length; i++) {
+            const block = selectedTemplate.blocks[i]
+            await fetch(`${CMS_API}/blocks`, {
+              method: "POST",
+              headers,
+              body: JSON.stringify({
+                pageId: page.id,
+                type: block.type,
+                content: block.content,
+                styles: block.styles,
+                position: i,
+              }),
+            })
+          }
+        }
+
         setPages(prev => [...prev, page])
-        setShowNew(false)
-        setNewTitle("")
-        setNewSlug("")
+        resetModal()
       }
     } finally {
       setCreating(false)
@@ -223,7 +349,7 @@ export default function PaginasPage() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }}
+              onClick={resetModal}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             />
             <motion.div
@@ -231,67 +357,154 @@ export default function PaginasPage() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl"
             >
               <div className="bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/60 rounded-2xl p-6 shadow-2xl shadow-black/40">
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-base font-semibold text-white">Crear Nueva Pagina</h3>
+                  <div className="flex items-center gap-3">
+                    {modalStep === "details" && (
+                      <motion.button
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setModalStep("template")}
+                        className="p-1.5 text-zinc-500 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+                      >
+                        <ChevronLeft size={16} />
+                      </motion.button>
+                    )}
+                    <h3 className="text-base font-semibold text-white">
+                      {modalStep === "template" ? "Elige una plantilla" : "Detalles de la pagina"}
+                    </h3>
+                  </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }}
+                    onClick={resetModal}
                     className="p-1.5 text-zinc-500 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
                   >
                     <X size={16} />
                   </motion.button>
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Titulo</label>
-                    <input
-                      value={newTitle}
-                      onChange={(e) => {
-                        setNewTitle(e.target.value)
-                        setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
-                      }}
-                      placeholder="Titulo de la pagina"
-                      className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 transition-all"
-                      autoFocus
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-zinc-400 mb-1.5 block">URL</label>
-                    <div className="flex items-center gap-2 bg-zinc-800/60 rounded-xl px-4 py-3 border border-zinc-700/50 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
-                      <span className="text-xs text-zinc-500 whitespace-nowrap">mannatech.dmlabs.mx/</span>
-                      <input
-                        value={newSlug}
-                        onChange={(e) => setNewSlug(e.target.value)}
-                        placeholder="slug"
-                        className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none font-mono"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-3 pt-2">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => { setShowNew(false); setNewTitle(""); setNewSlug("") }}
-                      className="px-4 py-2.5 text-sm text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+
+                <AnimatePresence mode="wait">
+                  {modalStep === "template" && (
+                    <motion.div
+                      key="template-step"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      Cancelar
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleCreate}
-                      disabled={!newTitle || !newSlug || creating}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:hover:bg-blue-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-blue-600/20"
+                      <p className="text-sm text-zinc-500 mb-4">Selecciona una plantilla base para tu nueva pagina</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {PAGE_TEMPLATES.map((template) => {
+                          const colors = TEMPLATE_COLORS[template.color]
+                          const isSelected = selectedTemplate?.id === template.id
+                          return (
+                            <motion.button
+                              key={template.id}
+                              whileHover={{ scale: 1.03, y: -2 }}
+                              whileTap={{ scale: 0.97 }}
+                              onClick={() => {
+                                setSelectedTemplate(template)
+                                setModalStep("details")
+                              }}
+                              className={`relative flex flex-col items-center text-center p-4 rounded-xl border transition-all duration-200 ${
+                                isSelected
+                                  ? `${colors.bg} ${colors.border} border-2`
+                                  : "bg-zinc-800/40 border-zinc-700/40 hover:border-zinc-600/60 hover:bg-zinc-800/60"
+                              }`}
+                            >
+                              <div className={`w-12 h-12 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center mb-3 transition-transform`}>
+                                <span className={colors.text}>{template.icon}</span>
+                              </div>
+                              <h4 className="text-xs font-semibold text-white mb-1">{template.name}</h4>
+                              <p className="text-[10px] text-zinc-500 leading-relaxed">{template.description}</p>
+                              {template.blocks.length > 0 && (
+                                <span className="mt-2 text-[9px] font-medium text-zinc-600 bg-zinc-800/60 px-2 py-0.5 rounded-full">
+                                  {template.blocks.length} bloques
+                                </span>
+                              )}
+                            </motion.button>
+                          )
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {modalStep === "details" && (
+                    <motion.div
+                      key="details-step"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-4"
                     >
-                      {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                      Crear Pagina
-                    </motion.button>
-                  </div>
-                </div>
+                      {/* Selected template badge */}
+                      {selectedTemplate && (
+                        <div className={`flex items-center gap-3 p-3 rounded-xl ${TEMPLATE_COLORS[selectedTemplate.color].bg} border ${TEMPLATE_COLORS[selectedTemplate.color].border}`}>
+                          <div className={`w-8 h-8 rounded-lg ${TEMPLATE_COLORS[selectedTemplate.color].bg} border ${TEMPLATE_COLORS[selectedTemplate.color].border} flex items-center justify-center`}>
+                            <span className={`${TEMPLATE_COLORS[selectedTemplate.color].text} [&>svg]:w-4 [&>svg]:h-4`}>{selectedTemplate.icon}</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-white">{selectedTemplate.name}</p>
+                            <p className="text-[10px] text-zinc-500">
+                              {selectedTemplate.blocks.length === 0 ? "Sin bloques" : `${selectedTemplate.blocks.length} bloques incluidos`}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Titulo</label>
+                        <input
+                          value={newTitle}
+                          onChange={(e) => {
+                            setNewTitle(e.target.value)
+                            setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
+                          }}
+                          placeholder="Titulo de la pagina"
+                          className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 transition-all"
+                          autoFocus
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-zinc-400 mb-1.5 block">URL</label>
+                        <div className="flex items-center gap-2 bg-zinc-800/60 rounded-xl px-4 py-3 border border-zinc-700/50 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
+                          <span className="text-xs text-zinc-500 whitespace-nowrap">mannatech.dmlabs.mx/</span>
+                          <input
+                            value={newSlug}
+                            onChange={(e) => setNewSlug(e.target.value)}
+                            placeholder="slug"
+                            className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none font-mono"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-3 pt-2">
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={resetModal}
+                          className="px-4 py-2.5 text-sm text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+                        >
+                          Cancelar
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={handleCreate}
+                          disabled={!newTitle || !newSlug || creating}
+                          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:hover:bg-blue-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-blue-600/20"
+                        >
+                          {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                          Crear
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
           </>

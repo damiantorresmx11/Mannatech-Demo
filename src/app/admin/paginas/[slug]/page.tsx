@@ -7,7 +7,7 @@ import {
   PanelRightClose, PanelRight, Sparkles, BarChart3, MousePointerClick,
   Package, MessageSquareQuote, HelpCircle, ListChecks, UserPlus,
   Users, Grid3x3, Award, Layout, Type, ImageIcon, Undo2, Redo2,
-  Copy, X, ChevronDown, ChevronUp,
+  Copy, X, ChevronDown, ChevronUp, Calendar,
 } from "lucide-react"
 import { blockDefMap, type FieldDef } from "@/config/block-definitions"
 import { blockDefinitions } from "@/config/block-definitions"
@@ -34,6 +34,7 @@ interface PageData {
   status: string
   seoTitle: string | null
   seoDescription: string | null
+  scheduledAt: string | null
   blocks: Block[]
 }
 
@@ -679,30 +680,62 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
             backgroundSize: "24px 24px",
           }} />
 
+          {/* Device frame wrapper */}
           <div
-            className="relative bg-white shadow-2xl overflow-hidden transition-all duration-500 ease-out mx-auto my-4"
+            className={`relative transition-all duration-500 ease-out mx-auto my-4 flex flex-col items-center ${
+              previewWidth === 375
+                ? "p-3 pt-8 pb-6 rounded-[40px] bg-zinc-900 border-[3px] border-zinc-700 shadow-[0_0_60px_rgba(0,0,0,0.5),inset_0_0_2px_rgba(255,255,255,0.05)]"
+                : previewWidth === 768
+                ? "p-4 rounded-[20px] bg-zinc-900 border-[2px] border-zinc-700/80 shadow-[0_0_50px_rgba(0,0,0,0.4),inset_0_0_2px_rgba(255,255,255,0.03)]"
+                : ""
+            }`}
             style={{
-              width: previewWidth === "full" ? "100%" : `${previewWidth}px`,
-              maxWidth: "100%",
-              height: previewWidth === "full" ? "calc(100vh - 96px)" : "calc(100vh - 110px)",
-              borderRadius: previewWidth === "full" ? 0 : "12px",
+              width: previewWidth === "full" ? "100%" : previewWidth === 768 ? "808px" : previewWidth === 375 ? "415px" : undefined,
               margin: previewWidth === "full" ? 0 : undefined,
             }}
           >
-            {/* Loading overlay */}
-            {!previewReady && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/90 z-10 gap-3">
-                <Loader2 className="animate-spin text-blue-500" size={24} />
-                <p className="text-xs text-zinc-500">Cargando preview...</p>
+            {/* Phone notch */}
+            {previewWidth === 375 && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[22px] bg-zinc-950 rounded-b-2xl rounded-t-md z-20 flex items-center justify-center">
+                <div className="w-[50px] h-[4px] bg-zinc-800 rounded-full" />
               </div>
             )}
 
-            <iframe
-              ref={iframeRef}
-              src={`/preview/${slug}`}
-              className="w-full h-full border-0 bg-white"
-              title="Preview"
-            />
+            {/* Tablet camera dot */}
+            {previewWidth === 768 && (
+              <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-800 rounded-full border border-zinc-700 z-20" />
+            )}
+
+            {/* Preview container */}
+            <div
+              className="relative bg-white shadow-2xl overflow-hidden transition-all duration-500 ease-out"
+              style={{
+                width: previewWidth === "full" ? "100%" : `${previewWidth}px`,
+                maxWidth: "100%",
+                height: previewWidth === "full" ? "calc(100vh - 96px)" : previewWidth === 768 ? "calc(100vh - 150px)" : "calc(100vh - 180px)",
+                borderRadius: previewWidth === "full" ? 0 : previewWidth === 375 ? "6px" : "8px",
+              }}
+            >
+              {/* Loading overlay */}
+              {!previewReady && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/90 z-10 gap-3">
+                  <Loader2 className="animate-spin text-blue-500" size={24} />
+                  <p className="text-xs text-zinc-500">Cargando preview...</p>
+                </div>
+              )}
+
+              <iframe
+                ref={iframeRef}
+                src={`/preview/${slug}`}
+                className="w-full h-full border-0 bg-white"
+                title="Preview"
+              />
+            </div>
+
+            {/* Phone home bar */}
+            {previewWidth === 375 && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[100px] h-[4px] bg-zinc-600 rounded-full z-20" />
+            )}
           </div>
         </div>
 
@@ -900,6 +933,67 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
                         <div className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white transition-transform ${page?.status === "published" ? "right-0.5" : "left-0.5"}`} />
                       </div>
                     </button>
+                  </div>
+
+                  {/* Scheduled Publishing */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Programar Publicacion</label>
+                    {page?.scheduledAt ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400">
+                          <Calendar size={14} />
+                          <span className="text-sm font-medium">
+                            {new Date(page.scheduledAt).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" })}
+                          </span>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const token = localStorage.getItem("cms-token")
+                            try {
+                              const res = await fetch(`${CMS_API}/pages/${page.id}`, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ scheduledAt: null }),
+                              })
+                              if (!res.ok) throw new Error()
+                              setPage(p => p ? { ...p, scheduledAt: null } : p)
+                            } catch { alert("Error al cancelar programacion") }
+                          }}
+                          className="w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
+                        >
+                          Cancelar programacion
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="datetime-local"
+                          id="scheduledAt"
+                          className="w-full px-3 py-2 text-sm bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-blue-500"
+                        />
+                        <button
+                          onClick={async () => {
+                            const input = document.getElementById("scheduledAt") as HTMLInputElement
+                            if (!input?.value || !page) return
+                            const isoDate = new Date(input.value).toISOString()
+                            const token = localStorage.getItem("cms-token")
+                            try {
+                              const res = await fetch(`${CMS_API}/pages/${page.id}`, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ scheduledAt: isoDate }),
+                              })
+                              if (!res.ok) throw new Error()
+                              setPage(p => p ? { ...p, scheduledAt: isoDate } : p)
+                            } catch { alert("Error al programar publicacion") }
+                          }}
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-lg transition-colors"
+                        >
+                          <Calendar size={14} />
+                          Programar
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Save Button */}
