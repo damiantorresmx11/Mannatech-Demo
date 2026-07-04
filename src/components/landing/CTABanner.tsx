@@ -17,8 +17,8 @@ export function CTABanner({ cms }: { cms?: Record<string, any> }) {
   const heading = cms?.heading || "Gana dinero globalmente";
   const subheading = cms?.subheading || "La Oportunidad Definitiva";
   const bgImage = cms?.backgroundImage || "https://mx.mannatech.com/wp-content/themes/mannatech/img/transform-03.jpg";
-  const ctaText = cms?.cta?.text || "Conoce Más";
-  const ctaHref = cms?.cta?.href || "/distribuidores/maria-lopez";
+  const ctaText = cms?.buttonLabel || cms?.cta?.text || "Conoce Más";
+  const ctaHref = cms?.buttonUrl || cms?.cta?.href || "/distribuidores/maria-lopez";
 
   return (
     <section id="unete" className="relative py-24 sm:py-32 overflow-hidden">

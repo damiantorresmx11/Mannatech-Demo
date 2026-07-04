@@ -87,7 +87,9 @@ export const blockDefinitions: BlockDefinition[] = [
     label: "Call to Action",
     icon: "MousePointerClick",
     content: [
+      { key: "backgroundImage", type: "media", label: "Imagen de Fondo" },
       { key: "heading", type: "text", label: "Titulo" },
+      { key: "subheading", type: "text", label: "Subtitulo" },
       { key: "text", type: "textarea", label: "Texto" },
       { key: "buttonLabel", type: "text", label: "Texto del Boton" },
       { key: "buttonUrl", type: "text", label: "URL del Boton" },
