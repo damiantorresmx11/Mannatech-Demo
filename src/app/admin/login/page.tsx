@@ -35,9 +35,8 @@ export default function AdminLoginPage() {
     } else {
       setSuccess(true)
       setTimeout(() => {
-        router.push("/admin/dashboard")
-        router.refresh()
-      }, 800)
+        window.location.href = "/admin/dashboard"
+      }, 600)
     }
   }
 
