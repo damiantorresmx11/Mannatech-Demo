@@ -255,6 +255,15 @@ export default function DashboardPage() {
     { label: "Usuarios", href: "/admin/usuarios", icon: Users, color: "#F59E0B" },
   ];
 
+  const [activeToolTab, setActiveToolTab] = useState<string | null>(null);
+
+  const productionTools = [
+    { id: "status", label: "Monitoreo", desc: "Uptime de servicios", url: "https://status.mannatech.dmlabs.mx", icon: Zap, color: "#10B981", embedUrl: "https://status.mannatech.dmlabs.mx/dashboard" },
+    { id: "analytics", label: "Analytics", desc: "Trafico y usuarios", url: "https://analytics.mannatech.dmlabs.mx", icon: TrendingUp, color: "#3B82F6", embedUrl: "https://analytics.mannatech.dmlabs.mx/share/overview" },
+    { id: "reportes", label: "Reportes", desc: "Dashboards de ventas", url: "https://reportes.mannatech.dmlabs.mx", icon: LayoutGrid, color: "#8B5CF6", embedUrl: "https://reportes.mannatech.dmlabs.mx" },
+    { id: "chat", label: "Soporte", desc: "Chat en vivo", url: "https://chat.mannatech.dmlabs.mx", icon: Headphones, color: "#F59E0B", embedUrl: "https://chat.mannatech.dmlabs.mx" },
+  ];
+
   return (
     <motion.div
       className="space-y-8 pb-8"
@@ -554,6 +563,98 @@ export default function DashboardPage() {
             </div>
           </div>
         </motion.div>
+      </motion.div>
+
+      {/* ══════ Production Tools Section ══════ */}
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-base font-semibold text-zinc-100">Herramientas de Produccion</h3>
+            <p className="text-xs text-zinc-500 mt-0.5">Monitoreo, analytics, reportes y soporte</p>
+          </div>
+          {activeToolTab && (
+            <button
+              onClick={() => setActiveToolTab(null)}
+              className="text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-700/50 hover:border-zinc-600 transition-all"
+            >
+              Cerrar panel
+            </button>
+          )}
+        </div>
+
+        {/* Tool cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          {productionTools.map((tool) => {
+            const isActive = activeToolTab === tool.id;
+            return (
+              <motion.button
+                key={tool.id}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveToolTab(isActive ? null : tool.id)}
+                className={`relative flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${
+                  isActive
+                    ? "bg-zinc-800/80 border-zinc-600/60 shadow-lg"
+                    : "bg-zinc-900/60 border-zinc-700/40 hover:border-zinc-600/50 hover:bg-zinc-800/50"
+                }`}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: `${tool.color}15` }}
+                >
+                  <tool.icon className="w-5 h-5" style={{ color: tool.color }} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-zinc-200">{tool.label}</p>
+                  <p className="text-[10px] text-zinc-500">{tool.desc}</p>
+                </div>
+                {isActive && (
+                  <div className="absolute top-2 right-2 w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: tool.color }} />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Embedded tool panel */}
+        {activeToolTab && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 600 }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" as const }}
+            className="rounded-2xl border border-zinc-700/50 bg-zinc-900/40 overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60 bg-zinc-900/80">
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const tool = productionTools.find(t => t.id === activeToolTab);
+                  if (!tool) return null;
+                  return (
+                    <>
+                      <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: tool.color }} />
+                      <span className="text-xs font-semibold text-zinc-300">{tool.label}</span>
+                      <span className="text-[10px] text-zinc-600">— {tool.desc}</span>
+                    </>
+                  );
+                })()}
+              </div>
+              <a
+                href={productionTools.find(t => t.id === activeToolTab)?.url}
+                target="_blank"
+                className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-blue-400 transition-colors"
+              >
+                Abrir en nueva ventana <ArrowUpRight size={10} />
+              </a>
+            </div>
+            <iframe
+              src={productionTools.find(t => t.id === activeToolTab)?.embedUrl}
+              className="w-full border-0 bg-zinc-950"
+              style={{ height: 560 }}
+              title={activeToolTab}
+            />
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );
