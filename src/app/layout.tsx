@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Open_Sans, Playfair_Display } from "next/font/google";
 import { cookies } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
 import { LayoutShell } from "@/components/LayoutShell";
 import {NextIntlClientProvider} from 'next-intl';
@@ -42,6 +43,13 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={`${openSans.variable} ${playfair.variable} h-full antialiased`}>
+      <head>
+        <Script
+          src="https://analytics.mannatech.dmlabs.mx/script.js"
+          data-website-id="17bb85db-0383-4936-82bf-4b7366754d7c"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <NextIntlClientProvider messages={messages}>
           <CompanyProvider initialCompanyId={companyId} initialLocale={locale as LocaleCode}>
