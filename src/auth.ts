@@ -31,11 +31,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return {
             id: data.user?.id || "admin",
-            name: data.user?.name || "Admin",
+            name: data.user?.name || "Admin DMLABS",
             email: credentials.email as string,
-            image: null,
-            cmsToken: data.token,
-            role: data.user?.role || "admin",
           }
         } catch {
           return null
@@ -47,18 +44,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/admin/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.cmsToken = (user as any).cmsToken
-        token.role = (user as any).role
-      }
-      return token
-    },
-    async session({ session, token }) {
-      (session as any).cmsToken = (token as any).cmsToken
-      (session as any).role = (token as any).role
-      return session
-    },
     authorized({ auth: session, request }) {
       const isAdmin = request.nextUrl.pathname.startsWith("/admin")
       const isLoginPage = request.nextUrl.pathname === "/admin/login"
@@ -68,7 +53,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return Response.redirect(new URL("/admin/login", request.nextUrl.origin))
       }
 
-      // If logged in and visiting login page, redirect to dashboard
       if (isLoginPage && isLoggedIn) {
         return Response.redirect(new URL("/admin/dashboard", request.nextUrl.origin))
       }
@@ -78,4 +62,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: { strategy: "jwt" },
   secret: process.env.AUTH_SECRET || "mannatech-cms-secret-2026-dmlabs",
+  trustHost: true,
 })
