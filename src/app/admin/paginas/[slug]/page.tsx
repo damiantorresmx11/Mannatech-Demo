@@ -722,7 +722,7 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
                   <span className="text-xs font-semibold text-zinc-300">{activeBlockDef.label}</span>
                 </div>
               ) : (
-                <span className="text-xs text-zinc-500">Selecciona un bloque</span>
+                <span className="text-xs text-zinc-400 font-medium">Pagina</span>
               )}
               <button onClick={() => setRightPanelOpen(false)} className="p-1 text-zinc-500 hover:text-white rounded-md hover:bg-zinc-800 transition-colors">
                 <PanelRightClose size={14} />
@@ -801,16 +801,135 @@ export default function EditorPage({ params }: { params: Promise<{ slug: string 
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-zinc-800/40 flex items-center justify-center">
-                  <MousePointerClick size={24} className="text-zinc-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-zinc-400 mb-1">Selecciona un bloque</p>
-                  <p className="text-xs text-zinc-600 leading-relaxed">
-                    Haz clic en cualquier bloque del canvas para editar sus propiedades.
-                    Doble clic para edicion inline.
-                  </p>
+              <div className="flex-1 overflow-y-auto px-4 py-4">
+                {/* Page Settings Panel */}
+                <div className="space-y-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Globe size={16} className="text-blue-400" />
+                    <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">Configuracion de pagina</span>
+                  </div>
+
+                  {/* Page Title */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Titulo de pagina</label>
+                    <input
+                      type="text"
+                      value={page?.title || ""}
+                      onChange={(e) => setPage(prev => prev ? { ...prev, title: e.target.value } : prev)}
+                      className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      placeholder="Titulo de la pagina"
+                    />
+                  </div>
+
+                  {/* SEO Title */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">SEO Title</label>
+                      <span className={`text-[10px] font-mono ${(page?.seoTitle?.length || 0) > 60 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {page?.seoTitle?.length || 0}/60
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      value={page?.seoTitle || ""}
+                      onChange={(e) => setPage(prev => prev ? { ...prev, seoTitle: e.target.value } : prev)}
+                      className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      placeholder="Titulo para motores de busqueda"
+                      maxLength={70}
+                    />
+                    {(page?.seoTitle?.length || 0) > 60 && (
+                      <p className="text-[10px] text-red-400">Recomendado: maximo 60 caracteres</p>
+                    )}
+                  </div>
+
+                  {/* SEO Description */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">SEO Description</label>
+                      <span className={`text-[10px] font-mono ${(page?.seoDescription?.length || 0) > 160 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {page?.seoDescription?.length || 0}/160
+                      </span>
+                    </div>
+                    <textarea
+                      value={page?.seoDescription || ""}
+                      onChange={(e) => setPage(prev => prev ? { ...prev, seoDescription: e.target.value } : prev)}
+                      className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"
+                      placeholder="Descripcion para motores de busqueda"
+                      rows={3}
+                      maxLength={200}
+                    />
+                    {(page?.seoDescription?.length || 0) > 160 && (
+                      <p className="text-[10px] text-red-400">Recomendado: maximo 160 caracteres</p>
+                    )}
+                  </div>
+
+                  {/* OG Image */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">OG Image URL</label>
+                    <input
+                      type="text"
+                      value={(page as any)?.ogImage || ""}
+                      onChange={(e) => setPage(prev => prev ? { ...prev, ogImage: e.target.value } as any : prev)}
+                      className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                    />
+                    <p className="text-[10px] text-zinc-600">Imagen para compartir en redes sociales (1200x630 recomendado)</p>
+                  </div>
+
+                  {/* Slug (read-only) */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Slug</label>
+                    <div className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-sm text-zinc-500 font-mono">
+                      /{page?.slug || ""}
+                    </div>
+                  </div>
+
+                  {/* Status Toggle */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Estado</label>
+                    <button
+                      onClick={() => setPage(prev => prev ? { ...prev, status: prev.status === "published" ? "draft" : "published" } : prev)}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border transition-colors ${
+                        page?.status === "published"
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                          : "bg-zinc-800 border-zinc-700 text-zinc-400"
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{page?.status === "published" ? "Publicado" : "Borrador"}</span>
+                      <div className={`w-8 h-4.5 rounded-full relative transition-colors ${page?.status === "published" ? "bg-emerald-500" : "bg-zinc-600"}`}>
+                        <div className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white transition-transform ${page?.status === "published" ? "right-0.5" : "left-0.5"}`} />
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Save Button */}
+                  <button
+                    onClick={async () => {
+                      if (!page) return
+                      const token = localStorage.getItem("cms-token")
+                      try {
+                        const res = await fetch(`${CMS_API}/pages/${page.id}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                          body: JSON.stringify({
+                            title: page.title,
+                            seoTitle: page.seoTitle,
+                            seoDescription: page.seoDescription,
+                            ogImage: (page as any).ogImage || null,
+                            status: page.status,
+                          }),
+                        })
+                        if (!res.ok) throw new Error("Error al guardar")
+                        alert("Configuracion guardada")
+                      } catch (err) {
+                        alert("Error al guardar configuracion")
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    <Save size={14} />
+                    Guardar configuracion
+                  </button>
                 </div>
               </div>
             )}

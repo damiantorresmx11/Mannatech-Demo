@@ -692,6 +692,123 @@ export function PreviewClient() {
           selectedId = null
           break
         }
+        case "update": {
+          // Real-time preview update: instantly reflect field changes in the DOM
+          const blockId = data.blockId as string
+          const field = data.field as string
+          const value = data.value as string
+
+          if (!blockId || !field || value === undefined) break
+
+          const blockEl = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLElement | null
+          if (!blockEl) break
+
+          // --- Style fields: apply directly to the block wrapper ---
+          const styleFields: Record<string, string> = {
+            bgColor: "backgroundColor",
+            backgroundColor: "backgroundColor",
+            paddingTop: "paddingTop",
+            paddingBottom: "paddingBottom",
+            paddingLeft: "paddingLeft",
+            paddingRight: "paddingRight",
+            marginTop: "marginTop",
+            marginBottom: "marginBottom",
+            borderRadius: "borderRadius",
+            color: "color",
+            textAlign: "textAlign",
+          }
+
+          if (styleFields[field]) {
+            const cssProp = styleFields[field]
+            ;(blockEl.style as any)[cssProp] = value
+            console.log("[CMS Editor] Style update:", field, "=", value)
+            break
+          }
+
+          // --- Text fields: update DOM content ---
+          const textFields = [
+            "heading", "title", "overline", "subheading", "subtitle",
+            "description", "text", "buttonLabel", "ctaText",
+            "label", "name", "caption", "badge", "eyebrow",
+          ]
+
+          // Strategy 1: Find element with data-cms-field attribute
+          const fieldEl = blockEl.querySelector(`[data-cms-field="${field}"]`) as HTMLElement | null
+          if (fieldEl) {
+            // Don't overwrite if user is currently inline-editing this element
+            if (editingField && editingField.element === fieldEl) break
+            fieldEl.textContent = value
+            console.log("[CMS Editor] Field update via data-cms-field:", field, "=", value)
+            break
+          }
+
+          // Strategy 2: Match by element hierarchy for common field names
+          if (textFields.includes(field)) {
+            const headings = blockEl.querySelectorAll("h1, h2, h3, h4, h5, h6")
+            const paragraphs = blockEl.querySelectorAll("p")
+            const buttons = blockEl.querySelectorAll("button, a.btn, a[class*='button'], a[class*='btn']")
+            const spans = blockEl.querySelectorAll("span")
+
+            let targetEl: HTMLElement | null = null
+
+            switch (field) {
+              case "heading":
+              case "title":
+                // First major heading in the block
+                targetEl = (headings[0] as HTMLElement) || null
+                break
+              case "overline":
+              case "eyebrow":
+              case "badge":
+                // Usually a small span or p before the heading
+                const preHeading = blockEl.querySelector(
+                  "span[class*='overline'], span[class*='eyebrow'], span[class*='badge'], " +
+                  "p[class*='overline'], p[class*='eyebrow'], span[class*='uppercase'], " +
+                  "span[class*='tracking']"
+                ) as HTMLElement
+                targetEl = preHeading || (spans[0] as HTMLElement) || null
+                break
+              case "subheading":
+              case "subtitle":
+              case "description":
+              case "text":
+                // First paragraph after headings, or second heading if no paragraphs
+                if (paragraphs.length > 0) {
+                  targetEl = paragraphs[0] as HTMLElement
+                } else if (headings.length > 1) {
+                  targetEl = headings[1] as HTMLElement
+                }
+                break
+              case "buttonLabel":
+              case "ctaText":
+                // First button or button-like link
+                if (buttons.length > 0) {
+                  targetEl = buttons[0] as HTMLElement
+                } else {
+                  // Fallback: any anchor that looks like a CTA
+                  const anyLink = blockEl.querySelector("a") as HTMLElement
+                  if (anyLink) targetEl = anyLink
+                }
+                break
+              case "label":
+              case "name":
+              case "caption":
+                // Try spans first, then paragraphs
+                targetEl = (spans[0] as HTMLElement) || (paragraphs[0] as HTMLElement) || null
+                break
+            }
+
+            if (targetEl) {
+              if (editingField && editingField.element === targetEl) break
+              targetEl.textContent = value
+              console.log("[CMS Editor] Field update via hierarchy:", field, "=", value)
+              break
+            }
+          }
+
+          console.log("[CMS Editor] Could not find target for field:", field, "in block:", blockId)
+          break
+        }
         case "refreshZones": {
           addZonesCreated = false
           setTimeout(createAddZones, 300)
