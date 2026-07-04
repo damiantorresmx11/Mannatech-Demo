@@ -16,6 +16,9 @@ import {
   Headphones,
   Shield,
   FileText,
+  Activity,
+  TrendingUp,
+  MessageCircle,
 } from "lucide-react";
 import type { SidebarItem } from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
@@ -34,8 +37,10 @@ const sidebarItems: SidebarItem[] = [
   { label: "Comisiones", href: "/admin/comisiones", icon: DollarSign },
   { label: "Marketing", href: "/admin/marketing", icon: Megaphone },
   { label: "Reportes", href: "/admin/reportes", icon: BarChart3 },
+  { label: "Analytics", href: "/admin/analytics", icon: TrendingUp },
+  { label: "Monitoreo", href: "/admin/monitoreo", icon: Activity },
+  { label: "Soporte", href: "/admin/soporte", icon: MessageCircle },
   { label: "Configuracion", href: "/admin/configuracion", icon: Settings },
-  { label: "Soporte", href: "/admin/soporte", icon: Headphones, badge: "7" },
   { label: "Auditoria", href: "/admin/auditoria", icon: Shield },
 ];
 

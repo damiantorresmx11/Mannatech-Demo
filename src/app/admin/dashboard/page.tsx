@@ -615,7 +615,7 @@ export default function DashboardPage() {
             ) : (
               <p className="text-xs text-zinc-600">Sin datos</p>
             )}
-            <a href="https://status.mannatech.dmlabs.mx" target="_blank" className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-emerald-400 transition-colors">
+            <a href="/admin/monitoreo"  className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-emerald-400 transition-colors">
               Ver detalle completo <ArrowUpRight size={9} />
             </a>
           </motion.div>
@@ -658,7 +658,7 @@ export default function DashboardPage() {
             ) : (
               <p className="text-xs text-zinc-600">Sin datos</p>
             )}
-            <a href="https://analytics.mannatech.dmlabs.mx" target="_blank" className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-blue-400 transition-colors">
+            <a href="/admin/analytics"  className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-blue-400 transition-colors">
               Ver analytics completo <ArrowUpRight size={9} />
             </a>
           </motion.div>
@@ -701,7 +701,7 @@ export default function DashboardPage() {
             ) : (
               <p className="text-xs text-zinc-600">Sin datos</p>
             )}
-            <a href="https://chat.mannatech.dmlabs.mx" target="_blank" className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-amber-400 transition-colors">
+            <a href="/admin/soporte"  className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-amber-400 transition-colors">
               Gestionar conversaciones <ArrowUpRight size={9} />
             </a>
           </motion.div>
