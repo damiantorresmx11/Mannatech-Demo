@@ -235,13 +235,13 @@ export default function AnalyticsPage() {
               <motion.div variants={itemVariants} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                 <h2 className="text-sm font-medium text-zinc-300 mb-4">Top 10 Paginas</h2>
                 <div className="space-y-2">
-                  {data.topPages.slice(0, 10).map((page, i) => (
+                  {(Array.isArray(data?.topPages) ? data.topPages : []).slice(0, 10).map((page, i) => (
                     <div key={i} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
                       <span className="text-sm text-zinc-300 truncate max-w-[70%]">{page.x || "(none)"}</span>
                       <span className="text-sm font-medium text-white">{page.y}</span>
                     </div>
                   ))}
-                  {data.topPages.length === 0 && (
+                  {(Array.isArray(data?.topPages) ? data.topPages : []).length === 0 && (
                     <p className="text-zinc-500 text-sm">Sin datos</p>
                   )}
                 </div>
@@ -251,13 +251,13 @@ export default function AnalyticsPage() {
               <motion.div variants={itemVariants} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                 <h2 className="text-sm font-medium text-zinc-300 mb-4">Referrers</h2>
                 <div className="space-y-2">
-                  {data.referrers.slice(0, 10).map((ref, i) => (
+                  {(Array.isArray(data?.referrers) ? data.referrers : []).slice(0, 10).map((ref, i) => (
                     <div key={i} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
                       <span className="text-sm text-zinc-300 truncate max-w-[70%]">{ref.x || "(directo)"}</span>
                       <span className="text-sm font-medium text-white">{ref.y}</span>
                     </div>
                   ))}
-                  {data.referrers.length === 0 && (
+                  {(Array.isArray(data?.referrers) ? data.referrers : []).length === 0 && (
                     <p className="text-zinc-500 text-sm">Sin datos</p>
                   )}
                 </div>
@@ -270,7 +270,7 @@ export default function AnalyticsPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={data.browsers.map((b) => ({ name: b.x || "Otro", value: b.y }))}
+                        data={(Array.isArray(data?.browsers) ? data.browsers : []).map((b) => ({ name: b.x || "Otro", value: b.y }))}
                         cx="50%"
                         cy="50%"
                         innerRadius={50}
@@ -278,7 +278,7 @@ export default function AnalyticsPage() {
                         paddingAngle={2}
                         dataKey="value"
                       >
-                        {data.browsers.map((_, i) => (
+                        {(Array.isArray(data?.browsers) ? data.browsers : []).map((_, i) => (
                           <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
@@ -304,7 +304,7 @@ export default function AnalyticsPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={data.devices.map((d) => ({ name: d.x || "Otro", value: d.y }))}
+                        data={(Array.isArray(data?.devices) ? data.devices : []).map((d) => ({ name: d.x || "Otro", value: d.y }))}
                         cx="50%"
                         cy="50%"
                         innerRadius={50}
@@ -312,7 +312,7 @@ export default function AnalyticsPage() {
                         paddingAngle={2}
                         dataKey="value"
                       >
-                        {data.devices.map((_, i) => (
+                        {(Array.isArray(data?.devices) ? data.devices : []).map((_, i) => (
                           <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
@@ -336,7 +336,7 @@ export default function AnalyticsPage() {
             <motion.div variants={itemVariants} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
               <h2 className="text-sm font-medium text-zinc-300 mb-4">Paises</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {data.countries.map((country, i) => (
+                {(Array.isArray(data?.countries) ? data.countries : []).map((country, i) => (
                   <div
                     key={i}
                     className="flex items-center justify-between bg-zinc-800/50 rounded-lg px-3 py-2"
@@ -345,7 +345,7 @@ export default function AnalyticsPage() {
                     <span className="text-sm font-medium text-white">{country.y}</span>
                   </div>
                 ))}
-                {data.countries.length === 0 && (
+                {(Array.isArray(data?.countries) ? data.countries : []).length === 0 && (
                   <p className="text-zinc-500 text-sm col-span-full">Sin datos</p>
                 )}
               </div>
