@@ -32,7 +32,7 @@ function ShellInner({
   const { collapsed, setMobileOpen } = useSidebar();
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+    <div className="dark min-h-screen bg-zinc-950">
       <DashboardSidebar
         items={sidebarItems}
         theme={sidebarTheme}
