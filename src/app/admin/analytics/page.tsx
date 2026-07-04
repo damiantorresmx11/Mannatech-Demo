@@ -119,9 +119,9 @@ export default function AnalyticsPage() {
 
   const kpis = data
     ? [
-        { label: "Visitantes", value: data.stats.visitors.value.toLocaleString() },
-        { label: "Paginas Vistas", value: data.stats.pageviews.value.toLocaleString() },
-        { label: "Sesiones", value: data.stats.visits.value.toLocaleString() },
+        { label: "Visitantes", value: (data?.stats?.visitors?.value || 0).toLocaleString() },
+        { label: "Paginas Vistas", value: (data?.stats?.pageviews?.value || 0).toLocaleString() },
+        { label: "Sesiones", value: (data?.stats?.visits?.value || 0).toLocaleString() },
         { label: "Tasa de Rebote", value: `${bounceRate}%` },
         { label: "Tiempo Promedio", value: formatTime(avgTime) },
       ]
