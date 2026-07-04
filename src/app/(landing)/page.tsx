@@ -48,7 +48,7 @@ export default async function HomePage() {
         <QuickCategoryMenu cms={cms.quickCategoryMenu} />
       </AnimatedBlock>
       <AnimatedBlock blockId={blockIds.featuredGrid || "fg"} blockType="featuredGrid" animation={styles.featuredGrid?.animation}>
-        <FeaturedGrid productos={productosDestacados} allProductos={todosProductos} />
+        <FeaturedGrid productos={productosDestacados} allProductos={todosProductos} cms={cms.featuredGrid} />
       </AnimatedBlock>
       <AnimatedBlock blockId={blockIds.missionSection || "ms"} blockType="missionSection" animation={styles.missionSection?.animation}>
         <MissionSection cms={cms.missionSection} />

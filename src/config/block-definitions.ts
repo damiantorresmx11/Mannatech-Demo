@@ -103,8 +103,11 @@ export const blockDefinitions: BlockDefinition[] = [
     label: "Productos Destacados",
     icon: "Package",
     content: [
+      { key: "overline", type: "text", label: "Overline" },
       { key: "title", type: "text", label: "Titulo" },
-      { key: "count", type: "number", label: "Cantidad", min: 1, max: 12 },
+      { key: "maxProducts", type: "slider", label: "Cantidad de Productos", min: 2, max: 20, defaultValue: 10 },
+      { key: "ctaText", type: "text", label: "Texto del Boton" },
+      { key: "ctaHref", type: "text", label: "URL del Boton" },
     ],
     design: commonDesign,
     advanced: commonAdvanced,

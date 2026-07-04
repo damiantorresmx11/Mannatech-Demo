@@ -74,7 +74,7 @@ export default async function PreviewPage({ params }: Props) {
           if (block.type === "featuredGrid") {
             return (
               <AnimatedBlock key={block.id} blockId={block.id} blockType={block.type} animation={anim}>
-                <FeaturedGrid productos={productosDestacados} allProductos={todosProductos} />
+                <FeaturedGrid productos={productosDestacados} allProductos={todosProductos} cms={block.content} />
               </AnimatedBlock>
             )
           }

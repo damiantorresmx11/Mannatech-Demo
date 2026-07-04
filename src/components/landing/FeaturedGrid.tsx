@@ -12,6 +12,7 @@ import { useCartStore } from "@/lib/cart-store";
 interface FeaturedGridProps {
   productos: Producto[];
   allProductos: Producto[];
+  cms?: Record<string, any>;
 }
 
 function TiltImage({ producto, onAdd }: { producto: Producto; onAdd: (e: React.MouseEvent) => void }) {
@@ -122,11 +123,16 @@ function SliderCard({ producto }: { producto: Producto }) {
   );
 }
 
-export function FeaturedGrid({ productos, allProductos }: FeaturedGridProps) {
+export function FeaturedGrid({ productos, allProductos, cms }: FeaturedGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const displayProducts = productos.length > 0 ? productos : allProductos.slice(0, 10);
+  const maxProducts = cms?.maxProducts || 10;
+  const overline = cms?.overline || "Lo Mejor de Mannatech";
+  const title = cms?.title || "Productos Destacados";
+  const ctaText = cms?.ctaText || "Ver todos los productos";
+  const ctaHref = cms?.ctaHref || "/productos";
+  const displayProducts = (productos.length > 0 ? productos : allProductos).slice(0, maxProducts);
 
   const updateScrollButtons = useCallback(() => {
     if (!scrollRef.current) return;
@@ -158,10 +164,10 @@ export function FeaturedGrid({ productos, allProductos }: FeaturedGridProps) {
         <div className="flex items-end justify-between mb-8">
           <div>
             <p className="text-mannatech text-xs font-semibold uppercase tracking-[0.35em] mb-2">
-              Lo Mejor de Mannatech
+              {overline}
             </p>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-              Productos Destacados
+              {title}
             </h2>
           </div>
           <div className="flex items-center gap-2">
@@ -206,10 +212,10 @@ export function FeaturedGrid({ productos, allProductos }: FeaturedGridProps) {
         {/* View all */}
         <div className="mt-8 text-center">
           <Link
-            href="/productos"
+            href={ctaHref}
             className="inline-flex items-center gap-2 text-sm font-semibold text-mannatech hover:text-mannatech-dark transition-colors group"
           >
-            Ver todos los productos
+            {ctaText}
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
