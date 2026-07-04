@@ -255,14 +255,16 @@ export default function DashboardPage() {
     { label: "Usuarios", href: "/admin/usuarios", icon: Users, color: "#F59E0B" },
   ];
 
-  const [activeToolTab, setActiveToolTab] = useState<string | null>(null);
+  const [toolsData, setToolsData] = useState<any>(null);
+  const [toolsLoading, setToolsLoading] = useState(true);
 
-  const productionTools = [
-    { id: "status", label: "Monitoreo", desc: "Uptime de servicios", url: "https://status.mannatech.dmlabs.mx", icon: Zap, color: "#10B981", embedUrl: "https://status.mannatech.dmlabs.mx/dashboard" },
-    { id: "analytics", label: "Analytics", desc: "Trafico y usuarios", url: "https://analytics.mannatech.dmlabs.mx", icon: TrendingUp, color: "#3B82F6", embedUrl: "https://analytics.mannatech.dmlabs.mx/share/overview" },
-    { id: "reportes", label: "Reportes", desc: "Dashboards de ventas", url: "https://reportes.mannatech.dmlabs.mx", icon: LayoutGrid, color: "#8B5CF6", embedUrl: "https://reportes.mannatech.dmlabs.mx" },
-    { id: "chat", label: "Soporte", desc: "Chat en vivo", url: "https://chat.mannatech.dmlabs.mx", icon: Headphones, color: "#F59E0B", embedUrl: "https://chat.mannatech.dmlabs.mx" },
-  ];
+  useEffect(() => {
+    fetch("/api/tools")
+      .then(r => r.json())
+      .then(setToolsData)
+      .catch(() => {})
+      .finally(() => setToolsLoading(false));
+  }, []);
 
   return (
     <motion.div
@@ -565,96 +567,145 @@ export default function DashboardPage() {
         </motion.div>
       </motion.div>
 
-      {/* ══════ Production Tools Section ══════ */}
-      <motion.div variants={itemVariants}>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-base font-semibold text-zinc-100">Herramientas de Produccion</h3>
-            <p className="text-xs text-zinc-500 mt-0.5">Monitoreo, analytics, reportes y soporte</p>
-          </div>
-          {activeToolTab && (
-            <button
-              onClick={() => setActiveToolTab(null)}
-              className="text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-700/50 hover:border-zinc-600 transition-all"
-            >
-              Cerrar panel
-            </button>
-          )}
-        </div>
+      {/* ══════ Production Tools — Native Data ══════ */}
+      <motion.div variants={containerVariants}>
+        <motion.div variants={itemVariants} className="mb-4">
+          <h3 className="text-base font-semibold text-zinc-100">Infraestructura</h3>
+          <p className="text-xs text-zinc-500 mt-0.5">Estado en tiempo real de todos los servicios</p>
+        </motion.div>
 
-        {/* Tool cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-          {productionTools.map((tool) => {
-            const isActive = activeToolTab === tool.id;
-            return (
-              <motion.button
-                key={tool.id}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setActiveToolTab(isActive ? null : tool.id)}
-                className={`relative flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${
-                  isActive
-                    ? "bg-zinc-800/80 border-zinc-600/60 shadow-lg"
-                    : "bg-zinc-900/60 border-zinc-700/40 hover:border-zinc-600/50 hover:bg-zinc-800/50"
-                }`}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: `${tool.color}15` }}
-                >
-                  <tool.icon className="w-5 h-5" style={{ color: tool.color }} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Uptime / Monitoreo */}
+          <motion.div variants={itemVariants} whileHover={cardHover} className="rounded-2xl border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                  <Zap className="w-4.5 h-4.5 text-emerald-400" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-zinc-200">{tool.label}</p>
-                  <p className="text-[10px] text-zinc-500">{tool.desc}</p>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">Monitoreo</p>
+                  <p className="text-[10px] text-zinc-500">Uptime de servicios</p>
                 </div>
-                {isActive && (
-                  <div className="absolute top-2 right-2 w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: tool.color }} />
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        {/* Embedded tool panel */}
-        {activeToolTab && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 600 }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" as const }}
-            className="rounded-2xl border border-zinc-700/50 bg-zinc-900/40 overflow-hidden"
-          >
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60 bg-zinc-900/80">
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const tool = productionTools.find(t => t.id === activeToolTab);
-                  if (!tool) return null;
-                  return (
-                    <>
-                      <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: tool.color }} />
-                      <span className="text-xs font-semibold text-zinc-300">{tool.label}</span>
-                      <span className="text-[10px] text-zinc-600">— {tool.desc}</span>
-                    </>
-                  );
-                })()}
               </div>
-              <a
-                href={productionTools.find(t => t.id === activeToolTab)?.url}
-                target="_blank"
-                className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-blue-400 transition-colors"
-              >
-                Abrir en nueva ventana <ArrowUpRight size={10} />
-              </a>
+              {!toolsLoading && toolsData?.uptime && (
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${toolsData.uptime.down === 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"}`}>
+                  {toolsData.uptime.down === 0 ? "Todo OK" : `${toolsData.uptime.down} caidos`}
+                </span>
+              )}
             </div>
-            <iframe
-              src={productionTools.find(t => t.id === activeToolTab)?.embedUrl}
-              className="w-full border-0 bg-zinc-950"
-              style={{ height: 560 }}
-              title={activeToolTab}
-            />
+            {toolsLoading ? (
+              <div className="h-12 bg-zinc-800/50 rounded-lg animate-pulse" />
+            ) : toolsData?.uptime ? (
+              <div className="flex items-center gap-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-emerald-400">{toolsData.uptime.up}</p>
+                  <p className="text-[9px] text-zinc-500 uppercase">Activos</p>
+                </div>
+                <div className="w-px h-8 bg-zinc-800" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-400">{toolsData.uptime.down}</p>
+                  <p className="text-[9px] text-zinc-500 uppercase">Caidos</p>
+                </div>
+                <div className="w-px h-8 bg-zinc-800" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-zinc-300">{toolsData.uptime.total}</p>
+                  <p className="text-[9px] text-zinc-500 uppercase">Total</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-600">Sin datos</p>
+            )}
+            <a href="https://status.mannatech.dmlabs.mx" target="_blank" className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-emerald-400 transition-colors">
+              Ver detalle completo <ArrowUpRight size={9} />
+            </a>
           </motion.div>
-        )}
+
+          {/* Analytics */}
+          <motion.div variants={itemVariants} whileHover={cardHover} className="rounded-2xl border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <TrendingUp className="w-4.5 h-4.5 text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">Analytics</p>
+                  <p className="text-[10px] text-zinc-500">Trafico del sitio</p>
+                </div>
+              </div>
+              {!toolsLoading && toolsData?.analytics && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-400">
+                  {toolsData.analytics.activeVisitors} en vivo
+                </span>
+              )}
+            </div>
+            {toolsLoading ? (
+              <div className="h-12 bg-zinc-800/50 rounded-lg animate-pulse" />
+            ) : toolsData?.analytics ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-500">Visitas hoy</span>
+                  <span className="text-sm font-bold text-zinc-200">{toolsData.analytics.today?.visits || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-500">Paginas vistas hoy</span>
+                  <span className="text-sm font-bold text-zinc-200">{toolsData.analytics.today?.pageviews || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-500">Visitantes (7 dias)</span>
+                  <span className="text-sm font-bold text-zinc-200">{toolsData.analytics.week?.visitors || 0}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-600">Sin datos</p>
+            )}
+            <a href="https://analytics.mannatech.dmlabs.mx" target="_blank" className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-blue-400 transition-colors">
+              Ver analytics completo <ArrowUpRight size={9} />
+            </a>
+          </motion.div>
+
+          {/* Chat / Soporte */}
+          <motion.div variants={itemVariants} whileHover={cardHover} className="rounded-2xl border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                  <Headphones className="w-4.5 h-4.5 text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">Soporte</p>
+                  <p className="text-[10px] text-zinc-500">Chat en vivo</p>
+                </div>
+              </div>
+              {!toolsLoading && toolsData?.chat && toolsData.chat.open > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400">
+                  {toolsData.chat.open} abiertos
+                </span>
+              )}
+            </div>
+            {toolsLoading ? (
+              <div className="h-12 bg-zinc-800/50 rounded-lg animate-pulse" />
+            ) : toolsData?.chat ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-500">Conversaciones abiertas</span>
+                  <span className="text-sm font-bold text-amber-400">{toolsData.chat.open}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-500">Sin asignar</span>
+                  <span className="text-sm font-bold text-zinc-200">{toolsData.chat.unassigned}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-zinc-500">Resueltas</span>
+                  <span className="text-sm font-bold text-emerald-400">{toolsData.chat.resolved}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-600">Sin datos</p>
+            )}
+            <a href="https://chat.mannatech.dmlabs.mx" target="_blank" className="flex items-center gap-1 mt-3 text-[10px] text-zinc-500 hover:text-amber-400 transition-colors">
+              Gestionar conversaciones <ArrowUpRight size={9} />
+            </a>
+          </motion.div>
+        </div>
       </motion.div>
     </motion.div>
   );
