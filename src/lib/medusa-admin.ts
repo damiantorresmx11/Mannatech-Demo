@@ -1,6 +1,8 @@
 "use client"
 
 const API = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.mannatech.dmlabs.mx"
+const MEDUSA_ADMIN_EMAIL = "admin@dmlabs.mx"
+const MEDUSA_ADMIN_PASSWORD = "Mannatech2026"
 
 let cachedToken: string | null = null
 
@@ -13,7 +15,13 @@ export async function getAdminToken(): Promise<string> {
     return stored
   }
 
-  throw new Error("No admin token. Please login first.")
+  // Auto-login with default admin credentials
+  try {
+    const token = await loginAdmin(MEDUSA_ADMIN_EMAIL, MEDUSA_ADMIN_PASSWORD)
+    return token
+  } catch {
+    throw new Error("No admin token. Auto-login failed.")
+  }
 }
 
 export async function loginAdmin(email: string, password: string): Promise<string> {
