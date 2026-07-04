@@ -62,9 +62,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized({ auth: session, request }) {
       const isAdmin = request.nextUrl.pathname.startsWith("/admin")
       const isLoginPage = request.nextUrl.pathname === "/admin/login"
+      const isLoggedIn = !!session?.user
 
-      if (isAdmin && !isLoginPage && !session) {
-        return false // Redirect to login
+      if (isAdmin && !isLoginPage && !isLoggedIn) {
+        return Response.redirect(new URL("/admin/login", request.nextUrl.origin))
+      }
+
+      // If logged in and visiting login page, redirect to dashboard
+      if (isLoginPage && isLoggedIn) {
+        return Response.redirect(new URL("/admin/dashboard", request.nextUrl.origin))
       }
 
       return true

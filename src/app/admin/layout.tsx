@@ -80,7 +80,7 @@ function SidebarFooter() {
 function AdminSessionGate({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
 
-  if (status === "loading") {
+  if (status === "loading" || status === "unauthenticated") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950">
         <div className="flex flex-col items-center gap-4">
