@@ -1,6 +1,9 @@
 // ── BigCommerce API Client ─────────────────────────────────────────────
 // Centralized fetch wrapper for BigCommerce V2/V3 REST APIs.
-// Uses static X-Auth-Token — no login/session needed.
+// Server-side: calls BigCommerce directly with X-Auth-Token.
+// Client-side: proxies through /api/commerce/ to avoid CORS issues.
+
+const isServer = typeof window === "undefined"
 
 const STORE_HASH = process.env.BIGCOMMERCE_STORE_HASH || ""
 const ACCESS_TOKEN = process.env.BIGCOMMERCE_ACCESS_TOKEN || ""
@@ -22,19 +25,38 @@ interface BCFetchOptions extends RequestInit {
   version?: "v2" | "v3"
 }
 
+function getUrl(endpoint: string, version: "v2" | "v3"): string {
+  if (isServer) {
+    // Direct call to BigCommerce API
+    const base = version === "v2" ? BASE_V2 : BASE_V3
+    return `${base}${endpoint}`
+  }
+  // Client-side: proxy through our API route
+  return `/api/commerce/${version}${endpoint}`
+}
+
+function getHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  }
+  if (isServer) {
+    headers["X-Auth-Token"] = ACCESS_TOKEN
+  }
+  return headers
+}
+
 export async function bcFetch<T>(
   endpoint: string,
   options: BCFetchOptions = {},
 ): Promise<T> {
   const { version = "v3", ...fetchOptions } = options
-  const base = version === "v2" ? BASE_V2 : BASE_V3
+  const url = getUrl(endpoint, version)
 
-  const res = await fetch(`${base}${endpoint}`, {
+  const res = await fetch(url, {
     ...fetchOptions,
     headers: {
-      "X-Auth-Token": ACCESS_TOKEN,
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      ...getHeaders(),
       ...fetchOptions.headers,
     },
   })
@@ -60,14 +82,12 @@ export async function bcFetchWithMeta<T>(
   options: BCFetchOptions = {},
 ): Promise<{ data: T; meta: { pagination: { total: number; count: number; per_page: number; current_page: number; total_pages: number } } }> {
   const { version = "v3", ...fetchOptions } = options
-  const base = version === "v2" ? BASE_V2 : BASE_V3
+  const url = getUrl(endpoint, version)
 
-  const res = await fetch(`${base}${endpoint}`, {
+  const res = await fetch(url, {
     ...fetchOptions,
     headers: {
-      "X-Auth-Token": ACCESS_TOKEN,
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      ...getHeaders(),
       ...fetchOptions.headers,
     },
   })
@@ -81,5 +101,9 @@ export async function bcFetchWithMeta<T>(
 }
 
 export function isConfigured(): boolean {
-  return Boolean(STORE_HASH && ACCESS_TOKEN)
+  if (isServer) {
+    return Boolean(STORE_HASH && ACCESS_TOKEN)
+  }
+  // Client-side can't check env vars — assume configured, proxy will return 503 if not
+  return true
 }

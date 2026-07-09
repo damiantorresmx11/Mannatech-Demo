@@ -116,7 +116,7 @@ function MiniSparkline({ data, color }: { data: number[]; color: string }) {
   const sparkData = data.map((v, i) => ({ v, i }));
   return (
     <div className="h-8 w-20">
-      <ResponsiveContainer width="100%" height="100%" minHeight={200}>
+      <ResponsiveContainer width="100%" height={32}>
         <AreaChart data={sparkData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
           <defs>
             <linearGradient id={`spark-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
