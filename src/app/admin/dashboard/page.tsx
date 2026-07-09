@@ -38,7 +38,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { getProducts, getOrders, getCustomers } from "@/lib/medusa-admin";
+import { getProducts, getOrders, getCustomers } from "@/lib/commerce/client";
 import { motion } from "framer-motion";
 import Link from "next/link";
 

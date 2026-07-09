@@ -11,7 +11,7 @@ import CardNumberInput from "@/components/shop/CardNumberInput";
 import { detectCardBrand, formatCardNumber, type CardBrand } from "@/lib/card";
 import OrderConfirmation from "@/components/shop/OrderConfirmation";
 import { formatPrecio } from "@/lib/format";
-import { createMedusaCart, completeCart } from "@/lib/medusa-cart";
+import { createCart, getCheckoutUrl } from "@/lib/commerce/client";
 
 const steps = [
   { id: 1, label: "Datos", icon: User },
@@ -253,7 +253,7 @@ export default function CheckoutPage() {
   // Snapshot items before clearCart wipes them on step 3→4
   const [confirmedItems, setConfirmedItems] = useState<typeof items>([]);
   const [confirmedTotal, setConfirmedTotal] = useState(0);
-  const [medusaOrderId, setMedusaOrderId] = useState<string | null>(null);
+  const [commerceOrderId, setCommerceOrderId] = useState<string | null>(null);
 
   // Prevent hydration mismatch — cart values come from localStorage
   if (!mounted) {
@@ -294,15 +294,16 @@ export default function CheckoutPage() {
     if (currentStep === 3) {
       setConfirmedItems([...items]);
       setConfirmedTotal(getTotal());
-      // Try to sync with Medusa (non-blocking for demo)
+      // Try to sync with BigCommerce (non-blocking for demo)
       try {
-        const cartRes = await createMedusaCart("", []);
-        if (cartRes?.cart?.id) {
-          const completeRes = await completeCart(cartRes.cart.id);
-          setMedusaOrderId(completeRes?.order?.id || null);
-        }
+        const cartItems = items.map((it) => ({
+          productId: parseInt(it.slug) || 0,
+          quantity: it.cantidad,
+        }));
+        const cart = await createCart(cartItems);
+        setCommerceOrderId(cart?.id || null);
       } catch {
-        // Medusa sync failed silently — demo still works
+        // Commerce sync failed silently — demo still works
       }
       clearCart();
     }

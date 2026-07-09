@@ -1,44 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
+import { searchProducts, isConfigured } from "@/lib/commerce/client";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const q = searchParams.get("q") || "";
-  const limit = searchParams.get("limit") || "10";
+  const limit = parseInt(searchParams.get("limit") || "10");
 
   if (!q.trim()) {
     return NextResponse.json({ products: [] });
   }
 
   try {
-    const headers: Record<string, string> = {};
-    const pubKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY;
-    if (pubKey && pubKey !== "pk_placeholder") {
-      headers["x-publishable-api-key"] = pubKey;
+    // If BigCommerce is not configured, return empty
+    if (!isConfigured()) {
+      return NextResponse.json({ products: [], error: "Commerce backend not configured" });
     }
 
-    const res = await fetch(
-      `http://127.0.0.1:9000/store/products?q=${encodeURIComponent(q)}&limit=${limit}`,
-      { headers, next: { revalidate: 0 } }
-    );
+    const results = await searchProducts(q, limit);
 
-    if (!res.ok) {
-      throw new Error(`Medusa API responded with ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    const products = (data.products || []).map((p: any) => ({
+    const products = results.map((p) => ({
       id: p.id,
-      name: p.title,
-      slug: p.handle,
-      price: p.variants?.[0]?.calculated_price?.calculated_amount
-        ?? p.variants?.[0]?.prices?.[0]?.amount
-        ?? null,
-      currency: p.variants?.[0]?.calculated_price?.currency_code
-        ?? p.variants?.[0]?.prices?.[0]?.currency_code
-        ?? "mxn",
-      image: p.thumbnail || p.images?.[0]?.url || null,
-      category: p.categories?.[0]?.name || p.collection?.title || null,
+      name: p.nombre,
+      slug: p.slug,
+      price: p.precio,
+      currency: "mxn",
+      image: p.imagen || null,
+      category: p.categoria || null,
     }));
 
     return NextResponse.json({ products });

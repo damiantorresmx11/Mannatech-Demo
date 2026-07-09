@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
 import type { CompanyId, Categoria, Producto, Textos, Distribuidor } from "./types";
+import { getPublicProducts, getProductBySlug as bcGetProductBySlug } from "./commerce/client";
+import type { Product } from "./commerce/types";
 
 const sharedDir = path.resolve(process.cwd(), "shared-content");
-const MEDUSA_URL = process.env.MEDUSA_BACKEND_URL || process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.mannatech.dmlabs.mx";
-const MEDUSA_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "";
 
 // ── JSON fallback ─────────────────────────────────────────────────────
 function readCompanyJSON<T>(companyId: CompanyId, filename: string): T {
@@ -28,53 +28,35 @@ interface DistribuidoresData {
   distribuidores: Distribuidor[];
 }
 
-// ── Medusa Store API fetch ────────────────────────────────────────────
-async function medusaFetch(endpoint: string) {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (MEDUSA_KEY) headers["x-publishable-api-key"] = MEDUSA_KEY;
-
-  const res = await fetch(`${MEDUSA_URL}${endpoint}`, {
-    headers,
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) return null;
-  return res.json();
-}
-
-// ── Map Medusa product to our Producto interface ──────────────────────
-function mapMedusaProduct(p: any): Producto {
-  const variant = p.variants?.[0];
-  const price = variant?.prices?.[0];
-  const amount = price ? price.amount / 100 : 0;
-
+// ── Map commerce Product to our Producto interface ────────────────────
+function mapCommerceProduct(p: Product): Producto {
   return {
-    slug: p.handle || p.id,
-    sku: variant?.sku || p.id,
-    nombre: p.title,
-    categoria: p.categories?.[0]?.name || p.collection?.title || "General",
-    precio: amount,
-    presentacion: variant?.title || "",
-    descripcionCorta: p.subtitle || p.description?.slice(0, 120) || "",
-    descripcionLarga: p.description || "",
-    beneficios: p.metadata?.beneficios || [],
-    ingredientes: p.metadata?.ingredientes || "",
-    imagen: p.thumbnail || p.images?.[0]?.url || "",
-    destacado: p.metadata?.destacado === true || p.metadata?.destacado === "true",
-    badge: p.metadata?.badge || null,
+    slug: p.slug,
+    sku: p.sku,
+    nombre: p.nombre,
+    categoria: p.categoria,
+    precio: p.precio,
+    presentacion: p.presentacion,
+    descripcionCorta: p.descripcionCorta,
+    descripcionLarga: p.descripcionLarga,
+    beneficios: p.beneficios,
+    ingredientes: p.ingredientes,
+    imagen: p.imagen,
+    destacado: p.destacado,
+    badge: p.badge,
   };
 }
 
-// ── Public API (tries Medusa first, falls back to JSON) ───────────────
+// ── Public API (tries BigCommerce first, falls back to JSON) ──────────
 
 export async function getProductosMedusa(): Promise<Producto[]> {
   try {
-    const data = await medusaFetch("/store/products?limit=50&fields=*variants.prices,*categories,*collection");
-    if (data?.products?.length > 0) {
-      return data.products.map(mapMedusaProduct);
+    const products = await getPublicProducts();
+    if (products?.length > 0) {
+      return products.map(mapCommerceProduct);
     }
   } catch {
-    // Medusa unavailable, fall through to JSON
+    // BigCommerce unavailable, fall through to JSON
   }
   return [];
 }
@@ -88,11 +70,11 @@ export function getProductos(companyId: CompanyId = "mx"): Producto[] {
 }
 
 export async function getProductosCombined(companyId: CompanyId = "mx"): Promise<Producto[]> {
-  const medusaProducts = await getProductosMedusa();
+  const commerceProducts = await getProductosMedusa();
   const jsonProducts = getProductos(companyId);
-  // Medusa products first, then JSON products (deduped by slug)
-  const slugs = new Set(medusaProducts.map((p) => p.slug));
-  const unique = [...medusaProducts, ...jsonProducts.filter((p) => !slugs.has(p.slug))];
+  // Commerce products first, then JSON products (deduped by slug)
+  const slugs = new Set(commerceProducts.map((p) => p.slug));
+  const unique = [...commerceProducts, ...jsonProducts.filter((p) => !slugs.has(p.slug))];
   return unique;
 }
 
@@ -101,10 +83,10 @@ export function getProductoBySlug(slug: string, companyId: CompanyId = "mx"): Pr
 }
 
 export async function getProductoBySlugCombined(slug: string, companyId: CompanyId = "mx"): Promise<Producto | undefined> {
-  // Try Medusa first
+  // Try BigCommerce first
   try {
-    const data = await medusaFetch(`/store/products?handle=${slug}&fields=*variants.prices,*categories,*collection`);
-    if (data?.products?.[0]) return mapMedusaProduct(data.products[0]);
+    const product = await bcGetProductBySlug(slug);
+    if (product) return mapCommerceProduct(product);
   } catch {}
   // Fallback to JSON
   return getProductoBySlug(slug, companyId);

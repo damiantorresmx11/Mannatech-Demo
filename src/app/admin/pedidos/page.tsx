@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { getOrders } from "@/lib/medusa-admin";
+import { getOrders } from "@/lib/commerce/client";
+import type { Order } from "@/lib/commerce/types";
 import {
   ShoppingCart,
   RefreshCw,
@@ -14,46 +15,24 @@ import {
   DollarSign,
 } from "lucide-react";
 
-interface MedusaOrder {
-  id: string;
-  display_id: number;
-  created_at: string;
-  email: string;
-  currency_code: string;
-  total: number;
-  status: string;
-  fulfillment_status: string;
-  payment_status: string;
-  items: { title: string; quantity: number }[];
-}
-
 const STATUS_MAP: Record<string, string> = {
   pending: "Pendiente",
-  completed: "Completado",
-  archived: "Archivado",
-  canceled: "Cancelado",
-  requires_action: "Accion Requerida",
-};
-
-const FULFILLMENT_MAP: Record<string, string> = {
-  not_fulfilled: "Sin Enviar",
-  fulfilled: "Enviado",
-  partially_fulfilled: "Parcial",
+  processing: "En Proceso",
   shipped: "Enviado",
-  delivered: "Entregado",
-  returned: "Devuelto",
-  canceled: "Cancelado",
+  completed: "Completado",
+  cancelled: "Cancelado",
+  refunded: "Reembolsado",
 };
 
 const FILTERS = [
   { key: "todos", label: "Todos" },
   { key: "pending", label: "Pendientes" },
   { key: "completed", label: "Completados" },
-  { key: "canceled", label: "Cancelados" },
+  { key: "cancelled", label: "Cancelados" },
 ];
 
 function formatCurrency(amount: number, currency: string) {
-  return `$${(amount / 100).toLocaleString("es-MX", {
+  return `$${amount.toLocaleString("es-MX", {
     minimumFractionDigits: 2,
   })} ${currency?.toUpperCase() || "MXN"}`;
 }
@@ -67,9 +46,9 @@ function formatDate(dateStr: string) {
   });
 }
 
-function getItemsSummary(items: { title: string; quantity: number }[]) {
+function getItemsSummary(items: Order["items"]) {
   if (!items || items.length === 0) return "Sin items";
-  const first = items[0].title;
+  const first = items[0].nombre;
   if (items.length === 1) return first;
   return `${first} y ${items.length - 1} mas`;
 }
@@ -77,7 +56,7 @@ function getItemsSummary(items: { title: string; quantity: number }[]) {
 export default function PedidosPage() {
   const [filter, setFilter] = useState("todos");
   const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState<MedusaOrder[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -100,13 +79,13 @@ export default function PedidosPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    let result = filter === "todos" ? orders : orders.filter((o) => o.status === filter);
+    let result = filter === "todos" ? orders : orders.filter((o) => o.estado === filter);
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
         (o) =>
-          o.email?.toLowerCase().includes(q) ||
-          String(o.display_id).includes(q) ||
+          o.cliente?.email?.toLowerCase().includes(q) ||
+          o.numero.includes(q) ||
           o.id.toLowerCase().includes(q)
       );
     }
@@ -115,8 +94,8 @@ export default function PedidosPage() {
 
   const stats = useMemo(() => {
     const total = orders.length;
-    const pending = orders.filter((o) => o.status === "pending").length;
-    const completed = orders.filter((o) => o.status === "completed").length;
+    const pending = orders.filter((o) => o.estado === "pending").length;
+    const completed = orders.filter((o) => o.estado === "completed").length;
     const revenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
     return { total, pending, completed, revenue };
   }, [orders]);
@@ -154,34 +133,10 @@ export default function PedidosPage() {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {[
-          {
-            label: "Total Pedidos",
-            value: stats.total,
-            icon: Package,
-            color: "text-blue-400",
-            bg: "bg-blue-500/10",
-          },
-          {
-            label: "Pendientes",
-            value: stats.pending,
-            icon: Clock,
-            color: "text-amber-400",
-            bg: "bg-amber-500/10",
-          },
-          {
-            label: "Completados",
-            value: stats.completed,
-            icon: CheckCircle2,
-            color: "text-emerald-400",
-            bg: "bg-emerald-500/10",
-          },
-          {
-            label: "Ingresos",
-            value: formatCurrency(stats.revenue, "mxn"),
-            icon: DollarSign,
-            color: "text-blue-400",
-            bg: "bg-blue-500/10",
-          },
+          { label: "Total Pedidos", value: stats.total, icon: Package, color: "text-blue-400", bg: "bg-blue-500/10" },
+          { label: "Pendientes", value: stats.pending, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10" },
+          { label: "Completados", value: stats.completed, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+          { label: "Ingresos", value: formatCurrency(stats.revenue, "mxn"), icon: DollarSign, color: "text-blue-400", bg: "bg-blue-500/10" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -192,12 +147,8 @@ export default function PedidosPage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
-                  {stat.label}
-                </p>
-                <p className="text-xl font-bold text-zinc-50 mt-1">
-                  {stat.value}
-                </p>
+                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">{stat.label}</p>
+                <p className="text-xl font-bold text-zinc-50 mt-1">{stat.value}</p>
               </div>
               <div className={`rounded-lg p-2.5 ${stat.bg}`}>
                 <stat.icon className={`size-5 ${stat.color}`} />
@@ -214,7 +165,6 @@ export default function PedidosPage() {
         transition={{ duration: 0.4, delay: 0.2 }}
         className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
       >
-        {/* Search */}
         <div className="relative flex-1 w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
           <input
@@ -225,8 +175,6 @@ export default function PedidosPage() {
             className="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 pl-10 pr-4 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
           />
         </div>
-
-        {/* Filter Tabs */}
         <div className="relative flex items-center gap-1 rounded-lg bg-zinc-800/50 border border-zinc-700/50 p-1">
           {FILTERS.map((f) => (
             <button
@@ -241,11 +189,7 @@ export default function PedidosPage() {
                   transition={{ type: "spring" as const, stiffness: 400, damping: 30 }}
                 />
               )}
-              <span
-                className={`relative z-10 ${
-                  filter === f.key ? "text-white" : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
+              <span className={`relative z-10 ${filter === f.key ? "text-white" : "text-zinc-400 hover:text-zinc-200"}`}>
                 {f.label}
               </span>
             </button>
@@ -276,32 +220,14 @@ export default function PedidosPage() {
           transition={{ duration: 0.3, delay: 0.25 }}
           className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden"
         >
-          {/* Table Header */}
-          <div className="grid grid-cols-[80px_1fr_1.5fr_1fr_100px_120px_100px] gap-2 px-5 py-3 border-b border-zinc-800 bg-zinc-950/50">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Orden
-            </span>
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Cliente
-            </span>
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Items
-            </span>
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Total
-            </span>
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Estatus
-            </span>
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Envio
-            </span>
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              Fecha
-            </span>
+          <div className="grid grid-cols-[80px_1fr_1.5fr_1fr_100px_100px] gap-2 px-5 py-3 border-b border-zinc-800 bg-zinc-950/50">
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Orden</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Cliente</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Items</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Total</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Estatus</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Fecha</span>
           </div>
-
-          {/* Rows */}
           <AnimatePresence mode="wait">
             <motion.div key={filter + search}>
               {filtered.map((order, i) => (
@@ -311,41 +237,25 @@ export default function PedidosPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, delay: i * 0.03 }}
                   onClick={() => router.push(`/admin/pedidos/${order.id}`)}
-                  className="grid grid-cols-[80px_1fr_1.5fr_1fr_100px_120px_100px] gap-2 px-5 py-3.5 border-b border-zinc-800/50 cursor-pointer hover:bg-zinc-800/50 transition-colors group"
+                  className="grid grid-cols-[80px_1fr_1.5fr_1fr_100px_100px] gap-2 px-5 py-3.5 border-b border-zinc-800/50 cursor-pointer hover:bg-zinc-800/50 transition-colors group"
                 >
-                  {/* Order ID */}
                   <span className="font-mono font-bold text-sm text-zinc-100 group-hover:text-blue-400 transition-colors">
-                    #{order.display_id}
+                    #{order.numero}
                   </span>
-
-                  {/* Email */}
                   <span className="text-sm text-zinc-300 truncate">
-                    {order.email || "---"}
+                    {order.cliente?.email || "---"}
                   </span>
-
-                  {/* Items */}
                   <span className="text-sm text-zinc-400 truncate">
                     {getItemsSummary(order.items)}
                   </span>
-
-                  {/* Total */}
                   <span className="text-sm font-medium text-zinc-100">
-                    {formatCurrency(order.total, order.currency_code)}
+                    {formatCurrency(order.total, order.moneda)}
                   </span>
-
-                  {/* Status Badge */}
                   <span>
-                    <StatusBadge status={order.status} />
+                    <OrderStatusBadge status={order.estado} />
                   </span>
-
-                  {/* Fulfillment Badge */}
-                  <span>
-                    <FulfillmentBadge status={order.fulfillment_status} />
-                  </span>
-
-                  {/* Date */}
                   <span className="text-sm text-zinc-500">
-                    {formatDate(order.created_at)}
+                    {formatDate(order.creadoEn)}
                   </span>
                 </motion.div>
               ))}
@@ -357,64 +267,19 @@ export default function PedidosPage() {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function OrderStatusBadge({ status }: { status: string }) {
   const config: Record<string, { bg: string; text: string; label: string }> = {
-    completed: {
-      bg: "bg-emerald-500/10 border-emerald-500/20",
-      text: "text-emerald-400",
-      label: STATUS_MAP.completed,
-    },
-    pending: {
-      bg: "bg-amber-500/10 border-amber-500/20",
-      text: "text-amber-400",
-      label: STATUS_MAP.pending,
-    },
-    canceled: {
-      bg: "bg-red-500/10 border-red-500/20",
-      text: "text-red-400",
-      label: STATUS_MAP.canceled,
-    },
-    archived: {
-      bg: "bg-zinc-500/10 border-zinc-500/20",
-      text: "text-zinc-400",
-      label: STATUS_MAP.archived,
-    },
-    requires_action: {
-      bg: "bg-orange-500/10 border-orange-500/20",
-      text: "text-orange-400",
-      label: STATUS_MAP.requires_action,
-    },
+    completed: { bg: "bg-emerald-500/10 border-emerald-500/20", text: "text-emerald-400", label: STATUS_MAP.completed },
+    pending: { bg: "bg-amber-500/10 border-amber-500/20", text: "text-amber-400", label: STATUS_MAP.pending },
+    processing: { bg: "bg-blue-500/10 border-blue-500/20", text: "text-blue-400", label: STATUS_MAP.processing },
+    shipped: { bg: "bg-blue-500/10 border-blue-500/20", text: "text-blue-400", label: STATUS_MAP.shipped },
+    cancelled: { bg: "bg-red-500/10 border-red-500/20", text: "text-red-400", label: STATUS_MAP.cancelled },
+    refunded: { bg: "bg-zinc-500/10 border-zinc-500/20", text: "text-zinc-400", label: STATUS_MAP.refunded },
   };
-
-  const c = config[status] || {
-    bg: "bg-zinc-500/10 border-zinc-500/20",
-    text: "text-zinc-400",
-    label: status,
-  };
-
+  const c = config[status] || { bg: "bg-zinc-500/10 border-zinc-500/20", text: "text-zinc-400", label: status };
   return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${c.bg} ${c.text}`}
-    >
+    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${c.bg} ${c.text}`}>
       {c.label}
-    </span>
-  );
-}
-
-function FulfillmentBadge({ status }: { status: string }) {
-  const isShipped =
-    status === "fulfilled" || status === "shipped" || status === "delivered";
-  const label = FULFILLMENT_MAP[status] || status || "---";
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
-        isShipped
-          ? "bg-blue-500/10 border-blue-500/20 text-blue-400"
-          : "bg-zinc-500/10 border-zinc-600/20 text-zinc-400"
-      }`}
-    >
-      {label}
     </span>
   );
 }
@@ -426,15 +291,11 @@ function LoadingSkeleton() {
         <div className="h-4 w-48 bg-zinc-800 rounded animate-pulse" />
       </div>
       {Array.from({ length: 6 }).map((_, i) => (
-        <div
-          key={i}
-          className="grid grid-cols-[80px_1fr_1.5fr_1fr_100px_120px_100px] gap-2 px-5 py-4 border-b border-zinc-800/50"
-        >
+        <div key={i} className="grid grid-cols-[80px_1fr_1.5fr_1fr_100px_100px] gap-2 px-5 py-4 border-b border-zinc-800/50">
           <div className="h-4 w-12 bg-zinc-800 rounded animate-pulse" />
           <div className="h-4 w-32 bg-zinc-800 rounded animate-pulse" />
           <div className="h-4 w-40 bg-zinc-800 rounded animate-pulse" />
           <div className="h-4 w-20 bg-zinc-800 rounded animate-pulse" />
-          <div className="h-5 w-16 bg-zinc-800 rounded-full animate-pulse" />
           <div className="h-5 w-16 bg-zinc-800 rounded-full animate-pulse" />
           <div className="h-4 w-16 bg-zinc-800 rounded animate-pulse" />
         </div>

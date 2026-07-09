@@ -1,32 +1,13 @@
 import type { MetadataRoute } from "next"
+import { getPublicProducts } from "@/lib/commerce/client"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mannatech.dmlabs.mx"
-const MEDUSA_URL = process.env.MEDUSA_BACKEND_URL || "http://127.0.0.1:9000"
 const CMS_API_URL = process.env.CMS_API_URL || "http://127.0.0.1:3002"
-
-interface MedusaProduct {
-  id: string
-  handle: string
-  updated_at: string
-}
 
 interface CMSPage {
   slug: string
   updatedAt?: string
   updated_at?: string
-}
-
-async function getProducts(): Promise<MedusaProduct[]> {
-  try {
-    const res = await fetch(`${MEDUSA_URL}/store/products?limit=100`, {
-      next: { revalidate: 3600 },
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.products || []
-  } catch {
-    return []
-  }
 }
 
 async function getCMSPages(): Promise<CMSPage[]> {
@@ -43,7 +24,14 @@ async function getCMSPages(): Promise<CMSPage[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, cmsPages] = await Promise.all([getProducts(), getCMSPages()])
+  let products: { slug: string }[] = []
+  try {
+    products = await getPublicProducts()
+  } catch {
+    products = []
+  }
+
+  const cmsPages = await getCMSPages()
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -79,8 +67,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   const productPages: MetadataRoute.Sitemap = products.map((product) => ({
-    url: `${BASE_URL}/productos/${product.handle}`,
-    lastModified: new Date(product.updated_at),
+    url: `${BASE_URL}/productos/${product.slug}`,
+    lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }))

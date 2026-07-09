@@ -4,22 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Plus, Package, RefreshCw, Loader2, X, Trash2, Search, Box, TrendingUp, Archive } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
-import { getProducts, createProduct, deleteProduct } from "@/lib/medusa-admin";
+import { getProducts, createProduct, deleteProduct } from "@/lib/commerce/client";
+import type { Product } from "@/lib/commerce/types";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface MedusaProduct {
-  id: string;
-  title: string;
-  handle: string;
-  status: string;
-  thumbnail: string | null;
-  collection: { title: string } | null;
-  categories: { name: string }[] | null;
-  variants: {
-    prices: { amount: number; currency_code: string }[];
-    inventory_quantity: number;
-  }[];
-}
 
 function CreateProductModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [title, setTitle] = useState("");
@@ -35,16 +22,10 @@ function CreateProductModal({ onClose, onCreated }: { onClose: () => void; onCre
     setError(null);
     try {
       await createProduct({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        status: "draft",
-        options: [{ title: "Default", values: ["Default"] }],
-        variants: [{
-          title: "Default",
-          options: { Default: "Default" },
-          prices: price ? [{ amount: Math.round(parseFloat(price) * 100), currency_code: "mxn" }] : [],
-          manage_inventory: true,
-        }],
+        nombre: title.trim(),
+        descripcion: description.trim() || undefined,
+        precio: price ? parseFloat(price) : 0,
+        estado: "draft",
       });
       onCreated();
       onClose();
@@ -117,7 +98,7 @@ type FilterTab = "all" | "active" | "draft";
 
 export default function ProductosPage() {
   const router = useRouter();
-  const [products, setProducts] = useState<MedusaProduct[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -141,9 +122,9 @@ export default function ProductosPage() {
 
   useEffect(() => { fetchProducts(); }, []);
 
-  const handleDelete = async (e: React.MouseEvent, id: string, title: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string, nombre: string) => {
     e.stopPropagation();
-    if (!confirm(`Eliminar "${title}"?`)) return;
+    if (!confirm(`Eliminar "${nombre}"?`)) return;
     setDeleting(id);
     try {
       await deleteProduct(id);
@@ -155,37 +136,27 @@ export default function ProductosPage() {
     }
   };
 
-  const getPrice = (product: MedusaProduct) => {
-    const variant = product.variants?.[0];
-    if (!variant?.prices?.length) return "---";
-    const price = variant.prices[0];
-    return `$${(price.amount / 100).toLocaleString("es-MX", { minimumFractionDigits: 2 })} ${price.currency_code.toUpperCase()}`;
-  };
-
-  const getStock = (product: MedusaProduct) => product.variants?.reduce((sum, v) => sum + (v.inventory_quantity || 0), 0) ?? 0;
-
-  const getCategory = (product: MedusaProduct) => {
-    if (product.categories?.length) return product.categories[0].name;
-    if (product.collection) return product.collection.title;
-    return "---";
+  const getPrice = (product: Product) => {
+    if (!product.precio) return "---";
+    return `$${product.precio.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN`;
   };
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
-    if (activeTab === "active") filtered = filtered.filter((p) => p.status === "published");
-    if (activeTab === "draft") filtered = filtered.filter((p) => p.status === "draft");
+    if (activeTab === "active") filtered = filtered.filter((p) => p.estado === "active");
+    if (activeTab === "draft") filtered = filtered.filter((p) => p.estado === "draft");
     if (search.trim()) {
       const q = search.toLowerCase();
-      filtered = filtered.filter((p) => p.title.toLowerCase().includes(q) || p.handle.toLowerCase().includes(q));
+      filtered = filtered.filter((p) => p.nombre.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q));
     }
     return filtered;
   }, [products, activeTab, search]);
 
   const stats = useMemo(() => ({
     total: products.length,
-    active: products.filter((p) => p.status === "published").length,
-    draft: products.filter((p) => p.status === "draft").length,
-    totalStock: products.reduce((sum, p) => sum + getStock(p), 0),
+    active: products.filter((p) => p.estado === "active").length,
+    draft: products.filter((p) => p.estado === "draft").length,
+    totalStock: products.reduce((sum, p) => sum + p.inventario, 0),
   }), [products]);
 
   const tabs: { key: FilterTab; label: string }[] = [
@@ -383,85 +354,82 @@ export default function ProductosPage() {
             </thead>
             <tbody>
               <AnimatePresence>
-                {filteredProducts.map((product, index) => {
-                  const stock = getStock(product);
-                  return (
-                    <motion.tr
-                      key={product.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3, delay: index * 0.03 }}
-                      onClick={() => router.push(`/admin/productos/${product.id}`)}
-                      className="group border-b border-zinc-800/50 hover:bg-zinc-800/40 cursor-pointer transition-colors"
-                    >
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-3">
-                          {product.thumbnail ? (
-                            <motion.img
-                              whileHover={{ scale: 1.05 }}
-                              src={product.thumbnail}
-                              alt=""
-                              className="size-10 rounded-lg object-cover ring-1 ring-zinc-700"
-                            />
-                          ) : (
-                            <div className="flex size-10 items-center justify-center rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20">
-                              <Package className="size-5 text-blue-400" />
-                            </div>
-                          )}
-                          <div>
-                            <span className="font-medium text-zinc-100 group-hover:text-white transition-colors">{product.title}</span>
-                            <p className="text-xs text-zinc-500 mt-0.5">{product.handle}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <span className="inline-flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300 ring-1 ring-zinc-700/50">
-                          {getCategory(product)}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <span className="font-semibold text-zinc-100">{getPrice(product)}</span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <div className={`size-2 rounded-full ${
-                            stock > 10 ? "bg-emerald-400" : stock > 0 ? "bg-amber-400" : "bg-red-400"
-                          }`} />
-                          <span className={`text-sm font-medium ${
-                            stock > 10 ? "text-emerald-400" : stock > 0 ? "text-amber-400" : "text-red-400"
-                          }`}>
-                            {stock}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        {product.status === "published" ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20">
-                            <div className="size-1.5 rounded-full bg-emerald-400" />
-                            Activo
-                          </span>
+                {filteredProducts.map((product, index) => (
+                  <motion.tr
+                    key={product.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3, delay: index * 0.03 }}
+                    onClick={() => router.push(`/admin/productos/${product.id}`)}
+                    className="group border-b border-zinc-800/50 hover:bg-zinc-800/40 cursor-pointer transition-colors"
+                  >
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        {product.imagen ? (
+                          <motion.img
+                            whileHover={{ scale: 1.05 }}
+                            src={product.imagen}
+                            alt=""
+                            className="size-10 rounded-lg object-cover ring-1 ring-zinc-700"
+                          />
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400 ring-1 ring-amber-500/20">
-                            <div className="size-1.5 rounded-full bg-amber-400" />
-                            Borrador
-                          </span>
+                          <div className="flex size-10 items-center justify-center rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20">
+                            <Package className="size-5 text-blue-400" />
+                          </div>
                         )}
-                      </td>
-                      <td className="px-5 py-3.5 text-right">
-                        <motion.button
-                          initial={{ opacity: 0, x: 10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          onClick={(e) => handleDelete(e, product.id, product.title)}
-                          disabled={deleting === product.id}
-                          className="opacity-0 group-hover:opacity-100 inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-red-400 hover:bg-red-950/40 hover:text-red-300 transition-all disabled:opacity-50"
-                        >
-                          {deleting === product.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
-                        </motion.button>
-                      </td>
-                    </motion.tr>
-                  );
-                })}
+                        <div>
+                          <span className="font-medium text-zinc-100 group-hover:text-white transition-colors">{product.nombre}</span>
+                          <p className="text-xs text-zinc-500 mt-0.5">{product.slug}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="inline-flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300 ring-1 ring-zinc-700/50">
+                        {product.categoria}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="font-semibold text-zinc-100">{getPrice(product)}</span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <div className={`size-2 rounded-full ${
+                          product.inventario > 10 ? "bg-emerald-400" : product.inventario > 0 ? "bg-amber-400" : "bg-red-400"
+                        }`} />
+                        <span className={`text-sm font-medium ${
+                          product.inventario > 10 ? "text-emerald-400" : product.inventario > 0 ? "text-amber-400" : "text-red-400"
+                        }`}>
+                          {product.inventario}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      {product.estado === "active" ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20">
+                          <div className="size-1.5 rounded-full bg-emerald-400" />
+                          Activo
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400 ring-1 ring-amber-500/20">
+                          <div className="size-1.5 rounded-full bg-amber-400" />
+                          Borrador
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <motion.button
+                        initial={{ opacity: 0, x: 10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        onClick={(e) => handleDelete(e, product.id, product.nombre)}
+                        disabled={deleting === product.id}
+                        className="opacity-0 group-hover:opacity-100 inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-red-400 hover:bg-red-950/40 hover:text-red-300 transition-all disabled:opacity-50"
+                      >
+                        {deleting === product.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                      </motion.button>
+                    </td>
+                  </motion.tr>
+                ))}
               </AnimatePresence>
             </tbody>
           </table>

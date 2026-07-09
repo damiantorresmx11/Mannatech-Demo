@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Warehouse, Loader2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getProducts } from "@/lib/medusa-admin";
+import { getProducts } from "@/lib/commerce/client";
+import type { Product } from "@/lib/commerce/types";
 
 interface InventoryItem { id: string; title: string; stock: number; level: "critico" | "bajo" | "normal"; }
 
@@ -19,10 +20,10 @@ export default function InventarioPage() {
     setLoading(true); setError(null);
     try {
       const data = await getProducts();
-      const mapped: InventoryItem[] = (data.products || []).map((p: any) => {
-        const stock = p.variants?.reduce((sum: number, v: any) => sum + (v.inventory_quantity || 0), 0) ?? 0;
+      const mapped: InventoryItem[] = (data.products || []).map((p: Product) => {
+        const stock = p.inventario;
         const level: "critico" | "bajo" | "normal" = stock <= 5 ? "critico" : stock <= 20 ? "bajo" : "normal";
-        return { id: p.id, title: p.title, stock, level };
+        return { id: p.id, title: p.nombre, stock, level };
       });
       mapped.sort((a, b) => a.stock - b.stock);
       setItems(mapped);
@@ -33,14 +34,14 @@ export default function InventarioPage() {
 
   const criticos = items.filter((i) => i.level === "critico");
   const bajos = items.filter((i) => i.level === "bajo");
-  const getLevelLabel = (l: string) => ({ critico: "Crítico", bajo: "Bajo", normal: "Normal" }[l] || l);
+  const getLevelLabel = (l: string) => ({ critico: "Critico", bajo: "Bajo", normal: "Normal" }[l] || l);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Inventario</h1>
-          <p className="text-sm text-zinc-500 mt-1">{loading ? "Cargando..." : `${items.length} productos · ${criticos.length} críticos · ${bajos.length} bajos`}</p>
+          <p className="text-sm text-zinc-500 mt-1">{loading ? "Cargando..." : `${items.length} productos · ${criticos.length} criticos · ${bajos.length} bajos`}</p>
         </div>
         <Button variant="outline" size="sm" onClick={fetchInventory} disabled={loading} className="gap-1.5">
           <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} /> Actualizar
@@ -56,7 +57,7 @@ export default function InventarioPage() {
               <CardContent className="pt-1">
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="size-5 text-red-500 shrink-0" />
-                  <div><p className="font-medium text-red-800 dark:text-red-300">{a.title}</p><p className="text-sm text-red-600 dark:text-red-400">Stock crítico: {a.stock} unidades</p></div>
+                  <div><p className="font-medium text-red-800 dark:text-red-300">{a.title}</p><p className="text-sm text-red-600 dark:text-red-400">Stock critico: {a.stock} unidades</p></div>
                 </div>
               </CardContent>
             </Card>
@@ -80,7 +81,7 @@ export default function InventarioPage() {
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Warehouse className="size-12 text-zinc-300 dark:text-zinc-700 mb-4" />
           <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Sin inventario</h3>
-          <p className="text-sm text-zinc-500 mt-1">Agrega productos para ver el inventario aquí.</p>
+          <p className="text-sm text-zinc-500 mt-1">Agrega productos para ver el inventario aqui.</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">

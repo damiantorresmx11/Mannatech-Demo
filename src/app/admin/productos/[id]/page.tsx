@@ -6,40 +6,27 @@ import { StatusBadge } from "@/components/dashboard";
 import { ArrowLeft, Save, Loader2, Package } from "lucide-react";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { getProduct, updateProduct } from "@/lib/medusa-admin";
-
-interface MedusaProductDetail {
-  id: string;
-  title: string;
-  handle: string;
-  description: string | null;
-  subtitle: string | null;
-  status: string;
-  thumbnail: string | null;
-  variants: { id: string; title: string; sku: string; prices: { amount: number; currency_code: string }[]; inventory_quantity: number }[];
-  categories: { name: string }[];
-  collection: { title: string } | null;
-}
+import { getProduct, updateProduct } from "@/lib/commerce/client";
+import type { Product } from "@/lib/commerce/types";
 
 export default function ProductoDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [product, setProduct] = useState<MedusaProductDetail | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("draft");
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [estado, setEstado] = useState<"active" | "draft">("draft");
 
   useEffect(() => {
-    getProduct(id).then((data) => {
-      const p = data.product;
+    getProduct(id).then((p) => {
       setProduct(p);
-      setTitle(p.title || "");
-      setDescription(p.description || "");
-      setStatus(p.status || "draft");
+      setNombre(p.nombre || "");
+      setDescripcion(p.descripcionLarga || "");
+      setEstado(p.estado === "active" ? "active" : "draft");
     }).catch(() => setError("Error al cargar producto"))
       .finally(() => setLoading(false));
   }, [id]);
@@ -49,7 +36,7 @@ export default function ProductoDetallePage({ params }: { params: Promise<{ id: 
     setSaved(false);
     setError(null);
     try {
-      await updateProduct(id, { title, description, status });
+      await updateProduct(id, { nombre, descripcionLarga: descripcion, estado });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
@@ -67,8 +54,7 @@ export default function ProductoDetallePage({ params }: { params: Promise<{ id: 
     return <div className="py-20 text-center text-zinc-500">Producto no encontrado</div>;
   }
 
-  const variant = product.variants?.[0];
-  const price = variant?.prices?.[0];
+  const variant = product.variantes?.[0];
 
   return (
     <div className="space-y-6">
@@ -77,7 +63,7 @@ export default function ProductoDetallePage({ params }: { params: Promise<{ id: 
           <ArrowLeft className="size-4" /> Productos
         </Link>
         <span className="text-zinc-300 dark:text-zinc-600">/</span>
-        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{product.title}</span>
+        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{product.nombre}</span>
       </div>
 
       <div className="flex items-center justify-between">
@@ -96,38 +82,36 @@ export default function ProductoDetallePage({ params }: { params: Promise<{ id: 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
-            <CardHeader><CardTitle>Información General</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Informacion General</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Nombre</label>
-                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
                   className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Handle</label>
-                  <input type="text" value={product.handle || ""} disabled
+                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Slug</label>
+                  <input type="text" value={product.slug || ""} disabled
                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-500" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">SKU</label>
-                  <input type="text" value={variant?.sku || "---"} disabled
+                  <input type="text" value={product.sku || "---"} disabled
                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-500" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Descripción</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4}
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Descripcion</label>
+                <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={4}
                   className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Estatus</label>
-                <select value={status} onChange={(e) => setStatus(e.target.value)}
+                <select value={estado} onChange={(e) => setEstado(e.target.value as "active" | "draft")}
                   className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500">
                   <option value="draft">Borrador</option>
-                  <option value="published">Publicado</option>
-                  <option value="proposed">Propuesto</option>
-                  <option value="rejected">Rechazado</option>
+                  <option value="active">Publicado</option>
                 </select>
               </div>
             </CardContent>
@@ -138,8 +122,8 @@ export default function ProductoDetallePage({ params }: { params: Promise<{ id: 
           <Card>
             <CardHeader><CardTitle>Imagen</CardTitle></CardHeader>
             <CardContent>
-              {product.thumbnail ? (
-                <img src={product.thumbnail} alt="" className="w-full rounded-lg object-cover" />
+              {product.imagen ? (
+                <img src={product.imagen} alt="" className="w-full rounded-lg object-cover" />
               ) : (
                 <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-200 bg-zinc-50 py-12 dark:border-zinc-700 dark:bg-zinc-800/50">
                   <Package className="size-8 text-zinc-400 mb-2" />
@@ -155,22 +139,22 @@ export default function ProductoDetallePage({ params }: { params: Promise<{ id: 
               <div className="flex justify-between">
                 <span className="text-zinc-500 dark:text-zinc-400">Precio</span>
                 <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                  {price ? `$${(price.amount / 100).toLocaleString("es-MX", { minimumFractionDigits: 2 })} ${price.currency_code.toUpperCase()}` : "---"}
+                  {product.precio ? `$${product.precio.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN` : "---"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500 dark:text-zinc-400">Stock</span>
-                <span className="font-medium text-zinc-900 dark:text-zinc-100">{variant?.inventory_quantity ?? 0}</span>
+                <span className="font-medium text-zinc-900 dark:text-zinc-100">{product.inventario ?? 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">Categoría</span>
+                <span className="text-zinc-500 dark:text-zinc-400">Categoria</span>
                 <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                  {product.categories?.[0]?.name || product.collection?.title || "---"}
+                  {product.categoria || "---"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500 dark:text-zinc-400">Estatus</span>
-                <StatusBadge status={status === "published" ? "Publicado" : status === "draft" ? "Borrador" : status} />
+                <StatusBadge status={estado === "active" ? "Publicado" : "Borrador"} />
               </div>
             </CardContent>
           </Card>
