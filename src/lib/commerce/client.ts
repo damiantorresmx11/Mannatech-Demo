@@ -39,9 +39,6 @@ export {
   getEmbeddedCheckoutUrl,
 } from "./bigcommerce/storefront"
 
-// Cache utilities
-export { withCache, invalidateCache, invalidateAllCache } from "./cache"
-
 // Check if the commerce backend is configured
 export { isConfigured } from "./bigcommerce/client"
 
