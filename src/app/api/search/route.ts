@@ -11,9 +11,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // If BigCommerce is not configured, return empty
     if (!isConfigured()) {
-      return NextResponse.json({ products: [], error: "Commerce backend not configured" });
+      return NextResponse.json({ products: [] });
     }
 
     const results = await searchProducts(q, limit);

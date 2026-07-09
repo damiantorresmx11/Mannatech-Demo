@@ -5,7 +5,11 @@ import { getOrders, getProducts, getCustomers, isConfigured } from "@/lib/commer
 export async function GET(request: NextRequest) {
   try {
     if (!isConfigured()) {
-      return NextResponse.json({ error: "Commerce backend not configured" }, { status: 503 });
+      return NextResponse.json({
+        totalRevenue: 0, totalOrders: 0, avgOrderValue: 0, newCustomers: 0,
+        ordersByStatus: {}, topProducts: [], revenueOverTime: [], customerGrowth: [],
+        currency: "MXN",
+      });
     }
 
     const { searchParams } = new URL(request.url);

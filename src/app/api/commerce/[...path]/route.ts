@@ -21,7 +21,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
 async function proxy(request: NextRequest, { path }: { path: string[] }) {
   if (!STORE_HASH || !ACCESS_TOKEN) {
-    return NextResponse.json({ error: "Commerce backend not configured" }, { status: 503 })
+    // Return 200 with empty data so browser doesn't log 503 errors
+    return NextResponse.json({ data: [], meta: { pagination: { total: 0 } }, _notConfigured: true })
   }
 
   const joinedPath = path.join("/")
